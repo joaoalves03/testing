@@ -1,4 +1,4 @@
-package com.example.goipvc
+package app.goipvc
 
 import io.flutter.embedding.android.FlutterActivity
 
