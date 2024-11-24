@@ -1,0 +1,9 @@
+{
+    "@@locale": "pt",
+
+    "@@comment": "Login page",
+    "login": "Entrar",
+    "username": "Nome de utilizador",
+    "password": "Palavra-passe",
+    "login_failed": "Falha no login"
+}
