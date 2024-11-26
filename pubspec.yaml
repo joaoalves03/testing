@@ -66,6 +66,13 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/divider.svg
+    
+    - assets/logos/ESA.svg
+    - assets/logos/ESCE.svg
+    - assets/logos/ESDL.svg
+    - assets/logos/ESE.svg
+    - assets/logos/ESTG.svg
     - assets/logos/IPVC.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
