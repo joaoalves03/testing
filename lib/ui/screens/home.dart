@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../themes.dart';
 import '../widgets/header.dart';
 
 void main() => runApp(HomeScreen());
@@ -10,6 +11,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: esaTheme['light'],
+      darkTheme: esaTheme['dark'],
+      themeMode: ThemeMode.system,
       home: MainScreen(),
     );
   }
