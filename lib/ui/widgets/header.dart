@@ -43,8 +43,8 @@ class HeaderState extends State<Header> {
       children: [
         SvgPicture.asset(
           imagePath,
-          width: 32,
-          height: 32,
+          width: 28,
+          height: 28,
         ),
         GestureDetector(
           onTap: () => _openNotificationScreen(context),
