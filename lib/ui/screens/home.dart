@@ -1,28 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../themes.dart';
 import '../widgets/header.dart';
-import '../widgets/navbar.dart';
-
-void main() => runApp(HomeScreen());
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: esaTheme['light'],
-      darkTheme: esaTheme['dark'],
-      themeMode: ThemeMode.system,
-      home: MainScreen(),
-    );
-  }
-}
-
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +40,13 @@ class MainScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             Center(child: Text('Aulas')),
             Center(child: Text('Tarefas')),
             Center(child: Text('Ementas')),
           ],
         ),
-        bottomNavigationBar: Navbar(),
       ),
     );
   }
