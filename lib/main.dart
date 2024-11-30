@@ -14,54 +14,64 @@ import 'ui/screens/menu.dart';
 
 final Logger logger = Logger();
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
   SharedPrefsUtil.printPrefs();
-
-  runApp(Main(isLoggedIn: isLoggedIn));
+  runApp(MyApp());
 }
 
-class Main extends StatelessWidget {
-  final bool isLoggedIn;
-  const Main({super.key, required this.isLoggedIn});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  Future<bool> _checkLoginStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'goIPVC',
-      localizationsDelegates: const [
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: S.delegate.supportedLocales,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system,
-      home: isLoggedIn ? const RootScreen() : const LoginScreen(),
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/schedule': (context) => const ScheduleScreen(),
-        '/blueprints': (context) => const BlueprintScreen(),
-        '/menu': (context) => const MenuScreen(),
+    return FutureBuilder<bool>(
+      future: _checkLoginStatus(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(home: CircularProgressIndicator());
+        } else {
+          final bool isLoggedIn = snapshot.data ?? false;
+          return MaterialApp(
+            title: 'goIPVC',
+            localizationsDelegates: const [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: S.delegate.supportedLocales,
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: ThemeMode.system,
+            home: isLoggedIn ? MainScreen() : const LoginScreen(),
+            routes: {
+              '/login': (context) => const LoginScreen(),
+              '/home': (context) => const HomeScreen(),
+              '/schedule': (context) => const ScheduleScreen(),
+              '/blueprints': (context) => const BlueprintScreen(),
+              '/menu': (context) => const MenuScreen(),
+            },
+          );
+        }
       },
     );
   }
 }
 
-class RootScreen extends StatefulWidget {
-  const RootScreen({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  RootScreenState createState() => RootScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class RootScreenState extends State<RootScreen> {
+class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
