@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
-import 'home.dart';
+import 'home/main.dart';
 import '../../generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {

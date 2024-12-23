@@ -46,7 +46,7 @@ class UserCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.amber.shade50, // adjust to your desired color
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(

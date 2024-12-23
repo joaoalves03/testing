@@ -7,7 +7,7 @@ import 'package:logger/logger.dart';
 import 'utils/shared_prefs.dart';
 
 import 'ui/screens/login.dart';
-import 'ui/screens/home.dart';
+import 'ui/screens/home/main.dart';
 import 'ui/screens/schedule.dart';
 import 'ui/screens/blueprints.dart';
 import 'ui/screens/menu.dart';
