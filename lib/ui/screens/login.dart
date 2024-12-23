@@ -27,7 +27,7 @@ class LoginState extends State<LoginScreen> {
     try {
       final response = await http
           .post(
-            Uri.parse('http://192.168.1.68:3000/login'),
+            Uri.parse('http://localhost:3000/login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

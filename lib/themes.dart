@@ -67,8 +67,8 @@ ThemeData createFlexTheme(Color color, bool isDark) {
 
 Map<String, ThemeData> genTheme(Color color) {
   return {
-    "light": createFlexTheme(color, false),
-    "dark": createFlexTheme(color, true),
+    'light': createFlexTheme(color, false),
+    'dark': createFlexTheme(color, true),
   };
 }
 
@@ -85,6 +85,6 @@ var eseTheme = genTheme(Color(0xff0054a4));
 var essTheme = genTheme(Color(0xffdca7ac));
 var estgTheme = genTheme(Color(0xfff3ab1d));
 var ipvcTheme = {
-  "light": genIPVCTheme(false),
-  "dark": genIPVCTheme(true),
+  'light': genIPVCTheme(false),
+  'dark': genIPVCTheme(true),
 };
