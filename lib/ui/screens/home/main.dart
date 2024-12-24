@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:goipvc/ui/widgets/header.dart';
 import './classes.dart';
+import './tasks.dart';
+import './meals.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -44,8 +46,8 @@ class HomeScreen extends StatelessWidget {
         body: const TabBarView(
           children: [
             ClassesTab(),
-            Center(child: Text('Tarefas')),
-            Center(child: Text('Ementas')),
+            TasksTab(),
+            MealsTab(),
           ],
         ),
       ),
