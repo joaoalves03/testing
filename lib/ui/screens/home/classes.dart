@@ -150,7 +150,7 @@ class RightNowCard extends StatelessWidget {
         Text(
           lesson.className,
           style: TextStyle(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 20,
             fontWeight: FontWeight.w900,
           ),
@@ -239,7 +239,7 @@ class UpcomingClass extends StatelessWidget {
             _buildDot(),
             Text(
               lesson.className,
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
           ],
         ),
