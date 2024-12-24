@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/widgets/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
@@ -90,6 +91,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: Header(),
       body: IndexedStack(
         index: _selectedIndex,
         children: _screens,

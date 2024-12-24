@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:goipvc/ui/widgets/header.dart';
 import './classes.dart';
 import './tasks.dart';
 import './meals.dart';
@@ -14,40 +13,32 @@ class HomeScreen extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          toolbarHeight: 135,
-          flexibleSpace: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Greeting(
+              title: 'Olá Matt!',
+              slogan: 'O teu ● de partida',
+              money: '0,00 €',
+              subtitle: 'Saldo atual',
+            ),
+            TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.watch_later), text: 'Aulas'),
+                Tab(icon: Icon(Icons.task), text: 'Tarefas'),
+                Tab(icon: Icon(Icons.local_dining), text: 'Ementas'),
+              ],
+            ),
+            // Wrap TabBarView in Expanded to avoid layout issues
+            Expanded(
+              child: TabBarView(
                 children: [
-                  Header(),
-                  Greeting(
-                    title: 'Olá Matt!',
-                    slogan: 'O teu ● de partida',
-                    money: '0,00 €',
-                    subtitle: 'Saldo atual',
-                  ),
+                  ClassesTab(),
+                  TasksTab(),
+                  MealsTab(),
                 ],
               ),
             ),
-          ),
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.watch_later), text: 'Aulas'),
-              Tab(icon: Icon(Icons.task), text: 'Tarefas'),
-              Tab(icon: Icon(Icons.local_dining), text: 'Ementas'),
-            ],
-          ),
-        ),
-        body: const TabBarView(
-          children: [
-            ClassesTab(),
-            TasksTab(),
-            MealsTab(),
           ],
         ),
       ),
@@ -72,7 +63,7 @@ class Greeting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: Column(
         children: [
           Row(
