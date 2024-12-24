@@ -27,7 +27,7 @@ class LoginState extends State<LoginScreen> {
     try {
       final response = await http
           .post(
-            Uri.parse('http://localhost:3000/login'),
+            Uri.parse('https://api.goipvc.xyz/login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
