@@ -1,35 +1,85 @@
 import 'package:flutter/material.dart';
-
-import '../widgets/header.dart';
+import 'package:goipvc/ui/widgets/list_section.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          flexibleSpace: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: Header(),
-            ),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(12.0),
+    return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              UserCard(),
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                child: UserCard(),
+              ),
+
+              ListSection(
+                title: "Geral",
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.school),
+                    title: Text("Cadeiras"),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.calendar_month),
+                    title: Text("Calendário Académico"),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.people),
+                    title: Text("Corpo Docente"),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.watch_later),
+                    title: Text("Horário de Serviços"),
+                  )
+                ]
+              ),
+              ListSection(
+                  title: "SASocial",
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.credit_card),
+                      title: Text("Conta"),
+                    )
+                  ]
+              ),
+              ListSection(
+                  title: "Academicos",
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.payment),
+                      title: Text("Propinas"),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.calendar_today),
+                      title: Text("Exames"),
+                    )
+                  ]
+              ),
+
+              Divider(),
+              
+              ListSection(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.info),
+                      title: Text("Sobre"),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text("Definições"),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.logout),
+                      title: Text("Logout"),
+                    )
+                  ]
+              )
             ],
           ),
-        ),
-      ),
     );
   }
 }

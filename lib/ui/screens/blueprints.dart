@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../widgets/header.dart';
-
 class BlueprintScreen extends StatefulWidget {
   const BlueprintScreen({super.key});
 
@@ -21,56 +19,36 @@ class BlueprintScreenState extends State<BlueprintScreen> {
 
     double itemSize = MediaQuery.of(context).size.width; // full width of screen
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          flexibleSpace: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Header(),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: List.generate(imageUrls.length, (index) {
-              return GestureDetector(
-                onTap: () async {
-                  if (!mounted) return; // check before accessing context
-                  await SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.landscapeLeft,
-                    DeviceOrientation.landscapeRight,
-                  ]);
-                  if (!mounted) return; // ensure context is still valid
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          LandscapeScreen(imageUrl: imageUrls[index]),
-                    ),
-                  );
-                },
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  width: itemSize,
-                  child: Image.network(
-                    imageUrls[index],
-                    fit: BoxFit.cover,
+    return SingleChildScrollView(
+        child: Column(
+          children: List.generate(imageUrls.length, (index) {
+            return GestureDetector(
+              onTap: () async {
+                if (!mounted) return; // check before accessing context
+                await SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ]);
+                if (!mounted) return; // ensure context is still valid
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        LandscapeScreen(imageUrl: imageUrls[index]),
                   ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.all(8),
+                width: itemSize,
+                child: Image.network(
+                  imageUrls[index],
+                  fit: BoxFit.cover,
                 ),
-              );
-            }),
-          ),
+              ),
+            );
+          }),
         ),
-      ),
     );
   }
 }
