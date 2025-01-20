@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:goipvc/ui/widgets/list_section.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -7,79 +9,73 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                child: UserCard(),
-              ),
-
-              ListSection(
-                title: "Geral",
-                children: [
-                  ListTile(
-                    leading: Icon(Icons.school),
-                    title: Text("Cadeiras"),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.calendar_month),
-                    title: Text("Calendário Académico"),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text("Corpo Docente"),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.watch_later),
-                    title: Text("Horário de Serviços"),
-                  )
-                ]
-              ),
-              ListSection(
-                  title: "SASocial",
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.credit_card),
-                      title: Text("Conta"),
-                    )
-                  ]
-              ),
-              ListSection(
-                  title: "Academicos",
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.payment),
-                      title: Text("Propinas"),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.calendar_today),
-                      title: Text("Exames"),
-                    )
-                  ]
-              ),
-
-              Divider(),
-              
-              ListSection(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.info),
-                      title: Text("Sobre"),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text("Definições"),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text("Logout"),
-                    )
-                  ]
-              )
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            child: UserCard(),
           ),
+          ListSection(title: "Geral", children: [
+            ListTile(
+              leading: Icon(Icons.school),
+              title: Text("Cadeiras"),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_month),
+              title: Text("Calendário Académico"),
+            ),
+            ListTile(
+              leading: Icon(Icons.people),
+              title: Text("Corpo Docente"),
+            ),
+            ListTile(
+              leading: Icon(Icons.watch_later),
+              title: Text("Horário de Serviços"),
+            )
+          ]),
+          ListSection(title: "SASocial", children: [
+            ListTile(
+              leading: Icon(Icons.credit_card),
+              title: Text("Conta"),
+            )
+          ]),
+          ListSection(title: "Academicos", children: [
+            ListTile(
+              leading: Icon(Icons.payment),
+              title: Text("Propinas"),
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text("Exames"),
+            )
+          ]),
+          Divider(),
+          ListSection(children: [
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text("Sobre"),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text("Definições"),
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text("Logout"),
+              onTap: () async {
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                await prefs.remove('isLoggedIn');
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
+              },
+            ),
+          ])
+        ],
+      ),
     );
   }
 }
