@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
-import 'home/main.dart';
 import '../../generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,10 +42,7 @@ class LoginState extends State<LoginScreen> {
         await prefs.setBool('isLoggedIn', true);
 
         if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
+          Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
