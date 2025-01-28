@@ -16,17 +16,22 @@ class LoginScreen extends StatefulWidget {
 class LoginState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _serverController =
+      TextEditingController(text: 'https://api.goipvc.xyz');
+  final FocusNode _serverFocusNode = FocusNode();
+  Color _serverBorderColor = Colors.grey;
 
   Future<void> _login() async {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
+    final String serverUrl = _serverController.text;
 
     String? errorMessage;
 
     try {
       final response = await http
           .post(
-            Uri.parse('https://api.goipvc.xyz/login'),
+            Uri.parse('$serverUrl/login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -40,6 +45,7 @@ class LoginState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('serverUrl', serverUrl);
 
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
@@ -63,6 +69,26 @@ class LoginState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _pingServer() async {
+    final String serverUrl = _serverController.text;
+
+    try {
+      final response = await http
+          .get(Uri.parse(serverUrl))
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _serverBorderColor = Colors.green;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _serverBorderColor = Colors.red;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,6 +96,35 @@ class LoginState extends State<LoginScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
+            Row(
+              children: <Widget>[
+                Icon(Icons.storage),
+                SizedBox(width: 8.0),
+                Text('Server:'),
+                SizedBox(width: 8.0),
+                Expanded(
+                  child: TextField(
+                    controller: _serverController,
+                    focusNode: _serverFocusNode,
+                    decoration: InputDecoration(
+                      hintText: 'https://api.goipvc.xyz/',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: _serverBorderColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: _serverBorderColor),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: _pingServer,
+                  child: Text('Test'),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.0),
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(labelText: S.of(context).username),
