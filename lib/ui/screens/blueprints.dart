@@ -12,43 +12,42 @@ class BlueprintScreenState extends State<BlueprintScreen> {
   @override
   Widget build(BuildContext context) {
     final List<String> imageUrls = [
-      'https://via.placeholder.com/1280x768',
-      'https://via.placeholder.com/1280x768',
-      'https://via.placeholder.com/1280x768',
+      //'https://via.placeholder.com/1280x768',
+      //'https://via.placeholder.com/1280x768',
+      //'https://via.placeholder.com/1280x768',
     ];
 
     double itemSize = MediaQuery.of(context).size.width; // full width of screen
 
     return SingleChildScrollView(
-        child: Column(
-          children: List.generate(imageUrls.length, (index) {
-            return GestureDetector(
-              onTap: () async {
-                if (!mounted) return; // check before accessing context
-                await SystemChrome.setPreferredOrientations([
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]);
-                if (!mounted) return; // ensure context is still valid
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        LandscapeScreen(imageUrl: imageUrls[index]),
-                  ),
-                );
-              },
-              child: Container(
-                margin: EdgeInsets.all(8),
-                width: itemSize,
-                child: Image.network(
-                  imageUrls[index],
-                  fit: BoxFit.cover,
+      child: Column(
+        children: List.generate(imageUrls.length, (index) {
+          return GestureDetector(
+            onTap: () async {
+              if (!mounted) return; // check before accessing context
+              await SystemChrome.setPreferredOrientations([
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+              ]);
+              if (!mounted) return; // ensure context is still valid
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LandscapeScreen(imageUrl: imageUrls[index]),
                 ),
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.all(8),
+              width: itemSize,
+              child: Image.network(
+                imageUrls[index],
+                fit: BoxFit.cover,
               ),
-            );
-          }),
-        ),
+            ),
+          );
+        }),
+      ),
     );
   }
 }
