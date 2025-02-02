@@ -40,12 +40,19 @@ class LoginState extends State<LoginScreen> {
               'password': password,
             }),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 6));
 
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('serverUrl', serverUrl);
+        await prefs.setString('server_url', serverUrl);
+        await prefs.setBool('is_logged_in', true);
+        await prefs.setString('username', username);
+        await prefs.setString('password', password);
+
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        final Map<String, dynamic> tokens = responseBody['tokens'];
+        await prefs.setString('academicos_token', tokens['academicos']);
+        await prefs.setString('on_token', tokens['on']);
 
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');

@@ -67,7 +67,7 @@ class MenuScreen extends StatelessWidget {
               onTap: () async {
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
-                await prefs.remove('isLoggedIn');
+                await prefs.clear();
                 if (context.mounted) {
                   Navigator.pushReplacementNamed(context, '/login');
                 }

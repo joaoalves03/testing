@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 
   Future<bool> _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLoggedIn') ?? false;
+    return prefs.getBool('is_logged_in') ?? false;
   }
 
   @override

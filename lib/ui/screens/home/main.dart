@@ -1,12 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import './classes.dart';
 import './tasks.dart';
 import './meals.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  HomeScreenState createState() => HomeScreenState();
+}
+
+class HomeScreenState extends State<HomeScreen> {
+  String title = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchName();
+  }
+
+  Future<void> _fetchName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String serverUrl = prefs.getString('server_url')!;
+    String onToken = prefs.getString('on_token')!;
+
+    final response = await http.get(
+      Uri.parse('$serverUrl/on/student-name'),
+      headers: {
+        'Cookie': onToken,
+      },
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        title = 'Olá ${response.body.split(' ')[0]}!';
+      });
+    } else {
+      setState(() {
+        title = 'Olá!';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +55,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Greeting(
-              title: 'Olá Matt!',
+              title: title,
               slogan: 'O teu ● de partida',
               money: '0,00 €',
               subtitle: 'Saldo atual',
