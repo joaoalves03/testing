@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,8 +6,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
-import '../../generated/l10n.dart';
-import '../widgets/containers.dart';
+import 'package:goipvc/generated/l10n.dart';
+import 'package:goipvc/ui/widgets/containers.dart';
+import '../init_view.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -59,7 +61,25 @@ class LoginState extends State<LoginScreen> {
         await prefs.setString('sas_refresh_token', tokens['SASRefreshToken']);
 
         if (mounted) {
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return InitView();
+              },
+
+              //Transition
+              transitionDuration: const Duration(milliseconds: 500),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return SharedAxisTransition(
+                  animation: animation,
+                  secondaryAnimation: secondaryAnimation,
+                  transitionType: SharedAxisTransitionType.vertical,
+                  child: child,
+                );
+              },
+            ),
+          );
         }
       } else {
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
