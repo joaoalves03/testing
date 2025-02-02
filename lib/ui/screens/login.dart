@@ -52,7 +52,9 @@ class LoginState extends State<LoginScreen> {
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
         final Map<String, dynamic> tokens = responseBody['tokens'];
         await prefs.setString('academicos_token', tokens['academicos']);
-        await prefs.setString('on_token', tokens['on']);
+        await prefs.setString('on_token', tokens['ON']);
+        await prefs.setString('sas_token', tokens['SASToken']);
+        await prefs.setString('sas_refresh_token', tokens['SASRefreshToken']);
 
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,33 +17,54 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  String title = '';
+  late SharedPreferences prefs;
+  late String serverUrl, academicosToken, sasToken, sasRefreshToken;
 
   @override
   void initState() {
     super.initState();
-    _fetchName();
+    _initializePreferences();
   }
 
+  Future<void> _initializePreferences() async {
+    prefs = await SharedPreferences.getInstance();
+    serverUrl = prefs.getString('server_url')!;
+    academicosToken = prefs.getString('academicos_token')!;
+    sasToken = prefs.getString('sas_token')!;
+    sasRefreshToken = prefs.getString('sas_refresh_token')!;
+
+    _fetchName();
+    _getBalance();
+  }
+
+  String name = '';
   Future<void> _fetchName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String serverUrl = prefs.getString('server_url')!;
-    String onToken = prefs.getString('on_token')!;
-
     final response = await http.get(
-      Uri.parse('$serverUrl/on/student-name'),
+      Uri.parse('$serverUrl/academicos/student-info'),
       headers: {
-        'Cookie': onToken,
+        'Cookie': academicosToken,
       },
     );
     if (response.statusCode == 200) {
       setState(() {
-        title = 'Olá ${response.body.split(' ')[0]}!';
+        var jsonResponse = jsonDecode(response.body);
+        name = jsonResponse['name'].split(' ')[0];
       });
-    } else {
+    }
+  }
+
+  double balance = 0.00;
+  Future<void> _getBalance() async {
+    final response = await http.get(
+      Uri.parse('$serverUrl/sas/balance'),
+      headers: {
+        'Authorization': sasToken,
+        'Cookie': sasRefreshToken,
+      },
+    );
+    if (response.statusCode == 200) {
       setState(() {
-        title = 'Olá!';
+        balance = double.parse(response.body);
       });
     }
   }
@@ -55,9 +78,9 @@ class HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Greeting(
-              title: title,
+              title: 'Olá $name!',
               slogan: 'O teu ● de partida',
-              money: '0,00 €',
+              money: '${balance.toString().replaceAll('.', ',')} €',
               subtitle: 'Saldo atual',
             ),
             TabBar(
@@ -67,7 +90,6 @@ class HomeScreenState extends State<HomeScreen> {
                 Tab(icon: Icon(Icons.local_dining), text: 'Ementas'),
               ],
             ),
-            // Wrap TabBarView in Expanded to avoid layout issues
             Expanded(
               child: TabBarView(
                 children: [

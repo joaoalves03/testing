@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
                 theme: ThemeData.light(),
                 darkTheme: ThemeData.dark(),
                 themeMode: ThemeMode.system,
+                debugShowCheckedModeBanner: false,
                 home: isLoggedIn ? InitView() : LoginScreen(),
                 routes: getRoutes());
           }
