@@ -65,9 +65,10 @@ class MenuScreen extends StatelessWidget {
               leading: Icon(Icons.logout),
               title: Text("Logout"),
               onTap: () async {
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                String? serverUrl = prefs.getString('server_url');
                 await prefs.clear();
+                await prefs.setString('server_url', serverUrl!);
                 if (context.mounted) {
                   Navigator.pushReplacementNamed(context, '/login');
                 }

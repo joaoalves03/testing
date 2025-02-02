@@ -49,6 +49,7 @@ class HomeScreenState extends State<HomeScreen> {
       setState(() {
         var jsonResponse = jsonDecode(response.body);
         name = jsonResponse['name'].split(' ')[0];
+        prefs.setInt('student_id', jsonResponse['studentId']);
       });
     }
   }
