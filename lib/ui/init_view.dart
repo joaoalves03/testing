@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/widgets/header.dart';
 
 import 'screens/login.dart';
 import 'screens/home/main.dart';
@@ -42,6 +43,7 @@ class _InitViewState extends State<InitView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: Header(),
       body: IndexedStack(
         index: _selectedIndex,
         children: _screens,
