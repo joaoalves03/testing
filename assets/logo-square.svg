@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="536.50354mm"
-   height="105.83334mm"
-   viewBox="0 0 536.50353 105.83334"
+   width="270.93301mm"
+   height="270.93332mm"
+   viewBox="0 0 270.93301 270.93332"
    version="1.1"
    id="svg5"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
-   sodipodi:docname="logo.svg"
+   sodipodi:docname="logo-square.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -24,8 +24,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.60342904"
-     inkscape:cx="1179.9233"
-     inkscape:cy="402.69855"
+     inkscape:cx="424.24209"
+     inkscape:cy="412.64173"
      inkscape:window-width="1920"
      inkscape:window-height="1012"
      inkscape:window-x="0"
@@ -58,7 +58,7 @@
      inkscape:groupmode="layer"
      id="layer1"
      style="display:none"
-     transform="translate(-24.560434,-167.17615)">
+     transform="translate(-3.3945704,-54.25705)">
     <rect
        style="fill:#000000;stroke-width:0.420065"
        id="rect53"
@@ -73,20 +73,20 @@
      id="layer2"
      inkscape:label="Layer 2"
      style="display:inline"
-     transform="translate(-24.560434,-167.17615)" />
+     transform="translate(-3.3945704,-54.25705)" />
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Layer 3"
      style="display:inline"
-     transform="translate(-24.560434,-167.17615)">
+     transform="translate(-3.3945704,-54.25705)">
     <g
        id="g2079"
        transform="matrix(0.89235119,0,0,0.89235119,4.7623324,43.216709)">
       <g
          style="display:inline;fill:#ffffff"
          id="g2045"
-         transform="matrix(10.186066,0,0,10.186066,436.3542,75.980943)">
+         transform="matrix(4.3402337,0,0,4.3402337,198.66135,112.0982)">
         <path
            d="M 5.63605,7.75735 7.05026,6.34314 12.7071,12 7.05029,17.6568 5.63608,16.2426 9.87869,12 Z"
            fill="currentColor"
@@ -104,8 +104,7 @@
         <g
            aria-label="IPVC"
            id="text5231"
-           style="font-size:76.8827px;line-height:1.25;font-family:'Gotham Black';-inkscape-font-specification:'Gotham Black, ';stroke-width:0.28831"
-           transform="matrix(2.3468937,0,0,2.3468937,-35.676195,-217.84447)">
+           style="font-size:76.8827px;line-height:1.25;font-family:'Gotham Black';-inkscape-font-specification:'Gotham Black, ';stroke-width:0.28831">
           <path
              d="M 62.716216,216.63266 H 77.631459 V 162.81477 H 62.716216 Z"
              style="fill:#ffffff"
@@ -125,7 +124,7 @@
         </g>
         <g
            aria-label="GO"
-           transform="matrix(0,-2.3468937,2.3468937,0,-35.676195,-217.84447)"
+           transform="rotate(-90)"
            id="text10513"
            style="font-size:35.3661px;line-height:1.25;font-family:'Gotham Black';-inkscape-font-specification:'Gotham Black, ';stroke-width:0.28831">
           <path

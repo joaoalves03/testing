@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
 import '../../generated/l10n.dart';
+import '../widgets/containers.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -98,6 +100,81 @@ class LoginState extends State<LoginScreen> {
     }
   }
 
+  void _showServerSettings(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _serverController,
+                  focusNode: _serverFocusNode,
+                  decoration: InputDecoration(
+                    labelText: "Server:",
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: _serverBorderColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: _serverBorderColor),
+                    ),
+                  ),
+                  autocorrect: false,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: _pingServer,
+                        child: Text("Test"),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          setState(() {});
+                          Navigator.pop(context);
+                        },
+                        child: Text("Save")
+                    ),
+                  ],
+                )
+              ],
+            ));
+      },
+    );
+  }
+
+  void _showQuickSettings(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              insetPadding: const EdgeInsets.all(4),
+              title: Text("Settings"),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.dns),
+                      title: const Text("Server"),
+                      trailing: TextContainer(
+                        text: _serverController.text,
+                      ),
+                      onTap: () {
+                        _showServerSettings(context);
+                      },
+                    )
+                  ],
+                ),
+              )
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,50 +183,68 @@ class LoginState extends State<LoginScreen> {
         child: Column(
           children: <Widget>[
             Row(
-              children: <Widget>[
-                Icon(Icons.storage),
-                SizedBox(width: 8.0),
-                Text('Server:'),
-                SizedBox(width: 8.0),
-                Expanded(
-                  child: TextField(
-                    controller: _serverController,
-                    focusNode: _serverFocusNode,
-                    decoration: InputDecoration(
-                      hintText: 'https://api.goipvc.xyz/',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: _serverBorderColor),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: _serverBorderColor),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8.0),
-                ElevatedButton(
-                  onPressed: _pingServer,
-                  child: Text('Test'),
-                ),
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    _showQuickSettings(context);
+                  },
+                  icon: const Icon(Icons.settings),
+                )
               ],
             ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: S.of(context).username),
+            const Spacer(),
+            SvgPicture.asset(
+              'assets/logo.svg',
+              height: 64,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: S.of(context).password),
-              obscureText: true,
+            const SizedBox(
+              height: 20,
             ),
-            ElevatedButton(
+            AutofillGroup(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: S.of(context).username
+                    ),
+                    autofillHints: const [AutofillHints.username],
+                    autocorrect: false,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: S.of(context).password
+                    ),
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.password],
+                    autocorrect: false,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            FilledButton.icon(
               onPressed: _login,
-              child: Text(S.of(context).login),
+              label: Text("Login"),
+              icon: const Icon(Icons.login),
             ),
+            const Spacer(),
           ],
         ),
-      ),
+      )
     );
   }
 }
