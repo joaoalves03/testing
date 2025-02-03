@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/ui/widgets/home/date_section.dart';
 import 'package:goipvc/ui/widgets/card.dart';
+import 'package:goipvc/ui/widgets/lesson_sheet.dart';
 
 class ClassesTab extends StatefulWidget {
   const ClassesTab({super.key});
@@ -131,11 +132,12 @@ class RightNowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledCard(
-        children: [
-          _buildTitleRow(context),
-          _buildInfoRow(),
-          _buildProgressRow(),
-        ],
+      onTap: () => showLessonBottomSheet(context, lesson),
+      children: [
+        _buildTitleRow(context),
+        _buildInfoRow(),
+        _buildProgressRow(),
+      ],
     );
   }
 
