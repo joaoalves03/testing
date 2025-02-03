@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/screens/menu/profile.dart';
+import 'package:goipvc/ui/screens/menu/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:goipvc/ui/widgets/list_section.dart';
@@ -60,6 +62,12 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.settings),
               title: Text("Definições"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsScreen())
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.logout),
@@ -87,9 +95,12 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('to be implemented')),
-      ),
+      onTap: () => {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen())
+        )
+      },
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
