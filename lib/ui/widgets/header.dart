@@ -48,13 +48,12 @@ class HeaderState extends State<Header> {
       surfaceTintColor: Theme.of(context).colorScheme.surface,
       title: SvgPicture.asset(
         imagePath,
-        width: 28,
-        height: 28,
+        height: 32,
       ),
       actions: [
-        GestureDetector(
-          onTap: () => _openNotificationScreen(context),
-          child: const Icon(Icons.notifications_none, size: 28),
+        IconButton(
+          onPressed: () => _openNotificationScreen(context),
+          icon: const Icon(Icons.notifications_none, size: 28),
         ),
       ],
     );

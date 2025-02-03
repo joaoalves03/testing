@@ -124,7 +124,7 @@ class Greeting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
         children: [
           Row(
@@ -168,7 +168,7 @@ class Greeting extends StatelessWidget {
             padding: const EdgeInsets.only(top: 10),
             child: SvgPicture.asset(
               'assets/divider.svg',
-              height: 32,
+              height: 20,
             ),
           ),
         ],
