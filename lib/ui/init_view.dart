@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:goipvc/ui/widgets/header.dart';
 
@@ -26,6 +27,7 @@ class InitView extends StatefulWidget {
 
 class _InitViewState extends State<InitView> {
   int _selectedIndex = 0;
+  int _previousIndex = 0;
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -36,6 +38,7 @@ class _InitViewState extends State<InitView> {
 
   void _onItemTapped(int index) {
     setState(() {
+      _previousIndex = _selectedIndex;
       _selectedIndex = index;
     });
   }
@@ -44,9 +47,19 @@ class _InitViewState extends State<InitView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Header(),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
+      body: PageTransitionSwitcher(
+        duration: const Duration(milliseconds: 300),
+        reverse: _selectedIndex < _previousIndex,
+        transitionBuilder: (child, animation, secondaryAnimation) {
+          return SharedAxisTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            transitionType: SharedAxisTransitionType.horizontal,
+            child: child,
+          );
+        },
+
+        child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
