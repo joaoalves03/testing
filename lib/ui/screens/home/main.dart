@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:goipvc/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,12 +34,12 @@ class HomeScreenState extends State<HomeScreen> {
     sasToken = prefs.getString('sas_token')!;
     sasRefreshToken = prefs.getString('sas_refresh_token')!;
 
-    _fetchName();
+    _fetchInfo();
     _getBalance();
   }
 
   String name = '';
-  Future<void> _fetchName() async {
+  Future<void> _fetchInfo() async {
     final response = await http.get(
       Uri.parse('$serverUrl/academicos/student-info'),
       headers: {
@@ -51,6 +52,29 @@ class HomeScreenState extends State<HomeScreen> {
         name = jsonResponse['name'].split(' ')[0];
         prefs.setInt('student_id', jsonResponse['studentId']);
       });
+    } else if (response.statusCode == 401) {
+      final refreshToken = await http.post(
+        Uri.parse('$serverUrl/auth/refresh-token'),
+        body: jsonEncode({
+          'username': prefs.getString('username')!,
+          'password': prefs.getString('password')!,
+          'strategy': 0,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (refreshToken.statusCode == 200) {
+        var json = jsonDecode(refreshToken.body);
+        academicosToken = json['tokens']['academicos'];
+
+        prefs.setString('academicos_token', academicosToken);
+
+        await _fetchInfo();
+      } else {
+        logger.d('Failed to refresh token..?');
+      }
     }
   }
 
@@ -67,6 +91,31 @@ class HomeScreenState extends State<HomeScreen> {
       setState(() {
         balance = double.parse(response.body);
       });
+    } else if (response.statusCode == 401) {
+      final refreshToken = await http.post(
+        Uri.parse('$serverUrl/auth/refresh-token'),
+        body: jsonEncode({
+          'username': prefs.getString('username')!,
+          'password': prefs.getString('password')!,
+          'strategy': 3,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (refreshToken.statusCode == 200) {
+        var json = jsonDecode(refreshToken.body);
+        sasToken = json['tokens']['SASToken'];
+        sasRefreshToken = json['tokens']['SASRefreshToken'];
+
+        prefs.setString('sas_token', sasToken);
+        prefs.setString('sas_refresh_token', sasRefreshToken);
+
+        await _getBalance();
+      } else {
+        logger.d('Failed to refresh token..?');
+      }
     }
   }
 
