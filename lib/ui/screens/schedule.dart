@@ -4,6 +4,8 @@ import 'package:goipvc/ui/widgets/dropdown.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:goipvc/models/lesson.dart';
+import 'package:goipvc/models/task.dart';
+import 'package:goipvc/models/holiday.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -18,55 +20,119 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   CalendarView _currentView = CalendarView.week;
   String _headerText = "Month Year";
   final ValueNotifier<bool> _showWeekends = ValueNotifier<bool>(true);
+
+  // todo: THIS IS TEMPORARY SHOULD BE SWITCHED TO ACTUAL DATA FROM API
+  final List<Holiday> _holidays = [
+    Holiday(
+      title: "",
+      start: "2024-12-08",
+      end: "2024-12-08",
+    ),
+    Holiday(
+      title: "Christmas",
+      start: "2024-12-23",
+      end: "2025-01-04",
+    ),
+  ];
+  final List<Task> _tasks = [
+    Task(
+      id: 1,
+      title: "Complete Project",
+      due: "2025-02-03T00:00:00",
+      className: "SO",
+      type: "Project",
+    ),
+  ];
+  final List<Lesson> _lessons = [
+    Lesson(
+      shortName: "SO",
+      className: "Sistemas Operativos",
+      classType: "PL",
+      start: "2025-02-02T09:00:00",
+      end: "2025-02-02T10:00",
+      id: "1",
+      teachers: ["Vitor Ferreira"],
+      room: "S2.1",
+      statusColor: "#FF0000",
+    ),
+    Lesson(
+      shortName: "BD",
+      className: "Bases de Dados",
+      classType: "TP",
+      start: "2025-02-02T10:00",
+      end: "2025-02-02T12:00",
+      id: "2",
+      teachers: ["Ana Oliveira"],
+      room: "S3.2",
+      statusColor: "#00FF00",
+    ),
+    Lesson(
+      shortName: "AED",
+      className: "Algoritmos e Estruturas de Dados",
+      classType: "TP",
+      start: "2025-02-03T08:00",
+      end: "2025-02-03T09:30",
+      id: "3",
+      teachers: ["Carlos Costa"],
+      room: "A1.1",
+      statusColor: "#0000FF",
+    ),
+    Lesson(
+      shortName: "PDI",
+      className: "Processamento Digital de Imagem",
+      classType: "PL",
+      start: "2025-02-03T16:30",
+      end: "2025-02-03T18:30",
+      id: "4",
+      teachers: ["Joana Martins"],
+      room: "L4.2",
+      statusColor: "#FFA500",
+    ),
+  ];
+  // end-todo
+
   MeetingDataSource _getDataSource() {
-    return MeetingDataSource([
-      Lesson(
-        shortName: "SO",
-        className: "Sistemas Operativos",
-        classType: "PL",
-        start: "2025-02-02T09:00:00",
-        end: "2025-02-02T10:00",
-        id: "1",
-        teachers: ["Vitor Ferreira"],
-        room: "S2.1",
-        statusColor: "#FF0000",
-      ),
-      Lesson(
-        shortName: "BD",
-        className: "Bases de Dados",
-        classType: "TP",
-        start: "2025-02-02T10:00",
-        end: "2025-02-02T12:00",
-        id: "2",
-        teachers: ["Ana Oliveira"],
-        room: "S3.2",
-        statusColor: "#00FF00",
-      ),
-      Lesson(
-        shortName: "AED",
-        className: "Algoritmos e Estruturas de Dados",
-        classType: "TP",
-        start: "2025-02-03T08:00",
-        end: "2025-02-03T09:30",
-        id: "3",
-        teachers: ["Carlos Costa"],
-        room: "A1.1",
-        statusColor: "#0000FF",
-      ),
-      Lesson(
-        shortName: "PDI",
-        className: "Processamento Digital de Imagem",
-        classType: "PL",
-        start: "2025-02-03T16:30",
-        end: "2025-02-03T18:30",
-        id: "4",
-        teachers: ["Joana Martins"],
-        room: "L4.2",
-        statusColor: "#FFA500",
-      ),
-    ]);
+    return MeetingDataSource(
+      _lessons,
+      _tasks,
+      _holidays,
+    );
   }
 
+  List<TimeRegion> _getTimeRegions() {
+    List<TimeRegion> regions = [];
+
+    if(_currentView == CalendarView.day){
+      return _holidays.map((holiday) {
+        return TimeRegion(
+          startTime: DateTime.parse(holiday.start).subtract(Duration(days: 1)),
+          endTime: DateTime.parse(holiday.end).add(Duration(days: 1)),
+          enablePointerInteraction: false,
+          color: Theme.of(context).colorScheme.surfaceContainer,
+        );
+      }).toList();
+    }
+
+    for (var holiday in _holidays) {
+      DateTime startDate = DateFormat("yyyy-MM-dd").parse(holiday.start);
+      DateTime endDate = DateFormat("yyyy-MM-dd").parse(holiday.end);
+
+      for (DateTime date = startDate;
+          date.isBefore(endDate.add(Duration(days: 1)));
+          date = date.add(Duration(days: 1))) {
+        regions.add(
+          TimeRegion(
+            startTime: date,
+            endTime: date.add(Duration(days: 1)),
+            enablePointerInteraction: false,
+            color: Theme.of(context).colorScheme.surfaceContainer,
+          ),
+        );
+      }
+    }
+
+    return regions;
+  }
 
   void _showSettingsSheet(BuildContext context) {
     showModalBottomSheet(
@@ -148,12 +214,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               cellEndPadding: 0,
               allowViewNavigation: true,
               view: _currentView,
-              monthViewSettings: MonthViewSettings(showAgenda: true),
+              monthViewSettings: MonthViewSettings(
+                  showAgenda: true,
+                  appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
+              ),
               timeSlotViewSettings: TimeSlotViewSettings(
                 dateFormat: 'd',
                 dayFormat: 'EEE',
                 timeFormat: 'H:mm',
-                startHour: 7,
+                startHour: 0,
                 endHour: 24
               ),
               selectionDecoration: _currentView != CalendarView.month
@@ -163,9 +232,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   : null,
 
               controller: _calendarController,
+              specialRegions: _getTimeRegions(),
               dataSource: _getDataSource(),
               onTap: (CalendarTapDetails tap) {
-                if (tap.targetElement == CalendarElement.appointment) {
+                if (tap.targetElement == CalendarElement.appointment && tap.appointments![0] is Lesson) {
                   showLessonBottomSheet(context, tap.appointments![0]);
                 }
               },
@@ -177,6 +247,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 SchedulerBinding.instance.addPostFrameCallback((_) {
                   if (mounted) {
                     setState(() {
+                      if(_currentView == CalendarView.month && _calendarController.view == CalendarView.day) {
+                        _currentView = CalendarView.day;
+                      }
                       _headerText = newHeader;
                     });
                   }
@@ -198,29 +271,62 @@ extension StringExtension on String {
 }
 
 class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Lesson> source){
-    appointments = source;
+  MeetingDataSource(List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
+    // Initialize the appointments list
+    appointments = [];
+
+    // Add lessons
+    appointments!.addAll(lessons);
+
+    // Add tasks as all-day appointments
+    appointments!.addAll(tasks.map((task) => Appointment(
+      startTime: DateTime.parse(task.due),
+      endTime: DateTime.parse(task.due).add(Duration(hours: 1)),
+      subject: task.title,
+      color: Colors.blue,
+      isAllDay: true,
+    )));
+
+        // Add holidays as all-day appointments
+    appointments!.addAll(holidays.map((holiday) => Appointment(
+      startTime: DateTime.parse(holiday.start),
+      endTime: DateTime.parse(holiday.end),
+      subject: holiday.title,
+      color: Colors.grey,
+      isAllDay: true,
+    )));
   }
 
   @override
   DateTime getStartTime(int index) {
-    return DateTime.parse(appointments![index].start);
+    if (appointments![index] is Lesson) {
+      return DateTime.parse((appointments![index] as Lesson).start);
+    }
+    return DateTime.now();
   }
 
   @override
   DateTime getEndTime(int index) {
-    return DateTime.parse(appointments![index].end);
+    if (appointments![index] is Lesson) {
+      return DateTime.parse((appointments![index] as Lesson).end);
+    }
+    return DateTime.now();
   }
 
   @override
   String getSubject(int index) {
-    return "${appointments![index].shortName}\n${appointments![index].room}";
+    if (appointments![index] is Lesson) {
+      return (appointments![index] as Lesson).shortName;
+    }
+    return "";
   }
 
   @override
   Color getColor(int index) {
-    return Color(
-        int.parse(appointments![index].statusColor.substring(1), radix: 16) + 0xFF000000);
+    if (appointments![index] is Lesson) {
+      return Color(int.parse((appointments![index] as Lesson).statusColor.substring(1), radix: 16) + 0xFF000000);
+    }
+    return Colors.grey;
   }
 }
 
