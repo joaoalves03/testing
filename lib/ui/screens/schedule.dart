@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:goipvc/ui/widgets/dropdown.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:goipvc/models/lesson.dart';
@@ -15,6 +16,8 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   final CalendarController _calendarController = CalendarController();
   CalendarView _currentView = CalendarView.week;
+  String _headerText = "Month Year";
+  final ValueNotifier<bool> _showWeekends = ValueNotifier<bool>(true);
   MeetingDataSource _getDataSource() {
     return MeetingDataSource([
       Lesson(
@@ -63,7 +66,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
     ]);
   }
-  String _headerText = "Month Year";
+
 
   void _showSettingsSheet(BuildContext context) {
     showModalBottomSheet(
@@ -76,6 +79,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         return Settings(
           onViewChanged: _updateView,
           currentView: _currentView,
+          showWeekends: _showWeekends,
+          onToggleWeekends: _toggleWeekends,
         );
       },
     );
@@ -85,6 +90,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     setState(() => _currentView = newView);
     _calendarController.view = newView;
     Navigator.pop(context);
+  }
+
+  void _toggleWeekends(bool value) {
+    _showWeekends.value = value;
+    setState(() {
+      if (_currentView == CalendarView.week || _currentView == CalendarView.workWeek) {
+        _currentView = value ? CalendarView.week : CalendarView.workWeek;
+      }
+    });
+    _calendarController.view = _currentView;
   }
 
   @override
@@ -210,11 +225,15 @@ class MeetingDataSource extends CalendarDataSource {
 class Settings extends StatelessWidget {
   final Function(CalendarView, BuildContext) onViewChanged;
   final CalendarView currentView;
+  final ValueNotifier<bool> showWeekends;
+  final Function(bool) onToggleWeekends;
 
   const Settings({
     super.key,
     required this.onViewChanged,
     required this.currentView,
+    required this.showWeekends,
+    required this.onToggleWeekends,
   });
 
   @override
@@ -270,6 +289,56 @@ class Settings extends StatelessWidget {
               ],
             ),
           ),
+          SizedBox(height: 16),
+          Text(
+            "Opções",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 16),
+          Column(
+            children: [
+              if (currentView == CalendarView.week || currentView == CalendarView.workWeek)
+                _buildOption(
+                  context,
+                  label: "Fim de Semana",
+                  tailing: ValueListenableBuilder<bool>(
+                    valueListenable: showWeekends,
+                    builder: (context, value, child) {
+                      return Switch(
+                        value: value,
+                        onChanged: (newValue) {
+                          showWeekends.value = newValue;
+                          onToggleWeekends(newValue);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              SizedBox(height: 4),
+              _buildOption(
+                  context,
+                  label: "Turma (WIP)",
+                  tailing: Dropdown<String>(
+                    value: "3A",
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: "3A",
+                        child: Text("3A"),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: "3b",
+                        child: Text("3B"),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: "3C",
+                        child: Text("3C"),
+                      ),
+                    ],
+                    onChanged: (Object? value) {  },
+                  )
+              )
+            ],
+          )
         ],
       ),
     );
@@ -316,6 +385,24 @@ class Settings extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildOption(BuildContext context, {required String label, required Widget tailing}) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Row(
+        children: [
+          Text(label),
+          Spacer(),
+          tailing,
+        ],
       ),
     );
   }
