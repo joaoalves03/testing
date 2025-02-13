@@ -87,8 +87,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void _updateView(CalendarView newView, BuildContext context) {
-    setState(() => _currentView = newView);
-    _calendarController.view = newView;
+    setState(() {_currentView = newView;});
+    _calendarController.view = _currentView;
+    _calendarController.displayDate = DateTime.now();
+    _calendarController.selectedDate = DateTime.now();
     Navigator.pop(context);
   }
 
@@ -278,7 +280,7 @@ class Settings extends StatelessWidget {
                   context,
                   icon: Icons.view_week_rounded,
                   label: 'Semana',
-                  view: CalendarView.week,
+                  view: showWeekends.value ? CalendarView.week : CalendarView.workWeek,
                 ),
                 _buildViewOption(
                   context,
@@ -297,46 +299,50 @@ class Settings extends StatelessWidget {
           SizedBox(height: 16),
           Column(
             children: [
-              if (currentView == CalendarView.week || currentView == CalendarView.workWeek)
-                _buildOption(
-                  context,
-                  label: "Fim de Semana",
-                  tailing: ValueListenableBuilder<bool>(
-                    valueListenable: showWeekends,
-                    builder: (context, value, child) {
-                      return Switch(
-                        value: value,
-                        onChanged: (newValue) {
-                          showWeekends.value = newValue;
-                          onToggleWeekends(newValue);
-                        },
-                      );
-                    },
-                  ),
-                ),
-              SizedBox(height: 4),
               _buildOption(
-                  context,
-                  label: "Turma (WIP)",
-                  tailing: Dropdown<String>(
-                    value: "3A",
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: "3A",
-                        child: Text("3A"),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: "3b",
-                        child: Text("3B"),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: "3C",
-                        child: Text("3C"),
-                      ),
-                    ],
-                    onChanged: (Object? value) {  },
-                  )
-              )
+                context,
+                label: "Fim de Semana",
+                tailing: ValueListenableBuilder<bool>(
+                  valueListenable: showWeekends,
+                  builder: (context, value, child) {
+                    return Switch(
+                      value:  currentView == CalendarView.week || currentView == CalendarView.workWeek
+                          ? value
+                          : true,
+                      // This check is needed so u cant change value while in month or day view
+                      onChanged: currentView == CalendarView.week || currentView == CalendarView.workWeek
+                          ? (newValue) {
+                            showWeekends.value = newValue;
+                            onToggleWeekends(newValue);
+                          }
+                          : null,
+                    );
+                  },
+                ),
+              ),
+              // SizedBox(height: 4),
+              // _buildOption(
+              //     context,
+              //     label: "Turma (WIP)",
+              //     tailing: Dropdown<String>(
+              //       value: "3A",
+              //       items: [
+              //         DropdownMenuItem<String>(
+              //           value: "3A",
+              //           child: Text("3A"),
+              //         ),
+              //         DropdownMenuItem<String>(
+              //           value: "3b",
+              //           child: Text("3B"),
+              //         ),
+              //         DropdownMenuItem<String>(
+              //           value: "3C",
+              //           child: Text("3C"),
+              //         ),
+              //       ],
+              //       onChanged: (Object? value) {  },
+              //     )
+              // )
             ],
           )
         ],
