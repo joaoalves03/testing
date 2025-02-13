@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'generated/l10n.dart';
 import 'package:logger/logger.dart';
 
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
+                  SfGlobalLocalizations.delegate
                 ],
                 supportedLocales: S.delegate.supportedLocales,
                 theme: ThemeData.light(),
