@@ -125,41 +125,44 @@ class LoginState extends State<LoginScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _serverController,
-                  focusNode: _serverFocusNode,
-                  decoration: InputDecoration(
-                    labelText: "Server:",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: _serverBorderColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: _serverBorderColor),
-                    ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _serverController,
+                focusNode: _serverFocusNode,
+                decoration: InputDecoration(
+                  labelText: "Server:",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _serverBorderColor),
                   ),
-                  autocorrect: false,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _serverBorderColor),
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                        onPressed: _pingServer,
-                        child: Text("Test"),
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {});
-                          Navigator.pop(context);
-                        },
-                        child: Text("Save")
-                    ),
-                  ],
-                )
+                autocorrect: false,
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: _pingServer,
+                  child: Text("Test"),
+                ),
+                TextButton(
+                    onPressed: () {
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                    child: Text("Save")
+                ),
               ],
-            ));
+            )
+          ],
+        );
       },
     );
   }
@@ -169,27 +172,36 @@ class LoginState extends State<LoginScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              insetPadding: const EdgeInsets.all(4),
-              title: Text("Settings"),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.dns),
-                      title: const Text("Server"),
-                      trailing: TextContainer(
-                        text: _serverController.text,
-                      ),
-                      onTap: () {
-                        _showServerSettings(context);
-                      },
-                    )
-                  ],
-                ),
-              )
+            insetPadding: const EdgeInsets.all(4),
+            title: Text("Settings"),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.dns),
+                    title: const Text("Server"),
+                    trailing: TextContainer(
+                      text: _serverController.text,
+                    ),
+                    onTap: () {
+                      _showServerSettings(context);
+                    },
+                  )
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {});
+                    Navigator.pop(context);
+                  },
+                  child: Text("Save")
+              ),
+            ],
           );
         }
     );
@@ -198,22 +210,22 @@ class LoginState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              _showQuickSettings(context);
+            },
+            icon: const Icon(Icons.settings),
+          )
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    _showQuickSettings(context);
-                  },
-                  icon: const Icon(Icons.settings),
-                )
-              ],
-            ),
-            const Spacer(),
             SvgPicture.asset(
               'assets/logo.svg',
               height: 64,
@@ -261,7 +273,6 @@ class LoginState extends State<LoginScreen> {
               label: Text("Login"),
               icon: const Icon(Icons.login),
             ),
-            const Spacer(),
           ],
         ),
       )
