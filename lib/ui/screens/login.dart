@@ -35,7 +35,7 @@ class LoginState extends State<LoginScreen> {
     try {
       final response = await http
           .post(
-            Uri.parse('$serverUrl/login'),
+            Uri.parse('$serverUrl/auth/login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -70,7 +70,8 @@ class LoginState extends State<LoginScreen> {
 
               //Transition
               transitionDuration: const Duration(milliseconds: 500),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
                 return SharedAxisTransition(
                   animation: animation,
                   secondaryAnimation: secondaryAnimation,
@@ -126,40 +127,39 @@ class LoginState extends State<LoginScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
             content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _serverController,
-                  focusNode: _serverFocusNode,
-                  decoration: InputDecoration(
-                    labelText: "Server:",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: _serverBorderColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: _serverBorderColor),
-                    ),
-                  ),
-                  autocorrect: false,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _serverController,
+              focusNode: _serverFocusNode,
+              decoration: InputDecoration(
+                labelText: "Server:",
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: _serverBorderColor),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                        onPressed: _pingServer,
-                        child: Text("Test"),
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {});
-                          Navigator.pop(context);
-                        },
-                        child: Text("Save")
-                    ),
-                  ],
-                )
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: _serverBorderColor),
+                ),
+              ),
+              autocorrect: false,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: _pingServer,
+                  child: Text("Test"),
+                ),
+                TextButton(
+                    onPressed: () {
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                    child: Text("Save")),
               ],
-            ));
+            )
+          ],
+        ));
       },
     );
   }
@@ -189,82 +189,77 @@ class LoginState extends State<LoginScreen> {
                     )
                   ],
                 ),
-              )
-          );
-        }
-    );
+              ));
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+        body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                onPressed: () {
+                  _showQuickSettings(context);
+                },
+                icon: const Icon(Icons.settings),
+              )
+            ],
+          ),
+          const Spacer(),
+          SvgPicture.asset(
+            'assets/logo.svg',
+            height: 64,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.onSurface,
+              BlendMode.srcIn,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          AutofillGroup(
+            child: Column(
               children: [
-                IconButton(
-                  onPressed: () {
-                    _showQuickSettings(context);
-                  },
-                  icon: const Icon(Icons.settings),
-                )
+                TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: S.of(context).username),
+                  autofillHints: const [AutofillHints.username],
+                  autocorrect: false,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: S.of(context).password),
+                  obscureText: true,
+                  autofillHints: const [AutofillHints.password],
+                  autocorrect: false,
+                ),
               ],
             ),
-            const Spacer(),
-            SvgPicture.asset(
-              'assets/logo.svg',
-              height: 64,
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            AutofillGroup(
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: S.of(context).username
-                    ),
-                    autofillHints: const [AutofillHints.username],
-                    autocorrect: false,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: S.of(context).password
-                    ),
-                    obscureText: true,
-                    autofillHints: const [AutofillHints.password],
-                    autocorrect: false,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            FilledButton.icon(
-              onPressed: _login,
-              label: Text("Login"),
-              icon: const Icon(Icons.login),
-            ),
-            const Spacer(),
-          ],
-        ),
-      )
-    );
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FilledButton.icon(
+            onPressed: _login,
+            label: Text("Login"),
+            icon: const Icon(Icons.login),
+          ),
+          const Spacer(),
+        ],
+      ),
+    ));
   }
 }
