@@ -46,6 +46,7 @@ class HeaderState extends State<Header> {
     return AppBar(
       elevation: 0,
       surfaceTintColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       title: SvgPicture.asset(
         imagePath,
         height: 32,

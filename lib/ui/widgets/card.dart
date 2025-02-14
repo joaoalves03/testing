@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 class FilledCard extends StatelessWidget {
   final IconData? icon;
   final String? title;
+  final Color? backgroundColor;
+  final double? paddingVertical;
+  final double? paddingHorizontal;
   final List<Widget> children;
   final Function()? onTap;
 
@@ -11,6 +14,9 @@ class FilledCard extends StatelessWidget {
     required this.children,
     this.icon,
     this.title,
+    this.backgroundColor,
+    this.paddingVertical,
+    this.paddingHorizontal,
     this.onTap,
   });
 
@@ -18,13 +24,13 @@ class FilledCard extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Card.filled(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        margin: const EdgeInsets.symmetric(vertical: 6),
+        color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
+        margin: EdgeInsets.symmetric(vertical: 6),
         clipBehavior: Clip.hardEdge,
         child: InkWell(
           onTap: onTap,
           child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+              padding: EdgeInsets.symmetric(vertical: paddingVertical ?? 16, horizontal: paddingHorizontal ?? 10),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -52,7 +58,7 @@ class FilledCard extends StatelessWidget {
                         ],
                       ),
 
-                    ...children
+                    ...children,
                   ]
               )
           ),

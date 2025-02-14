@@ -12,7 +12,7 @@ class DropdownContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsetsDirectional.only(
-          start: 1,
+          start: 10,
           end: 1,
           top: 6,
           bottom: 6
