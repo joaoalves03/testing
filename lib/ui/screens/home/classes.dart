@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:intl/intl.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/services/data_provider.dart';
@@ -70,7 +71,7 @@ class ClassesTabState extends State<ClassesTab> {
     final lessons = Provider.of<DataProvider>(context).lessons;
     if (lessons == null) {
       // @TODO: add a retry button?
-      return Center(child: CircularProgressIndicator());
+      return ErrorMessage();
     }
 
     // filter upcoming lessons
