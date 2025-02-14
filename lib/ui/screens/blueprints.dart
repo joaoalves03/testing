@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/models/blueprint.dart';
 
-class BlueprintsScreen extends StatefulWidget {
-  const BlueprintsScreen({super.key});
+import '../widgets/dropdown.dart';
+
+class BlueprintScreen extends StatefulWidget {
+  const BlueprintScreen({super.key});
 
   @override
-  BlueprintsScreenState createState() => BlueprintsScreenState();
+  State<BlueprintScreen> createState() => _BlueprintScreenState();
 }
 
-class BlueprintsScreenState extends State<BlueprintsScreen> {
+class _BlueprintScreenState extends State<BlueprintScreen> {
+  late int _currentIndex;
+  final TransformationController _transformationController = TransformationController();
+  final DraggableScrollableController _sheetController = DraggableScrollableController();
   final List<Blueprint> blueprints = [
     Blueprint(
       index: 1,
@@ -43,59 +48,9 @@ class BlueprintsScreenState extends State<BlueprintsScreen> {
   ]..sort((a, b) => a.index.compareTo(b.index));
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: blueprints.length,
-      itemBuilder: (context, index) {
-        final blueprint = blueprints[index];
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlueprintScreen(
-                blueprints: blueprints,
-                initialIndex: index,
-              ),
-            ),
-          ),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            clipBehavior: Clip.hardEdge,
-            child: Image.network(blueprint.imageUrl, fit: BoxFit.cover),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class BlueprintScreen extends StatefulWidget {
-  final List<Blueprint> blueprints;
-  final int initialIndex;
-
-  const BlueprintScreen({
-    required this.blueprints,
-    required this.initialIndex,
-    super.key,
-  });
-
-  @override
-  State<BlueprintScreen> createState() => _BlueprintScreenState();
-}
-
-class _BlueprintScreenState extends State<BlueprintScreen> {
-  late int _currentIndex;
-  final TransformationController _transformationController = TransformationController();
-  final DraggableScrollableController _sheetController = DraggableScrollableController();
-
-  @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialIndex;
+    _currentIndex = 0;
   }
 
   Widget _buildLegendItem(String abbreviation, String description) {
@@ -131,16 +86,9 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentBlueprint = widget.blueprints[_currentIndex];
+    final currentBlueprint = blueprints[_currentIndex];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${currentBlueprint.school} - PISO ${currentBlueprint.index}'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
@@ -155,6 +103,38 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                     currentBlueprint.imageUrl,
                     fit: BoxFit.contain,
                   ),
+                ),
+              ),
+
+              Positioned(
+                left: 6,
+                top: 6,
+                child: Dropdown<String>(
+                  value: "ESTG",
+                  items: [
+                    DropdownMenuItem(
+                        value: "ESTG",
+                        child: Text(
+                            "ESTG",
+                          style: TextStyle(fontSize: 18),
+                        )
+                    ),
+                    DropdownMenuItem(
+                        value: "ESA",
+                        child: Text(
+                          "ESA",
+                          style: TextStyle(fontSize: 18),
+                        )
+                    ),
+                    DropdownMenuItem(
+                        value: "ESCE",
+                        child: Text(
+                          "ESCE",
+                          style: TextStyle(fontSize: 18),
+                        )
+                    ),
+                  ],
+                  onChanged: (Object? value) {  },
                 ),
               ),
 
@@ -197,8 +177,8 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Legenda',
+                              Text(
+                                'Legenda - Piso ${currentBlueprint.index}',
                                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 16),
@@ -238,7 +218,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                       child: Column(
                         verticalDirection: VerticalDirection.up,
                         mainAxisSize: MainAxisSize.min,
-                        children: widget.blueprints.asMap().entries.map((entry) {
+                        children: blueprints.asMap().entries.map((entry) {
                           final index = entry.key;
                           final blueprint = entry.value;
                           return Container(

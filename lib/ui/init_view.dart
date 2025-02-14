@@ -13,7 +13,7 @@ Map<String, WidgetBuilder> getRoutes() {
     '/login': (context) => const LoginScreen(),
     '/home': (context) => const HomeScreen(),
     '/schedule': (context) => const ScheduleScreen(),
-    '/blueprints': (context) => const BlueprintsScreen(),
+    '/blueprints': (context) => const BlueprintScreen(),
     '/menu': (context) => const MenuScreen(),
   };
 }
@@ -32,7 +32,7 @@ class _InitViewState extends State<InitView> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const ScheduleScreen(),
-    const BlueprintsScreen(),
+    const BlueprintScreen(),
     const MenuScreen(),
   ];
 
