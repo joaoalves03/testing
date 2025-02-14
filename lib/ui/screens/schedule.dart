@@ -6,6 +6,8 @@ import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/models/task.dart';
 import 'package:goipvc/models/holiday.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
+import 'package:provider/provider.dart';
+import 'package:goipvc/services/data_provider.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -42,60 +44,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       type: "Project",
     ),
   ];
-  final List<Lesson> _lessons = [
-    Lesson(
-      shortName: "SO",
-      className: "Sistemas Operativos",
-      classType: "PL",
-      start: "2025-02-02T09:00:00",
-      end: "2025-02-02T10:00",
-      id: "1",
-      teachers: ["Vitor Ferreira"],
-      room: "S2.1",
-      statusColor: "#FF0000",
-    ),
-    Lesson(
-      shortName: "BD",
-      className: "Bases de Dados",
-      classType: "TP",
-      start: "2025-02-02T10:00",
-      end: "2025-02-02T12:00",
-      id: "2",
-      teachers: ["Ana Oliveira"],
-      room: "S3.2",
-      statusColor: "#00FF00",
-    ),
-    Lesson(
-      shortName: "AED",
-      className: "Algoritmos e Estruturas de Dados",
-      classType: "TP",
-      start: "2025-02-03T08:00",
-      end: "2025-02-03T09:30",
-      id: "3",
-      teachers: ["Carlos Costa"],
-      room: "A1.1",
-      statusColor: "#0000FF",
-    ),
-    Lesson(
-      shortName: "PDI",
-      className: "Processamento Digital de Imagem",
-      classType: "PL",
-      start: "2025-02-03T16:30",
-      end: "2025-02-03T18:30",
-      id: "4",
-      teachers: ["Joana Martins"],
-      room: "L4.2",
-      statusColor: "#FFA500",
-    ),
-  ];
-  // end-todo
 
-  MeetingDataSource _getDataSource() {
-    return MeetingDataSource(
-      _lessons,
-      _tasks,
-      _holidays,
-    );
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<DataProvider>(context, listen: false).fetchLessons();
+  }
+
+  MeetingDataSource _getDataSource(List<Lesson> lessons) {
+    return MeetingDataSource(lessons, _tasks, _holidays);
   }
 
   List<TimeRegion> _getTimeRegions() {
@@ -174,92 +131,97 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: SizedBox(
-            height: 40,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Text(
-                        _headerText.capitalize(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.today),
-                  onPressed: () {
-                    _calendarController.displayDate = DateTime.now();
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () {
-                    _showSettingsSheet(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: SfCalendar(
-            headerHeight: 0,
-            firstDayOfWeek: 1,
-            cellEndPadding: 0,
-            allowViewNavigation: true,
-            view: _currentView,
-            monthViewSettings: MonthViewSettings(
-              showAgenda: true,
-              appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-            ),
-            timeSlotViewSettings: TimeSlotViewSettings(
-                dateFormat: 'd',
-                dayFormat: 'EEE',
-                timeFormat: 'H:mm',
-                startHour: 0,
-                endHour: 24),
-            selectionDecoration: _currentView != CalendarView.month
-                ? BoxDecoration(color: Colors.transparent)
-                : null,
-            controller: _calendarController,
-            specialRegions: _getTimeRegions(),
-            dataSource: _getDataSource(),
-            onTap: (CalendarTapDetails tap) {
-              if (tap.targetElement == CalendarElement.appointment &&
-                  tap.appointments![0] is Lesson) {
-                showLessonBottomSheet(context, tap.appointments![0]);
-              }
-            },
-            onViewChanged: (ViewChangedDetails viewChangedDetails) {
-              String newHeader = DateFormat('MMMM yyyy').format(
-                viewChangedDetails
-                    .visibleDates[viewChangedDetails.visibleDates.length ~/ 2],
-              );
+    return Scaffold(body: Consumer<DataProvider>(
+      builder: (context, dataProvider, child) {
+        final lessons = dataProvider.lessons ?? [];
 
-              SchedulerBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  setState(() {
-                    if (_currentView == CalendarView.month &&
-                        _calendarController.view == CalendarView.day) {
-                      _currentView = CalendarView.day;
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: SizedBox(
+                height: 40,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Text(
+                            _headerText.capitalize(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 18),
+                          )
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.today),
+                      onPressed: () {
+                        _calendarController.displayDate = DateTime.now();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        _showSettingsSheet(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: SfCalendar(
+                headerHeight: 0,
+                firstDayOfWeek: 1,
+                cellEndPadding: 0,
+                allowViewNavigation: true,
+                view: _currentView,
+                monthViewSettings: MonthViewSettings(
+                  showAgenda: true,
+                  appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
+                ),
+                timeSlotViewSettings: TimeSlotViewSettings(
+                    dateFormat: 'd',
+                    dayFormat: 'EEE',
+                    timeFormat: 'H:mm',
+                    startHour: 0,
+                    endHour: 24),
+                selectionDecoration: _currentView != CalendarView.month
+                    ? BoxDecoration(color: Colors.transparent)
+                    : null,
+                controller: _calendarController,
+                specialRegions: _getTimeRegions(),
+                dataSource: _getDataSource(lessons),
+                onTap: (CalendarTapDetails tap) {
+                  if (tap.targetElement == CalendarElement.appointment &&
+                      tap.appointments![0] is Lesson) {
+                    showLessonBottomSheet(context, tap.appointments![0]);
+                  }
+                },
+                onViewChanged: (ViewChangedDetails viewChangedDetails) {
+                  String newHeader = DateFormat('MMMM yyyy').format(
+                    viewChangedDetails.visibleDates[
+                        viewChangedDetails.visibleDates.length ~/ 2],
+                  );
+
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        if (_currentView == CalendarView.month &&
+                            _calendarController.view == CalendarView.day) {
+                          _currentView = CalendarView.day;
+                        }
+                        _headerText = newHeader;
+                      });
                     }
-                    _headerText = newHeader;
                   });
-                }
-              });
-            },
-          ),
-        )
-      ],
+                },
+              ),
+            )
+          ],
+        );
+      },
     ));
   }
 }
