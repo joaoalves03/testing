@@ -21,6 +21,16 @@ class BlueprintsScreenState extends State<BlueprintsScreen> {
       },
     ),
     Blueprint(
+      index: 3,
+      school: "ESTG",
+      imageUrl: "https://picsum.photos/seed/3/1280/768",
+      legend: {
+        "SE": "Saída de Emergência",
+        "S": "Sala de Aula",
+        "L": "Laboratório",
+      },
+    ),
+    Blueprint(
       index: 2,
       school: "ESTG",
       imageUrl: "https://picsum.photos/seed/2/1280/768",
@@ -30,7 +40,7 @@ class BlueprintsScreenState extends State<BlueprintsScreen> {
         "BL": "Biblioteca",
       },
     ),
-  ];
+  ]..sort((a, b) => a.index.compareTo(b.index));
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +110,11 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
               color: Colors.blue.withOpacity(0.2),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(
-              abbreviation,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            child: Center(
+              child: Text(
+                abbreviation,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -145,6 +157,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                   ),
                 ),
               ),
+
               DraggableScrollableSheet(
                 controller: _sheetController,
                 initialChildSize: 0.1,
@@ -204,7 +217,8 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
               ListenableBuilder(
                 listenable: _sheetController,
                 builder: (context, child) {
-                  final sheetHeight = constraints.maxHeight * (_sheetController.size);
+                  final sheetHeight = constraints.maxHeight *
+                      (_sheetController.isAttached ? _sheetController.size : 0.1);
                   return Positioned(
                     left: 16,
                     bottom: sheetHeight + 16,
@@ -222,6 +236,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                       clipBehavior: Clip.hardEdge,
                       padding: const EdgeInsets.all(8),
                       child: Column(
+                        verticalDirection: VerticalDirection.up,
                         mainAxisSize: MainAxisSize.min,
                         children: widget.blueprints.asMap().entries.map((entry) {
                           final index = entry.key;
