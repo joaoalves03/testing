@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:goipvc/ui/widgets/dropdown.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:goipvc/models/lesson.dart';
@@ -102,7 +101,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   List<TimeRegion> _getTimeRegions() {
     List<TimeRegion> regions = [];
 
-    if(_currentView == CalendarView.day){
+    if (_currentView == CalendarView.day) {
       return _holidays.map((holiday) {
         return TimeRegion(
           startTime: DateTime.parse(holiday.start).subtract(Duration(days: 1)),
@@ -153,7 +152,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void _updateView(CalendarView newView, BuildContext context) {
-    setState(() {_currentView = newView;});
+    setState(() {
+      _currentView = newView;
+    });
     _calendarController.view = _currentView;
     _calendarController.displayDate = DateTime.now();
     _calendarController.selectedDate = DateTime.now();
@@ -163,7 +164,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   void _toggleWeekends(bool value) {
     _showWeekends.value = value;
     setState(() {
-      if (_currentView == CalendarView.week || _currentView == CalendarView.workWeek) {
+      if (_currentView == CalendarView.week ||
+          _currentView == CalendarView.workWeek) {
         _currentView = value ? CalendarView.week : CalendarView.workWeek;
       }
     });
@@ -173,105 +175,104 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: SizedBox(
-              height: 40,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Text(_headerText.capitalize(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ],
-                    ),
+        body: Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: SizedBox(
+            height: 40,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        _headerText.capitalize(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 18),
+                      )
+                    ],
                   ),
-                  IconButton(
-                    icon: Icon(Icons.today),
-                    onPressed: () {
-                      _calendarController.displayDate = DateTime.now();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {
-                      _showSettingsSheet(context);
-                    },
-                  ),
-                ],
-              ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.today),
+                  onPressed: () {
+                    _calendarController.displayDate = DateTime.now();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    _showSettingsSheet(context);
+                  },
+                ),
+              ],
             ),
           ),
-          Expanded(
-            child: SfCalendar(
-              headerHeight: 0,
-              firstDayOfWeek: 1,
-              cellEndPadding: 0,
-              allowViewNavigation: true,
-              view: _currentView,
-              monthViewSettings: MonthViewSettings(
-                  showAgenda: true,
-                  appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-              ),
-              timeSlotViewSettings: TimeSlotViewSettings(
+        ),
+        Expanded(
+          child: SfCalendar(
+            headerHeight: 0,
+            firstDayOfWeek: 1,
+            cellEndPadding: 0,
+            allowViewNavigation: true,
+            view: _currentView,
+            monthViewSettings: MonthViewSettings(
+              showAgenda: true,
+              appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
+            ),
+            timeSlotViewSettings: TimeSlotViewSettings(
                 dateFormat: 'd',
                 dayFormat: 'EEE',
                 timeFormat: 'H:mm',
                 startHour: 0,
-                endHour: 24
-              ),
-              selectionDecoration: _currentView != CalendarView.month
-                  ? BoxDecoration(
-                      color: Colors.transparent
-                  )
-                  : null,
+                endHour: 24),
+            selectionDecoration: _currentView != CalendarView.month
+                ? BoxDecoration(color: Colors.transparent)
+                : null,
+            controller: _calendarController,
+            specialRegions: _getTimeRegions(),
+            dataSource: _getDataSource(),
+            onTap: (CalendarTapDetails tap) {
+              if (tap.targetElement == CalendarElement.appointment &&
+                  tap.appointments![0] is Lesson) {
+                showLessonBottomSheet(context, tap.appointments![0]);
+              }
+            },
+            onViewChanged: (ViewChangedDetails viewChangedDetails) {
+              String newHeader = DateFormat('MMMM yyyy').format(
+                viewChangedDetails
+                    .visibleDates[viewChangedDetails.visibleDates.length ~/ 2],
+              );
 
-              controller: _calendarController,
-              specialRegions: _getTimeRegions(),
-              dataSource: _getDataSource(),
-              onTap: (CalendarTapDetails tap) {
-                if (tap.targetElement == CalendarElement.appointment && tap.appointments![0] is Lesson) {
-                  showLessonBottomSheet(context, tap.appointments![0]);
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() {
+                    if (_currentView == CalendarView.month &&
+                        _calendarController.view == CalendarView.day) {
+                      _currentView = CalendarView.day;
+                    }
+                    _headerText = newHeader;
+                  });
                 }
-              },
-              onViewChanged: (ViewChangedDetails viewChangedDetails) {
-                String newHeader = DateFormat('MMMM yyyy').format(
-                  viewChangedDetails.visibleDates[viewChangedDetails.visibleDates.length ~/ 2],
-                );
-
-                SchedulerBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) {
-                    setState(() {
-                      if(_currentView == CalendarView.month && _calendarController.view == CalendarView.day) {
-                        _currentView = CalendarView.day;
-                      }
-                      _headerText = newHeader;
-                    });
-                  }
-                });
-              },
-            ),
-          )
-        ],
-      )
-    );
+              });
+            },
+          ),
+        )
+      ],
+    ));
   }
 }
 
 extension StringExtension on String {
   String capitalize() {
-    return
-      "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
 
 class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
+  MeetingDataSource(
+      List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
     // Initialize the appointments list
     appointments = [];
 
@@ -280,21 +281,21 @@ class MeetingDataSource extends CalendarDataSource {
 
     // Add tasks as all-day appointments
     appointments!.addAll(tasks.map((task) => Appointment(
-      startTime: DateTime.parse(task.due),
-      endTime: DateTime.parse(task.due).add(Duration(hours: 1)),
-      subject: task.title,
-      color: Colors.blue,
-      isAllDay: true,
-    )));
+          startTime: DateTime.parse(task.due),
+          endTime: DateTime.parse(task.due).add(Duration(hours: 1)),
+          subject: task.title,
+          color: Colors.blue,
+          isAllDay: true,
+        )));
 
-        // Add holidays as all-day appointments
+    // Add holidays as all-day appointments
     appointments!.addAll(holidays.map((holiday) => Appointment(
-      startTime: DateTime.parse(holiday.start),
-      endTime: DateTime.parse(holiday.end),
-      subject: holiday.title,
-      color: Colors.grey,
-      isAllDay: true,
-    )));
+          startTime: DateTime.parse(holiday.start),
+          endTime: DateTime.parse(holiday.end),
+          subject: holiday.title,
+          color: Colors.grey,
+          isAllDay: true,
+        )));
   }
 
   @override
@@ -324,7 +325,10 @@ class MeetingDataSource extends CalendarDataSource {
   @override
   Color getColor(int index) {
     if (appointments![index] is Lesson) {
-      return Color(int.parse((appointments![index] as Lesson).statusColor.substring(1), radix: 16) + 0xFF000000);
+      return Color(int.parse(
+              (appointments![index] as Lesson).statusColor.substring(1),
+              radix: 16) +
+          0xFF000000);
     }
     return Colors.grey;
   }
@@ -386,7 +390,9 @@ class Settings extends StatelessWidget {
                   context,
                   icon: Icons.view_week_rounded,
                   label: 'Semana',
-                  view: showWeekends.value ? CalendarView.week : CalendarView.workWeek,
+                  view: showWeekends.value
+                      ? CalendarView.week
+                      : CalendarView.workWeek,
                 ),
                 _buildViewOption(
                   context,
@@ -412,15 +418,17 @@ class Settings extends StatelessWidget {
                   valueListenable: showWeekends,
                   builder: (context, value, child) {
                     return Switch(
-                      value:  currentView == CalendarView.week || currentView == CalendarView.workWeek
+                      value: currentView == CalendarView.week ||
+                              currentView == CalendarView.workWeek
                           ? value
                           : true,
                       // This check is needed so u cant change value while in month or day view
-                      onChanged: currentView == CalendarView.week || currentView == CalendarView.workWeek
+                      onChanged: currentView == CalendarView.week ||
+                              currentView == CalendarView.workWeek
                           ? (newValue) {
-                            showWeekends.value = newValue;
-                            onToggleWeekends(newValue);
-                          }
+                              showWeekends.value = newValue;
+                              onToggleWeekends(newValue);
+                            }
                           : null,
                     );
                   },
@@ -456,7 +464,10 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget _buildViewOption(BuildContext context, {required IconData icon, required String label, required CalendarView view}) {
+  Widget _buildViewOption(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required CalendarView view}) {
     return Expanded(
       child: Material(
         color: Colors.transparent,
@@ -483,15 +494,13 @@ class Settings extends StatelessWidget {
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(1000),
                   ),
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: currentView == view
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    )
-                  ),
+                  child: Text(label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: currentView == view
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      )),
                 )
               ],
             ),
@@ -501,7 +510,8 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget _buildOption(BuildContext context, {required String label, required Widget tailing}) {
+  Widget _buildOption(BuildContext context,
+      {required String label, required Widget tailing}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
       decoration: BoxDecoration(
