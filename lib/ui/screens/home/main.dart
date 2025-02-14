@@ -67,9 +67,7 @@ class HomeScreenState extends State<HomeScreen> {
 
       if (refreshToken.statusCode == 200) {
         var json = jsonDecode(refreshToken.body);
-        academicosToken = json['tokens']['academicos'];
-
-        prefs.setString('academicos_token', academicosToken);
+        prefs.setString('academicos_token', json['token']);
 
         await _fetchInfo();
       } else {
@@ -105,12 +103,10 @@ class HomeScreenState extends State<HomeScreen> {
       );
 
       if (refreshToken.statusCode == 200) {
-        var json = jsonDecode(refreshToken.body);
-        sasToken = json['tokens']['SASToken'];
-        sasRefreshToken = json['tokens']['SASRefreshToken'];
+        var tokens = jsonDecode(refreshToken.body)['tokens'];
 
-        prefs.setString('sas_token', sasToken);
-        prefs.setString('sas_refresh_token', sasRefreshToken);
+        prefs.setString('sas_token', tokens["sas"]);
+        prefs.setString('sas_refresh_token', tokens["sasRefresh"]);
 
         await _getBalance();
       } else {
