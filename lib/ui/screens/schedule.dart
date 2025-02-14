@@ -147,7 +147,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       child: Row(
                         children: [
                           Text(
-                            _headerText.capitalize(),
+                            toBeginningOfSentenceCase(_headerText),
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 18),
                           )
@@ -223,12 +223,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         );
       },
     ));
-  }
-}
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
 
