@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/models/lesson.dart';
+import 'package:intl/intl.dart';
 
 void showLessonBottomSheet(BuildContext context, Lesson lesson) {
+  String _day = DateFormat.EEEE('pt').format(DateTime.parse(lesson.start));
+  String _startHour = DateFormat.Hm().format(DateTime.parse(lesson.start));
+  String _endHour = DateFormat.Hm().format(DateTime.parse(lesson.end));
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -39,17 +44,23 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Quinta",
+                    toBeginningOfSentenceCase(_day),
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant
                     ),
                   ),
-                  Text(
-                    "${lesson.start} → ${lesson.end}",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: _startHour),
+                        const WidgetSpan(
+                            child:
+                            Icon(Icons.arrow_forward_rounded, size: 16)),
+                        TextSpan(text: _endHour),
+                      ],
                     ),
-                  )
+                    style: const TextStyle(fontSize: 14),
+                  ),
                 ],
               ),
               isThreeLine: true,
@@ -60,20 +71,32 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
               title: Text(lesson.room),
             ),
             Divider(),
-            if (lesson.teachers.isNotEmpty)
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text(
-                  lesson.teachers.join(", "),
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface
-                  ),
-                ),
-                trailing: Icon(Icons.chevron_right),
-                onTap: () {
+            if (lesson.teachers.isNotEmpty) ...[
+              ...lesson.teachers.asMap().entries.map((entry) {
+                final index = entry.key;
+                final teacher = entry.value;
 
-                },
-              ),
+                return ListTile(
+                  leading: index == 0
+                      ? lesson.teachers.length > 1
+                        ? Icon(Icons.people)
+                        : Icon(Icons.person)
+                      : Icon(null),
+                  title: Text(
+                    teacher,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  trailing: Icon(Icons.chevron_right),
+                  onTap: () {
+
+                  },
+                );
+              }),
+            ],
             Divider(),
             ListTile(
               leading: Icon(Icons.book),

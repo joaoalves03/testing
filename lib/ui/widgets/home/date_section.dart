@@ -21,10 +21,10 @@ class DateSection extends StatelessWidget {
     } else if (date.difference(today).inDays == 1) {
       day = "Amanhã";
     } else {
-      day = DateFormat.EEEE('pt_PT').format(date);
+      day = DateFormat.EEEE('pt').format(date);
     }
 
-    String formattedDate = DateFormat("dd MMMM yyyy", 'pt_PT').format(date);
+    String formattedDate = DateFormat("dd MMMM yyyy", 'pt').format(date);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
