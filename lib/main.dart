@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/services/data_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
@@ -15,7 +17,12 @@ final Logger logger = Logger();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPrefsUtil.printPrefs();
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => DataProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -50,8 +57,7 @@ class MyApp extends StatelessWidget {
                 themeMode: ThemeMode.system,
                 debugShowCheckedModeBanner: false,
                 home: isLoggedIn ? InitView() : LoginScreen(),
-                routes: getRoutes()
-            );
+                routes: getRoutes());
           }
         });
   }
