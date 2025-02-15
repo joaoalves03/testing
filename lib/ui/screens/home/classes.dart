@@ -22,6 +22,10 @@ class ClassesTabState extends State<ClassesTab> {
     Provider.of<DataProvider>(context, listen: false).fetchLessons();
   }
 
+  void fetchLessons(){
+    Provider.of<DataProvider>(context, listen: false).fetchLessons();
+  }
+
   final now = DateTime.now();
 
   Widget _buildNowCard(List<Lesson> lessonsForDate) {
@@ -71,7 +75,9 @@ class ClassesTabState extends State<ClassesTab> {
     final lessons = Provider.of<DataProvider>(context).lessons;
     if (lessons == null) {
       // @TODO: add a retry button?
-      return ErrorMessage();
+      return ErrorMessage(
+        callback: fetchLessons,
+      );
     }
 
     // filter upcoming lessons
