@@ -23,6 +23,9 @@ class LoginState extends State<LoginScreen> {
   final TextEditingController _serverController = TextEditingController();
   final FocusNode _serverFocusNode = FocusNode();
   Color _serverBorderColor = Colors.grey;
+  bool _isLoggingIn = false;
+  String? _usernameError;
+  String? _passwordError;
 
   @override
   void initState() {
@@ -37,6 +40,30 @@ class LoginState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    setState(() {
+      _usernameError = null;
+      _passwordError = null;
+    });
+
+    if (_usernameController.text.isEmpty) {
+      setState(() {
+        _usernameError = "Username cannot be empty!";
+      });
+    }
+    if (_passwordController.text.isEmpty) {
+      setState(() {
+        _passwordError = "Password cannot be empty!";
+      });
+    }
+
+    if (_usernameError != null || _passwordError != null) {
+      return;
+    }
+
+    setState(() {
+      _isLoggingIn = true;
+    });
+
     final String username = _usernameController.text;
     final String password = _passwordController.text;
     final String serverUrl = _serverController.text;
@@ -101,6 +128,12 @@ class LoginState extends State<LoginScreen> {
       errorMessage = e.message;
     } on TimeoutException catch (_) {
       errorMessage = 'Request timed out';
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoggingIn = false;
+        });
+      }
     }
 
     if (mounted && errorMessage != null) {
@@ -257,8 +290,10 @@ class LoginState extends State<LoginScreen> {
                   TextField(
                     controller: _usernameController,
                     decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: S.of(context).username
+                      border: const OutlineInputBorder(),
+                      labelText: S.of(context).username,
+                      errorText: _usernameError,
+                      errorStyle: const TextStyle(color: Colors.red),
                     ),
                     autofillHints: const [AutofillHints.username],
                     autocorrect: false,
@@ -269,8 +304,10 @@ class LoginState extends State<LoginScreen> {
                   TextField(
                     controller: _passwordController,
                     decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: S.of(context).password
+                      border: const OutlineInputBorder(),
+                      labelText: S.of(context).password,
+                      errorText: _passwordError,
+                      errorStyle: const TextStyle(color: Colors.red),
                     ),
                     obscureText: true,
                     autofillHints: const [AutofillHints.password],
@@ -283,9 +320,18 @@ class LoginState extends State<LoginScreen> {
               height: 20,
             ),
             FilledButton.icon(
-              onPressed: _login,
+              onPressed: _isLoggingIn ? null : _login,
               label: Text("Login"),
-              icon: const Icon(Icons.login),
+              icon: _isLoggingIn
+                  ? Container(
+                    width: 24,
+                    height: 24,
+                    padding: const EdgeInsets.all(2.0),
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ),
+                  )
+                  : const Icon(Icons.login),
             ),
           ],
         ),
