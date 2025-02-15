@@ -170,41 +170,43 @@ class LoginState extends State<LoginScreen> {
 
   void _showQuickSettings(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            insetPadding: const EdgeInsets.all(4),
-            title: Text("Settings"),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.dns),
-                    title: const Text("Server"),
-                    trailing: TextContainer(
-                      text: _serverController.text,
-                    ),
-                    onTap: () {
-                      _showServerSettings(context);
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          insetPadding: const EdgeInsets.all(4),
+          title: Text("Settings"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.dns),
+                  title: const Text("Server"),
+                  trailing: ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _serverController,
+                    builder: (context, value, child) {
+                      return TextContainer(text: value.text);
                     },
-                  )
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    setState(() {});
-                    Navigator.pop(context);
+                  ),
+                  onTap: () {
+                    _showServerSettings(context);
                   },
-                  child: Text("Save")
-              ),
-            ],
-          );
-        }
+                )
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("Close")
+            ),
+          ],
+        );
+      },
     );
   }
 
