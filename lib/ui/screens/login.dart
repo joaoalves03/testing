@@ -20,10 +20,21 @@ class LoginScreen extends StatefulWidget {
 class LoginState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _serverController =
-      TextEditingController(text: 'https://api.goipvc.xyz');
+  final TextEditingController _serverController = TextEditingController();
   final FocusNode _serverFocusNode = FocusNode();
   Color _serverBorderColor = Colors.grey;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServerUrl();
+  }
+
+  Future<void> _loadServerUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedServerUrl = prefs.getString('server_url');
+    _serverController.text = savedServerUrl ?? 'https://api.goipvc.xyz';
+  }
 
   Future<void> _login() async {
     final String username = _usernameController.text;
