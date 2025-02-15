@@ -50,6 +50,10 @@ class HeaderState extends State<Header> {
       title: SvgPicture.asset(
         imagePath,
         height: 32,
+        colorFilter: ColorFilter.mode(
+          Theme.of(context).colorScheme.onSurface,
+          BlendMode.srcIn,
+        )
       ),
       actions: [
         IconButton(

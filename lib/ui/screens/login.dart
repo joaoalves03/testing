@@ -126,23 +126,26 @@ class LoginState extends State<LoginScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _serverController,
-              focusNode: _serverFocusNode,
-              decoration: InputDecoration(
-                labelText: "Server:",
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: _serverBorderColor),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _serverController,
+                focusNode: _serverFocusNode,
+                decoration: InputDecoration(
+                  labelText: "Server:",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _serverBorderColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _serverBorderColor),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: _serverBorderColor),
-                ),
+                autocorrect: false,
               ),
-              autocorrect: false,
-            ),
+            ],
+          ),
+          actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -155,11 +158,12 @@ class LoginState extends State<LoginScreen> {
                       setState(() {});
                       Navigator.pop(context);
                     },
-                    child: Text("Save")),
+                    child: Text("Save")
+                ),
               ],
             )
           ],
-        ));
+        );
       },
     );
   }
@@ -169,97 +173,110 @@ class LoginState extends State<LoginScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              insetPadding: const EdgeInsets.all(4),
-              title: Text("Settings"),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.dns),
-                      title: const Text("Server"),
-                      trailing: TextContainer(
-                        text: _serverController.text,
-                      ),
-                      onTap: () {
-                        _showServerSettings(context);
-                      },
-                    )
-                  ],
-                ),
-              ));
-        });
+            insetPadding: const EdgeInsets.all(4),
+            title: Text("Settings"),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.dns),
+                    title: const Text("Server"),
+                    trailing: TextContainer(
+                      text: _serverController.text,
+                    ),
+                    onTap: () {
+                      _showServerSettings(context);
+                    },
+                  )
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {});
+                    Navigator.pop(context);
+                  },
+                  child: Text("Save")
+              ),
+            ],
+          );
+        }
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                onPressed: () {
-                  _showQuickSettings(context);
-                },
-                icon: const Icon(Icons.settings),
-              )
-            ],
-          ),
-          const Spacer(),
-          SvgPicture.asset(
-            'assets/logo.svg',
-            height: 64,
-            colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.onSurface,
-              BlendMode.srcIn,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          AutofillGroup(
-            child: Column(
-              children: [
-                TextField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: S.of(context).username),
-                  autofillHints: const [AutofillHints.username],
-                  autocorrect: false,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: S.of(context).password),
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.password],
-                  autocorrect: false,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          FilledButton.icon(
-            onPressed: _login,
-            label: Text("Login"),
-            icon: const Icon(Icons.login),
-          ),
-          const Spacer(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              _showQuickSettings(context);
+            },
+            icon: const Icon(Icons.settings),
+          )
         ],
       ),
-    ));
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/logo.svg',
+              height: 64,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            AutofillGroup(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: S.of(context).username
+                    ),
+                    autofillHints: const [AutofillHints.username],
+                    autocorrect: false,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: S.of(context).password
+                    ),
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.password],
+                    autocorrect: false,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            FilledButton.icon(
+              onPressed: _login,
+              label: Text("Login"),
+              icon: const Icon(Icons.login),
+            ),
+          ],
+        ),
+      )
+    );
   }
 }
