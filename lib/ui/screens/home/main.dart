@@ -69,7 +69,7 @@ class HomeScreenState extends State<HomeScreen> {
         var json = jsonDecode(refreshToken.body);
         prefs.setString('academicos_token', json['token']);
 
-        await _fetchInfo();
+        // await _fetchInfo();
       } else {
         logger.d('Failed to refresh token..?');
       }
@@ -108,7 +108,7 @@ class HomeScreenState extends State<HomeScreen> {
         prefs.setString('sas_token', tokens["sas"]);
         prefs.setString('sas_refresh_token', tokens["sasRefresh"]);
 
-        await _getBalance();
+        // await _getBalance();
       } else {
         logger.d('Failed to refresh token..?');
       }
