@@ -19,11 +19,17 @@ class ClassesTabState extends State<ClassesTab> {
   @override
   void initState() {
     super.initState();
+    _initializeAndFetchLessons();
+  }
+
+  void fetchLessons() {
     Provider.of<DataProvider>(context, listen: false).fetchLessons();
   }
 
-  void fetchLessons(){
-    Provider.of<DataProvider>(context, listen: false).fetchLessons();
+  void _initializeAndFetchLessons() async {
+    await Provider.of<DataProvider>(context, listen: false)
+        .initializePreferences();
+    fetchLessons();
   }
 
   final now = DateTime.now();

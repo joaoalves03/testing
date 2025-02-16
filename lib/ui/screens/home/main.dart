@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:goipvc/main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import 'package:goipvc/services/data_provider.dart';
 
 import './classes.dart';
 import './tasks.dart';
@@ -18,105 +16,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  late SharedPreferences prefs;
-  late String serverUrl, academicosToken, sasToken, sasRefreshToken;
-
   @override
   void initState() {
     super.initState();
-    _initializePreferences();
-  }
-
-  Future<void> _initializePreferences() async {
-    prefs = await SharedPreferences.getInstance();
-    serverUrl = prefs.getString('server_url')!;
-    academicosToken = prefs.getString('academicos_token')!;
-    sasToken = prefs.getString('sas_token')!;
-    sasRefreshToken = prefs.getString('sas_refresh_token')!;
-
-    _fetchInfo();
-    _getBalance();
-  }
-
-  String name = '';
-  Future<void> _fetchInfo() async {
-    final response = await http.get(
-      Uri.parse('$serverUrl/academicos/student-info'),
-      headers: {
-        'Cookie': academicosToken,
-      },
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        var jsonResponse = jsonDecode(response.body);
-        name = jsonResponse['name'].split(' ')[0];
-        prefs.setInt('student_id', jsonResponse['studentId']);
-      });
-    } else if (response.statusCode == 401) {
-      final refreshToken = await http.post(
-        Uri.parse('$serverUrl/auth/refresh-token'),
-        body: jsonEncode({
-          'username': prefs.getString('username')!,
-          'password': prefs.getString('password')!,
-          'strategy': 0,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (refreshToken.statusCode == 200) {
-        var json = jsonDecode(refreshToken.body);
-        prefs.setString('academicos_token', json['token']);
-
-        // await _fetchInfo();
-      } else {
-        logger.d('Failed to refresh token..?');
-      }
-    }
-  }
-
-  double balance = 0.00;
-  Future<void> _getBalance() async {
-    final response = await http.get(
-      Uri.parse('$serverUrl/sas/balance'),
-      headers: {
-        'Authorization': sasToken,
-        'Cookie': sasRefreshToken,
-      },
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        balance = double.parse(response.body);
-      });
-    } else if (response.statusCode == 401) {
-      final refreshToken = await http.post(
-        Uri.parse('$serverUrl/auth/refresh-token'),
-        body: jsonEncode({
-          'username': prefs.getString('username')!,
-          'password': prefs.getString('password')!,
-          'strategy': 3,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (refreshToken.statusCode == 200) {
-        var tokens = jsonDecode(refreshToken.body)['tokens'];
-
-        prefs.setString('sas_token', tokens["sas"]);
-        prefs.setString('sas_refresh_token', tokens["sasRefresh"]);
-
-        // await _getBalance();
-      } else {
-        logger.d('Failed to refresh token..?');
-      }
-    }
+    Provider.of<DataProvider>(context, listen: false).initializePreferences();
   }
 
   @override
   Widget build(BuildContext context) {
+    final dataProvider = Provider.of<DataProvider>(context);
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -124,9 +33,10 @@ class HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Greeting(
-              title: 'Olá $name!',
+              title: 'Olá ${dataProvider.studentName}!',
               slogan: 'O teu ● de partida',
-              money: '${balance.toString().replaceAll('.', ',')} €',
+              money:
+                  '${dataProvider.balance.toString().replaceAll('.', ',')} €',
               subtitle: 'Saldo atual',
             ),
             TabBar(
