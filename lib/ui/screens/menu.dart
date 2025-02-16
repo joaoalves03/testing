@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/screens/menu/calendar.dart';
 import 'package:goipvc/ui/screens/menu/profile.dart';
 import 'package:goipvc/ui/screens/menu/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,12 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.calendar_month),
               title: Text("Calendário Académico"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CalendarScreen())
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.people),
