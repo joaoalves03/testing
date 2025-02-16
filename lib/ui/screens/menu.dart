@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/services/data_provider.dart';
+import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/screens/menu/calendar.dart';
 import 'package:goipvc/ui/screens/menu/profile.dart';
 import 'package:goipvc/ui/screens/menu/settings.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:goipvc/ui/widgets/list_section.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -139,12 +138,24 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-class UserCard extends StatelessWidget {
+class UserCard extends StatefulWidget {
   const UserCard({super.key});
+
+  @override
+  UserCardState createState() => UserCardState();
+}
+
+class UserCardState extends State<UserCard> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<DataProvider>(context, listen: false).fetchStudentImage();
+  }
 
   @override
   Widget build(BuildContext context) {
     final studentInfo = Provider.of<DataProvider>(context).studentInfo;
+    final studentImage = Provider.of<DataProvider>(context).studentImage;
 
     return GestureDetector(
       onTap: () => {
@@ -162,7 +173,16 @@ class UserCard extends StatelessWidget {
             CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey.shade300,
-              child: const Icon(Icons.person, color: Colors.grey),
+              child: studentImage != null
+                  ? ClipOval(
+                      child: Image.memory(
+                        studentImage,
+                        fit: BoxFit.cover,
+                        width: 48,
+                        height: 48,
+                      ),
+                    )
+                  : const Icon(Icons.person, color: Colors.grey),
             ),
             const SizedBox(width: 16),
             Expanded(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:goipvc/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -123,5 +124,23 @@ class DataService {
       }
     }
     return null;
+  }
+
+  Future<Uint8List?> fetchStudentImage(
+      String studentId, String courseId, String academicosToken) async {
+    final url =
+        'https://academicos.ipvc.pt/netpa/PhotoLoader?codAluno=$studentId&codCurso=$courseId';
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Cookie': academicosToken,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      return null;
+    }
   }
 }
