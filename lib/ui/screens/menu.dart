@@ -37,17 +37,6 @@ class MenuScreen extends StatelessWidget {
               title: Text("Horário de Serviços"),
             )
           ]),
-          ListSection(title: "SASocial", children: [
-            ListTile(
-              leading: Icon(Icons.language),
-              title: Text("SASocial"),
-              trailing: Icon(Icons.launch),
-            ),
-            ListTile(
-              leading: Icon(Icons.credit_card),
-              title: Text("Conta"),
-            )
-          ]),
           ListSection(title: "Academicos", children: [
             ListTile(
               leading: Icon(Icons.language),
@@ -61,6 +50,17 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.calendar_today),
               title: Text("Exames"),
+            )
+          ]),
+          ListSection(title: "SASocial", children: [
+            ListTile(
+              leading: Icon(Icons.language),
+              title: Text("SASocial"),
+              trailing: Icon(Icons.launch),
+            ),
+            ListTile(
+              leading: Icon(Icons.credit_card),
+              title: Text("Conta"),
             )
           ]),
           ListSection(title: "ON", children: [
