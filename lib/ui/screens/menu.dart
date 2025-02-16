@@ -31,8 +31,8 @@ class MenuScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CalendarScreen())
-                );
+                    MaterialPageRoute(
+                        builder: (context) => const CalendarScreen()));
               },
             ),
             ListTile(
@@ -44,10 +44,14 @@ class MenuScreen extends StatelessWidget {
               title: Text("Horário de Serviços"),
             )
           ]),
-          ListSection(title: "Academicos", children: [
+          ListSection(title: "Académicos", children: [
             ListTile(
-              leading: Icon(Icons.language),
-              title: Text("Academicos"),
+              leading: Image.asset(
+                'assets/logos/services/academicos.png',
+                width: 20,
+                height: 20,
+              ),
+              title: Text("Académicos"),
               trailing: Icon(Icons.launch),
             ),
             ListTile(
@@ -61,7 +65,11 @@ class MenuScreen extends StatelessWidget {
           ]),
           ListSection(title: "SASocial", children: [
             ListTile(
-              leading: Icon(Icons.language),
+              leading: Image.asset(
+                'assets/logos/services/sasocial.png',
+                width: 20,
+                height: 20,
+              ),
               title: Text("SASocial"),
               trailing: Icon(Icons.launch),
             ),
@@ -72,14 +80,22 @@ class MenuScreen extends StatelessWidget {
           ]),
           ListSection(title: "ON", children: [
             ListTile(
-              leading: Icon(Icons.language),
+              leading: Image.asset(
+                'assets/logos/services/on.png',
+                width: 20,
+                height: 20,
+              ),
               title: Text("ON"),
               trailing: Icon(Icons.launch),
             )
           ]),
           ListSection(title: "Moodle", children: [
             ListTile(
-              leading: Icon(Icons.language),
+              leading: Image.asset(
+                'assets/logos/services/moodle.png',
+                width: 20,
+                height: 20,
+              ),
               title: Text("Moodle"),
               trailing: Icon(Icons.launch),
             )
@@ -96,8 +112,8 @@ class MenuScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SettingsScreen())
-                );
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsScreen()));
               },
             ),
             ListTile(
@@ -128,10 +144,8 @@ class UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileScreen())
-        )
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()))
       },
       child: Container(
         padding: const EdgeInsets.all(16),

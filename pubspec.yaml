@@ -80,6 +80,11 @@ flutter:
     - assets/logos/ESTG.svg
     - assets/logos/IPVC.svg
 
+    - assets/logos/services/academicos.png
+    - assets/logos/services/moodle.png
+    - assets/logos/services/on.png
+    - assets/logos/services/sasocial.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
