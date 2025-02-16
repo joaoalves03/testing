@@ -11,9 +11,9 @@ class DataProvider with ChangeNotifier {
   List<Lesson>? _lessons;
   List<Lesson>? get lessons => _lessons;
 
-  Student? studentInfo;
-  double balance = 0.00;
-  Uint8List? studentImage;
+  Student? get studentInfo => DataService().studentInfo;
+  double get balance => DataService().balance ?? 0.00;
+  Uint8List? get studentImage => DataService().studentImage;
   late SharedPreferences prefs;
   late String serverUrl, academicosToken, sasToken, sasRefreshToken;
 
@@ -40,37 +40,29 @@ class DataProvider with ChangeNotifier {
   }
 
   Future<void> fetchStudentInfo() async {
-    if (studentInfo == null) {
-      final response = await DataService()
-          .fetchStudentInfo(serverUrl, academicosToken, prefs);
-
-      if (response != null) {
-        studentInfo = Student.fromJson(response);
-        prefs.setInt('student_id', response['studentId']);
+    if (DataService().studentInfo == null) {
+      await DataService().fetchStudentInfo(serverUrl, academicosToken, prefs);
+      if (DataService().studentInfo != null) {
+        prefs.setInt('student_id', DataService().studentInfo!.studentId);
       }
-
       notifyListeners();
     }
   }
 
   Future<void> getBalance() async {
-    if (balance == 0.00) {
-      final response = await DataService()
+    if (DataService().balance == null) {
+      await DataService()
           .fetchBalance(serverUrl, sasToken, sasRefreshToken, prefs);
-
-      if (response != null) {
-        balance = response;
-      }
-
       notifyListeners();
     }
   }
 
   Future<void> fetchStudentImage() async {
-    if (studentInfo != null && studentImage == null) {
-      studentImage = await DataService().fetchStudentImage(
-        studentInfo!.studentId.toString(),
-        studentInfo!.courseId.toString(),
+    if (DataService().studentInfo != null &&
+        DataService().studentImage == null) {
+      await DataService().fetchStudentImage(
+        DataService().studentInfo!.studentId.toString(),
+        DataService().studentInfo!.courseId.toString(),
         academicosToken,
       );
       notifyListeners();
