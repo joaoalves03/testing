@@ -16,7 +16,9 @@ class DataProvider with ChangeNotifier {
 
   Future<void> initializePreferences() async {
     prefs = await SharedPreferences.getInstance();
+    
     serverUrl = prefs.getString('server_url')!;
+
     academicosToken = prefs.getString('academicos_token')!;
     sasToken = prefs.getString('sas_token')!;
     sasRefreshToken = prefs.getString('sas_refresh_token')!;
@@ -34,6 +36,7 @@ class DataProvider with ChangeNotifier {
         studentInfo = Student.fromJson(response);
         prefs.setInt('student_id', response['studentId']);
       }
+
       notifyListeners();
     }
   }
@@ -42,9 +45,11 @@ class DataProvider with ChangeNotifier {
     if (balance == 0.00) {
       final response = await DataService()
           .fetchBalance(serverUrl, sasToken, sasRefreshToken, prefs);
+
       if (response != null) {
         balance = response;
       }
+
       notifyListeners();
     }
   }
