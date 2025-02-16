@@ -39,18 +39,42 @@ class MenuScreen extends StatelessWidget {
           ]),
           ListSection(title: "SASocial", children: [
             ListTile(
+              leading: Icon(Icons.language),
+              title: Text("SASocial"),
+              trailing: Icon(Icons.launch),
+            ),
+            ListTile(
               leading: Icon(Icons.credit_card),
               title: Text("Conta"),
             )
           ]),
           ListSection(title: "Academicos", children: [
             ListTile(
-              leading: Icon(Icons.payment),
+              leading: Icon(Icons.language),
+              title: Text("Academicos"),
+              trailing: Icon(Icons.launch),
+            ),
+            ListTile(
+              leading: Icon(Icons.local_atm),
               title: Text("Propinas"),
             ),
             ListTile(
               leading: Icon(Icons.calendar_today),
               title: Text("Exames"),
+            )
+          ]),
+          ListSection(title: "ON", children: [
+            ListTile(
+              leading: Icon(Icons.language),
+              title: Text("ON"),
+              trailing: Icon(Icons.launch),
+            )
+          ]),
+          ListSection(title: "Moodle", children: [
+            ListTile(
+              leading: Icon(Icons.language),
+              title: Text("Moodle"),
+              trailing: Icon(Icons.launch),
             )
           ]),
           Divider(),
@@ -82,6 +106,7 @@ class MenuScreen extends StatelessWidget {
                 }
               },
             ),
+            SizedBox(height: 60)
           ])
         ],
       ),
