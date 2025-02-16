@@ -33,7 +33,7 @@ class HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Greeting(
-              title: 'Olá ${dataProvider.studentName}!',
+              title: 'Olá ${dataProvider.studentInfo?.firstName}!',
               slogan: 'O teu ● de partida',
               money:
                   '${dataProvider.balance.toString().replaceAll('.', ',')} €',

@@ -23,6 +23,7 @@ class ClassesTabState extends State<ClassesTab> {
   }
 
   void fetchLessons() {
+    if (!mounted) return;
     Provider.of<DataProvider>(context, listen: false).fetchLessons();
   }
 

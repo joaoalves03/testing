@@ -44,7 +44,6 @@ class DataService {
 
       if (refreshToken.statusCode == 200) {
         var json = jsonDecode(refreshToken.body);
-        logger.d(json);
         await prefs.setString('on_token', json['token']);
         // await fetchLessons();
       }

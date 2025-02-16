@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/models/student.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data_service.dart';
@@ -8,7 +9,7 @@ class DataProvider with ChangeNotifier {
   List<Lesson>? _lessons;
   List<Lesson>? get lessons => _lessons;
 
-  String studentName = '';
+  Student? studentInfo;
   double balance = 0.00;
   late SharedPreferences prefs;
   late String serverUrl, academicosToken, sasToken, sasRefreshToken;
@@ -25,11 +26,12 @@ class DataProvider with ChangeNotifier {
   }
 
   Future<void> fetchStudentInfo() async {
-    if (studentName.isEmpty) {
+    if (studentInfo == null) {
       final response = await DataService()
           .fetchStudentInfo(serverUrl, academicosToken, prefs);
+
       if (response != null) {
-        studentName = response['name'].split(' ')[0];
+        studentInfo = Student.fromJson(response);
         prefs.setInt('student_id', response['studentId']);
       }
       notifyListeners();

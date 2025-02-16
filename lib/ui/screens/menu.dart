@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/services/data_provider.dart';
 import 'package:goipvc/ui/screens/menu/calendar.dart';
 import 'package:goipvc/ui/screens/menu/profile.dart';
 import 'package:goipvc/ui/screens/menu/settings.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:goipvc/ui/widgets/list_section.dart';
@@ -142,6 +144,8 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final studentInfo = Provider.of<DataProvider>(context).studentInfo;
+
     return GestureDetector(
       onTap: () => {
         Navigator.push(context,
@@ -164,13 +168,16 @@ class UserCard extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'John Doe',
+                    '${studentInfo?.fullName}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  Text('EI - ESTG', style: TextStyle(fontSize: 14)),
-                  Text('Nº XXXXX', style: TextStyle(fontSize: 14)),
+                  Text(
+                      '${studentInfo?.courseInitials} - ${studentInfo?.schoolInitials}',
+                      style: TextStyle(fontSize: 14)),
+                  Text('Nº ${studentInfo?.studentId}',
+                      style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),
