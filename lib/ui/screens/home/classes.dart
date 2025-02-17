@@ -45,11 +45,6 @@ class ClassesTabState extends State<ClassesTab> {
 
   List<Widget> _buildNextClassesChildren(List<Lesson> lessonsForDate) {
     return lessonsForDate
-        .skip(now.isAfter(DateTime.parse(lessonsForDate.first.start)) &&
-                now.isBefore(DateTime.parse(lessonsForDate.first.end))
-            ? 1
-            : 0)
-        .toList()
         .asMap()
         .entries
         .map((entry) {
@@ -64,7 +59,14 @@ class ClassesTabState extends State<ClassesTab> {
 
   Widget _buildNextOrUpcomingClasses(
       DateTime currentDate, List<Lesson> lessonsForDate) {
-    if (currentDate.day == now.day) {
+    lessonsForDate = lessonsForDate
+        .skip(now.isAfter(DateTime.parse(lessonsForDate.first.start)) &&
+        now.isBefore(DateTime.parse(lessonsForDate.first.end))
+        ? 1
+        : 0)
+        .toList();
+
+    if (currentDate.day == now.day && lessonsForDate.isNotEmpty) {
       return NextClasses(
         children: _buildNextClassesChildren(lessonsForDate),
       );
