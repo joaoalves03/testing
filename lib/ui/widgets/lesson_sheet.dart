@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/models/lesson.dart';
+import 'package:goipvc/utils/globals.dart';
 import 'package:intl/intl.dart';
 
 void showLessonBottomSheet(BuildContext context, Lesson lesson) {
@@ -42,22 +43,48 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    toBeginningOfSentenceCase(day),
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  Row(
+                    children: [
+                      Text(
+                        toBeginningOfSentenceCase(day),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                      buildDot(context),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(text: startHour),
+                            WidgetSpan(
+                                child: Icon(Icons.arrow_forward_rounded, size: 16)),
+                            TextSpan(text: endHour),
+                          ],
+                        ),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface
+                        ),
+                      ),
+                    ],
                   ),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(text: startHour),
-                        const WidgetSpan(
-                            child: Icon(Icons.arrow_forward_rounded, size: 16)),
-                        TextSpan(text: endHour),
-                      ],
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  Row(
+                    children: [
+                      Text(
+                        lesson.classType,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      buildDot(context, textColor: Theme.of(context).colorScheme.onSurfaceVariant),
+                      Text(
+                        lesson.getStatusFromColor(lesson.statusColor),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  )
                 ],
               ),
               isThreeLine: true,
