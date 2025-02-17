@@ -190,6 +190,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 selectionDecoration: _currentView != CalendarView.month
                     ? BoxDecoration(color: Colors.transparent)
                     : null,
+
+
                 controller: _calendarController,
                 specialRegions: _getTimeRegions(),
                 dataSource: _getDataSource(lessons),
@@ -227,15 +229,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 }
 
 class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(
-      List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
-    // Initialize the appointments list
+  MeetingDataSource(List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
     appointments = [];
 
-    // Add lessons
     appointments!.addAll(lessons);
 
-    // Add tasks as all-day appointments
     appointments!.addAll(tasks.map((task) => Appointment(
           startTime: DateTime.parse(task.due),
           endTime: DateTime.parse(task.due).add(Duration(hours: 1)),
@@ -244,7 +242,6 @@ class MeetingDataSource extends CalendarDataSource {
           isAllDay: true,
         )));
 
-    // Add holidays as all-day appointments
     appointments!.addAll(holidays.map((holiday) => Appointment(
           startTime: DateTime.parse(holiday.start),
           endTime: DateTime.parse(holiday.end),
@@ -273,7 +270,8 @@ class MeetingDataSource extends CalendarDataSource {
   @override
   String getSubject(int index) {
     if (appointments![index] is Lesson) {
-      return (appointments![index] as Lesson).shortName;
+      Lesson lesson = (appointments![index] as Lesson);
+      return "${lesson.shortName}\n${lesson.room}";
     }
     return "";
   }
