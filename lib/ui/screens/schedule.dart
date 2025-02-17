@@ -185,7 +185,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     dateFormat: 'd',
                     dayFormat: 'EEE',
                     timeFormat: 'H:mm',
-                    startHour: 0,
+                    startHour: 7,
                     endHour: 24),
                 selectionDecoration: _currentView != CalendarView.month
                     ? BoxDecoration(color: Colors.transparent)
