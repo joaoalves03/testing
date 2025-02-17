@@ -45,6 +45,7 @@ dependencies:
   syncfusion_flutter_calendar: ^27.1.57
   syncfusion_localizations: ^27.2.5
   provider: ^6.1.2
+  dynamic_color: ^1.7.0
 
 dev_dependencies:
   flutter_test:

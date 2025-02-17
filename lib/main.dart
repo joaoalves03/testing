@@ -12,6 +12,9 @@ import 'utils/shared_prefs.dart';
 import 'ui/init_view.dart';
 import 'ui/screens/login.dart';
 
+import 'package:dynamic_color/dynamic_color.dart';
+import 'themes.dart';
+
 final Logger logger = Logger();
 
 void main() {
@@ -35,30 +38,59 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-        future: _checkLoginStatus(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return MaterialApp(home: CircularProgressIndicator());
-          } else {
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return FutureBuilder<bool>(
+          future: _checkLoginStatus(),
+          builder: (context, snapshot) {
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const MaterialApp(home: Scaffold(body: Center(child: CircularProgressIndicator())));
+            }
+
             final bool isLoggedIn = snapshot.data ?? false;
             return MaterialApp(
-                title: 'goIPVC',
-                localizationsDelegates: const [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  SfGlobalLocalizations.delegate
-                ],
-                supportedLocales: S.delegate.supportedLocales,
-                theme: ThemeData.light(),
-                darkTheme: ThemeData.dark(),
-                themeMode: ThemeMode.system,
-                debugShowCheckedModeBanner: false,
-                home: isLoggedIn ? InitView() : LoginScreen(),
-                routes: getRoutes());
-          }
-        });
+              title: 'goIPVC',
+              localizationsDelegates: const [
+                S.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                SfGlobalLocalizations.delegate
+              ],
+              supportedLocales: S.delegate.supportedLocales,
+              theme: _buildTheme(lightDynamic, Brightness.light),
+              darkTheme: _buildTheme(darkDynamic, Brightness.dark),
+              themeMode: ThemeMode.system,
+              debugShowCheckedModeBanner: false,
+              home: isLoggedIn ? const InitView() : const LoginScreen(),
+              routes: getRoutes(),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  ThemeData _buildTheme(ColorScheme? dynamicColor, Brightness brightness) {
+    ColorScheme colorScheme;
+    if (dynamicColor != null) {
+      colorScheme = ColorScheme.fromSeed(
+          seedColor: dynamicColor.primary,
+          brightness: brightness
+      );
+    } else {
+      colorScheme = ColorScheme.fromSeed(
+        seedColor: Colors.blue,
+        brightness: brightness,
+      );
+    }
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+    );
   }
 }
+
+
