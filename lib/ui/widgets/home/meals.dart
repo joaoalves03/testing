@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/models/meal.dart';
-import 'package:goipvc/ui/widgets/home/date_section.dart';
+
+import 'date_section.dart';
 
 
 class MealsTab extends StatefulWidget {

@@ -3,10 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import 'package:goipvc/services/data_provider.dart';
-
-import './classes.dart';
-import './tasks.dart';
-import './meals.dart';
+import 'package:goipvc/ui/widgets/home/classes.dart';
+import 'package:goipvc/ui/widgets/home/tasks.dart';
+import 'package:goipvc/ui/widgets/home/meals.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

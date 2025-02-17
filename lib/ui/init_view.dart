@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:goipvc/ui/widgets/header.dart';
 
 import 'screens/login.dart';
-import 'screens/home/main.dart';
+import 'screens/home.dart';
 import 'screens/schedule.dart';
 import 'screens/blueprints.dart';
 import 'screens/menu.dart';

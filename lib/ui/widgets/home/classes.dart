@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/utils/globals.dart';
 import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:intl/intl.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/services/data_provider.dart';
-import 'package:goipvc/ui/widgets/home/date_section.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
 import 'package:provider/provider.dart';
+
+import 'date_section.dart';
 
 class ClassesTab extends StatefulWidget {
   const ClassesTab({super.key});
@@ -147,11 +149,6 @@ class RightNowCard extends StatelessWidget {
     required this.lesson,
   });
 
-  String _formatTime(String dateTime) {
-    final date = DateTime.parse(dateTime);
-    return DateFormat.Hm().format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     return FilledCard(
@@ -210,7 +207,7 @@ class RightNowCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(_formatTime(lesson.start)),
+        Text(formatTimeToHours(lesson.start)),
         Expanded(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -221,7 +218,7 @@ class RightNowCard extends StatelessWidget {
             ),
           ),
         ),
-        Text(_formatTime(lesson.end)),
+        Text(formatTimeToHours(lesson.end)),
       ],
     );
   }
@@ -255,18 +252,6 @@ class UpcomingClass extends StatelessWidget {
     this.extend = false,
   });
 
-  String _formatTime(String dateTime) {
-    final date = DateTime.parse(dateTime);
-    return DateFormat.Hm().format(date);
-  }
-
-  Widget _buildDot() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
-      child: Text('•', style: TextStyle(fontSize: 22)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -275,10 +260,10 @@ class UpcomingClass extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (!extend) Text(_formatTime(lesson.start)),
-              if (!extend) _buildDot(),
+              if (!extend) Text(formatTimeToHours(lesson.start)),
+              if (!extend) buildDot(),
               Text(lesson.classType),
-              _buildDot(),
+              buildDot(),
               Text(
                 lesson.className,
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -296,11 +281,11 @@ class UpcomingClass extends StatelessWidget {
                       Text.rich(
                         TextSpan(
                           children: [
-                            TextSpan(text: _formatTime(lesson.start)),
+                            TextSpan(text: formatTimeToHours(lesson.start)),
                             const WidgetSpan(
                                 child:
                                 Icon(Icons.arrow_forward_rounded, size: 16)),
-                            TextSpan(text: _formatTime(lesson.end)),
+                            TextSpan(text: formatTimeToHours(lesson.end)),
                           ],
                         ),
                         style: const TextStyle(fontSize: 14),
