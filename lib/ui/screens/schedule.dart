@@ -214,6 +214,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             _calendarController.view == CalendarView.day) {
                           _currentView = CalendarView.day;
                         }
+
+                        if (_currentView == CalendarView.week &&
+                            _calendarController.view == CalendarView.day) {
+                          _currentView = CalendarView.day;
+                        }
+
+                        if (_currentView == CalendarView.workWeek &&
+                            _calendarController.view == CalendarView.day) {
+                          _currentView = CalendarView.day;
+                        }
                         _headerText = newHeader;
                       });
                     }
