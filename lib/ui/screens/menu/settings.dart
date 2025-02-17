@@ -379,11 +379,11 @@ class ExtraSettingsState extends State<ExtraSettings>{
       ListTile(
         leading: Icon(
           Icons.delete_forever,
-          color: Theme.of(context).colorScheme.error,
+          color: Colors.red,
         ),
         title: Text(
           "Eliminar Dados",
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
+          style: TextStyle(color: Colors.red),
         ),
         onTap: () { },
       ),

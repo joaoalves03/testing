@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:goipvc/models/student.dart';
+import 'package:goipvc/models/tuition_fee.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data_service.dart';
@@ -14,6 +15,8 @@ class DataProvider with ChangeNotifier {
   Student? get studentInfo => DataService().studentInfo;
   double get balance => DataService().balance ?? 0.00;
   Uint8List? get studentImage => DataService().studentImage;
+  List<TuitionFee>? get tuitionFees => DataService().tuitionFees;
+
   late SharedPreferences prefs;
   late String serverUrl, academicosToken, sasToken, sasRefreshToken;
 
@@ -65,6 +68,14 @@ class DataProvider with ChangeNotifier {
         DataService().studentInfo!.courseId.toString(),
         academicosToken,
       );
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchTuitionFees() async {
+    if (DataService().tuitionFees == null) {
+      await DataService()
+          .fetchTuitionFees(serverUrl, academicosToken, prefs);
       notifyListeners();
     }
   }

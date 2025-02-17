@@ -6,6 +6,8 @@ class FilledCard extends StatelessWidget {
   final Color? backgroundColor;
   final double? paddingVertical;
   final double? paddingHorizontal;
+  final double? marginVertical;
+  final double? marginHorizontal;
   final List<Widget> children;
   final Function()? onTap;
 
@@ -17,6 +19,8 @@ class FilledCard extends StatelessWidget {
     this.backgroundColor,
     this.paddingVertical,
     this.paddingHorizontal,
+    this.marginVertical,
+    this.marginHorizontal,
     this.onTap,
   });
 
@@ -25,7 +29,7 @@ class FilledCard extends StatelessWidget {
 
     return Card.filled(
         color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
-        margin: EdgeInsets.symmetric(vertical: 6),
+        margin: EdgeInsets.symmetric(vertical: marginVertical ?? 6, horizontal: marginHorizontal ?? 0),
         clipBehavior: Clip.hardEdge,
         child: InkWell(
           onTap: onTap,

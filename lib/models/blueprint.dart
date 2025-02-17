@@ -13,19 +13,10 @@ class Blueprint {
 
   factory Blueprint.fromJson(Map<String, dynamic> json) {
     return Blueprint(
-      index: json['index'] as int,
-      school: json['school'] as String,
-      imageUrl: json['image_url'] as String,
+      index: json['index'],
+      school: json['school'],
+      imageUrl: json['image_url'],
       legend: Map<String, String>.from(json['legend'] as Map),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'index': index,
-      'school': school,
-      'image_url': imageUrl,
-      'legend': legend,
-    };
   }
 }

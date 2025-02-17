@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/services/data_provider.dart';
@@ -33,7 +34,7 @@ class MenuScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const CalendarScreen()));
+                        builder: (context) => CalendarScreen()));
               },
             ),
             ListTile(
@@ -58,6 +59,12 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.local_atm),
               title: Text("Propinas"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TuitionFeesScreen()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.calendar_today),
@@ -114,7 +121,7 @@ class MenuScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SettingsScreen()));
+                        builder: (context) => SettingsScreen()));
               },
             ),
             ListTile(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:goipvc/main.dart';
+import 'package:goipvc/models/tuition_fee.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/lesson.dart';
@@ -15,6 +16,7 @@ class DataService {
   Student? _studentInfo;
   double? _balance;
   Uint8List? _studentImage;
+  List<TuitionFee>? _tuitionFees;
 
   Future<void> fetchLessons() async {
     final prefs = await SharedPreferences.getInstance();
@@ -155,4 +157,43 @@ class DataService {
   }
 
   Uint8List? get studentImage => _studentImage;
+
+  Future<void> fetchTuitionFees(
+      String serverUrl, String academicosToken, SharedPreferences prefs) async {
+    if (_tuitionFees == null) {
+      final response = await http.get(
+        Uri.parse('$serverUrl/academicos/tuition'),
+        headers: {
+          'Cookie': academicosToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List;
+        _tuitionFees = data.map((e) => TuitionFee.fromJson(e)).toList();
+      } else if (response.statusCode == 401) {
+        final refreshToken = await http.post(
+          Uri.parse('$serverUrl/auth/refresh-token'),
+          body: jsonEncode({
+            'username': prefs.getString('username')!,
+            'password': prefs.getString('password')!,
+            'strategy': 0,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (refreshToken.statusCode == 200) {
+          var json = jsonDecode(refreshToken.body);
+          prefs.setString('academicos_token', json['token']);
+          await fetchTuitionFees(serverUrl, json['token'], prefs);
+        } else {
+          logger.d('Failed to refresh token..?');
+        }
+      }
+    }
+  }
+
+  List<TuitionFee>? get tuitionFees => _tuitionFees;
 }

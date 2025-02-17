@@ -45,7 +45,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
         "BL": "Biblioteca",
       },
     ),
-  ]..sort((a, b) => a.index.compareTo(b.index));
+  ];
 
   @override
   void initState() {
