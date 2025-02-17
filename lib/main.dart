@@ -13,7 +13,6 @@ import 'ui/init_view.dart';
 import 'ui/screens/login.dart';
 
 import 'package:dynamic_color/dynamic_color.dart';
-import 'themes.dart';
 
 final Logger logger = Logger();
 

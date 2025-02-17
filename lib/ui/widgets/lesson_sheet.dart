@@ -3,9 +3,9 @@ import 'package:goipvc/models/lesson.dart';
 import 'package:intl/intl.dart';
 
 void showLessonBottomSheet(BuildContext context, Lesson lesson) {
-  String _day = DateFormat.EEEE('pt').format(DateTime.parse(lesson.start));
-  String _startHour = DateFormat.Hm().format(DateTime.parse(lesson.start));
-  String _endHour = DateFormat.Hm().format(DateTime.parse(lesson.end));
+  String day = DateFormat.EEEE('pt').format(DateTime.parse(lesson.start));
+  String startHour = DateFormat.Hm().format(DateTime.parse(lesson.start));
+  String endHour = DateFormat.Hm().format(DateTime.parse(lesson.end));
 
   showModalBottomSheet(
     context: context,
@@ -37,26 +37,23 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                 lesson.className,
                 style: TextStyle(
                     fontSize: 20,
-                    color: Theme.of(context).colorScheme.onSurface
-                ),
+                    color: Theme.of(context).colorScheme.onSurface),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    toBeginningOfSentenceCase(_day),
+                    toBeginningOfSentenceCase(day),
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant
-                    ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: _startHour),
+                        TextSpan(text: startHour),
                         const WidgetSpan(
-                            child:
-                            Icon(Icons.arrow_forward_rounded, size: 16)),
-                        TextSpan(text: _endHour),
+                            child: Icon(Icons.arrow_forward_rounded, size: 16)),
+                        TextSpan(text: endHour),
                       ],
                     ),
                     style: const TextStyle(fontSize: 14),
@@ -79,8 +76,8 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                 return ListTile(
                   leading: index == 0
                       ? lesson.teachers.length > 1
-                        ? Icon(Icons.people)
-                        : Icon(Icons.person)
+                          ? Icon(Icons.people)
+                          : Icon(Icons.person)
                       : Icon(null),
                   title: Text(
                     teacher,
@@ -91,9 +88,7 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                     ),
                   ),
                   trailing: Icon(Icons.chevron_right),
-                  onTap: () {
-
-                  },
+                  onTap: () {},
                 );
               }),
             ],
@@ -102,14 +97,11 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
               leading: Icon(Icons.book),
               title: Text(
                 "Ver cadeira",
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface
-                ),
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),
               trailing: Icon(Icons.chevron_right),
-              onTap: () {
-
-              },
+              onTap: () {},
             ),
           ],
         ),
