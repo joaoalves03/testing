@@ -260,52 +260,55 @@ class UpcomingClass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            if (!extend) Text(_formatTime(lesson.start)),
-            if (!extend) _buildDot(),
-            Text(lesson.classType),
-            _buildDot(),
-            Text(
-              lesson.className,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-          ],
-        ),
-        if (extend)
-          Padding(
-            padding: EdgeInsets.only(left: 22),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.watch_later, size: 16),
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(text: _formatTime(lesson.start)),
-                          const WidgetSpan(
-                              child:
-                                  Icon(Icons.arrow_forward_rounded, size: 16)),
-                          TextSpan(text: _formatTime(lesson.end)),
-                        ],
+    return InkWell(
+      onTap: () => showLessonBottomSheet(context, lesson),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              if (!extend) Text(_formatTime(lesson.start)),
+              if (!extend) _buildDot(),
+              Text(lesson.classType),
+              _buildDot(),
+              Text(
+                lesson.className,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            ],
+          ),
+          if (extend)
+            Padding(
+              padding: EdgeInsets.only(left: 22),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.watch_later, size: 16),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(text: _formatTime(lesson.start)),
+                            const WidgetSpan(
+                                child:
+                                Icon(Icons.arrow_forward_rounded, size: 16)),
+                            TextSpan(text: _formatTime(lesson.end)),
+                          ],
+                        ),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 16),
-                    Text(lesson.room),
-                  ],
-                ),
-              ],
-            ),
-          )
-      ],
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16),
+                      Text(lesson.room),
+                    ],
+                  ),
+                ],
+              ),
+            )
+        ],
+      ),
     );
   }
 }
