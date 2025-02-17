@@ -196,19 +196,26 @@ class RightNowCard extends StatelessWidget {
   }
 
   Row _buildProgressRow() {
+    DateTime start = DateTime.parse(lesson.start);
+    DateTime end = DateTime.parse(lesson.end);
+    double progress = (DateTime.now().millisecondsSinceEpoch - start.millisecondsSinceEpoch) /
+        (end.millisecondsSinceEpoch - start.millisecondsSinceEpoch);
+
+    if (progress <= 0 || progress > 1) {
+      progress = 0;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(_formatTime(lesson.start)),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: const LinearProgressIndicator(
-                value: 0.5,
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: LinearProgressIndicator(
+                value: progress,
                 minHeight: 20,
-              ),
+                borderRadius: BorderRadius.circular(4)
             ),
           ),
         ),
