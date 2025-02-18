@@ -10,12 +10,12 @@ class BlueprintScreen extends StatefulWidget {
 }
 
 class _BlueprintScreenState extends State<BlueprintScreen> {
+  late String _currentSchool;
   late int _currentIndex;
   final DraggableScrollableController _sheetController = DraggableScrollableController();
   final List<Blueprint> blueprints = [
     Blueprint(
       index: 1,
-      school: "ESTG",
       imageUrl: "https://picsum.photos/seed/1/1280/768",
       legend: {
         "SE": "Saída de Emergência",
@@ -25,7 +25,6 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
     ),
     Blueprint(
       index: 2,
-      school: "ESTG",
       imageUrl: "https://picsum.photos/seed/2/1280/768",
       legend: {
         "AE": "Associação de Estudantes",
@@ -35,7 +34,6 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
     ),
     Blueprint(
       index: 3,
-      school: "ESTG",
       imageUrl: "https://picsum.photos/seed/3/1280/768",
       legend: {
         "SE": "Saída de Emergência",
@@ -48,63 +46,8 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
   @override
   void initState() {
     super.initState();
+    _currentSchool = "ESTG";
     _currentIndex = 0;
-  }
-
-  Widget _buildSelector({
-        required Widget child,
-        required bool active,
-        required void Function() onTap
-      }){
-    return Container(
-      width: 42,
-      height: 42,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: active
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(100),
-        onTap: onTap,
-        child: Center(
-          child: child,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLegendItem(String abbreviation, String description) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(
-              child: Text(
-                abbreviation,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              description,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -177,15 +120,15 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Legenda - Piso ${currentBlueprint.index}',
+                                'Legenda - ${_currentSchool} Piso ${currentBlueprint.index}',
                                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 16),
                               ...currentBlueprint.legend.entries.map(
-                                    (entry) => _buildLegendItem(
-                                        entry.key,
-                                        entry.value
-                                    ),
+                                  (entry) => LegendItem(
+                                      abbreviation: entry.key,
+                                      description: entry.value
+                                  ),
                               ),
                             ],
                           ),
@@ -215,7 +158,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                           ),
                         ],
                       ),
-                      clipBehavior: Clip.hardEdge,
+                      clipBehavior: Clip.antiAlias,
                       padding: const EdgeInsets.all(8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -225,7 +168,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               for(var (index, blueprint) in blueprints.indexed)
-                                _buildSelector(
+                                FloorSelector(
                                   active: _currentIndex == index,
                                   child: Text(
                                     "${blueprint.index}",
@@ -253,7 +196,7 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
                               ),
                             ),
                           ),
-                          _buildSelector(
+                          FloorSelector(
                             active: false,
                             child: Icon(Icons.swap_horiz),
                             onTap: () => setState(() => _currentIndex = 0),
@@ -268,6 +211,86 @@ class _BlueprintScreenState extends State<BlueprintScreen> {
           );
         }
       )
+    );
+  }
+}
+
+class LegendItem extends StatelessWidget{
+  final String abbreviation;
+  final String description;
+
+  const LegendItem({
+    super.key,
+    required this.abbreviation,
+    required this.description
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Center(
+              child: Text(
+                abbreviation,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              description,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FloorSelector extends StatelessWidget{
+  final Widget child;
+  final bool active;
+  final void Function() onTap;
+
+  const FloorSelector({
+    super.key,
+    required this.child,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 42,
+      height: 42,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: active
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.surfaceContainer,
+        child: InkWell(
+          onTap: onTap,
+          child: Center(
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }
