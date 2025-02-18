@@ -46,6 +46,7 @@ dependencies:
   syncfusion_localizations: ^27.2.5
   provider: ^6.1.2
   dynamic_color: ^1.7.0
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
