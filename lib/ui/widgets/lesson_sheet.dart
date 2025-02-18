@@ -78,7 +78,7 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                       ),
                       buildDot(context, textColor: Theme.of(context).colorScheme.onSurfaceVariant),
                       Text(
-                        lesson.getStatusFromColor(lesson.statusColor),
+                        Lesson.getStatusFromColor(lesson.statusColor),
                         style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurfaceVariant),
