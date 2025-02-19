@@ -132,6 +132,8 @@ class ClassesTabState extends State<ClassesTab> {
                   _buildNowCard(lessonsForDate),
                   _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
                 ],
+
+                SizedBox(height: 15)
               ],
             ),
           );
@@ -161,40 +163,37 @@ class RightNowCard extends StatelessWidget {
     );
   }
 
-  Row _buildTitleRow(BuildContext context) {
+  Widget _buildTitleRow(BuildContext context) {
     return Row(
       children: [
         Text(lesson.classType, style: TextStyle(fontWeight: FontWeight.w900)),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 1),
-          child: Text(' • ', style: TextStyle(fontSize: 22)),
-        ),
-        Text(
-          lesson.className,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
+        Dot(),
+        Expanded(
+          child: Text(
+            lesson.className,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Row _buildInfoRow() {
+  Widget _buildInfoRow() {
     return Row(
       children: [
         Text(lesson.teachers[0], style: const TextStyle(fontSize: 13)),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
-          child: Text(' • '),
-        ),
+        Dot(),
         Text(lesson.room, style: const TextStyle(fontSize: 13)),
       ],
     );
   }
 
-  Row _buildProgressRow() {
+  Widget _buildProgressRow() {
     DateTime start = DateTime.parse(lesson.start);
     DateTime end = DateTime.parse(lesson.end);
     double progress = (DateTime.now().millisecondsSinceEpoch - start.millisecondsSinceEpoch) /
@@ -263,36 +262,56 @@ class UpcomingClass extends StatelessWidget {
               if (!extend) Text(formatTimeToHours(lesson.start)),
               if (!extend) Dot(),
               Text(
-                lesson.className,
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                lesson.classType,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              Dot(),
+              Expanded(
+                child: Text(
+                  lesson.className,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: extend
+                          ? FontWeight.bold
+                          : FontWeight.normal
+                  ),
+                )
               ),
             ],
           ),
           if (extend)
             Padding(
-              padding: EdgeInsets.only(left: 22),
+              padding: EdgeInsets.only(left: 26, bottom: 16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 2,
                     children: [
-                      const Icon(Icons.watch_later, size: 16),
+                      Icon(Icons.watch_later, size: 16),
                       Text.rich(
                         TextSpan(
                           children: [
                             TextSpan(text: formatTimeToHours(lesson.start)),
-                            const WidgetSpan(
-                                child:
-                                Icon(Icons.arrow_forward_rounded, size: 16)),
+                            WidgetSpan(
+                              child: Icon(Icons.arrow_forward_rounded, size: 16)
+                            ),
                             TextSpan(text: formatTimeToHours(lesson.end)),
                           ],
                         ),
-                        style: const TextStyle(fontSize: 14),
+                        style: TextStyle(fontSize: 14),
                       ),
                     ],
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(Icons.location_on, size: 16),
+                      Icon(Icons.location_on, size: 16),
+                      SizedBox(width: 2),
                       Text(lesson.room),
                     ],
                   ),
