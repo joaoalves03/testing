@@ -28,45 +28,44 @@ class FilledCard extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Card.filled(
-        color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
-        margin: EdgeInsets.symmetric(vertical: marginVertical ?? 6, horizontal: marginHorizontal ?? 0),
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-              padding: EdgeInsets.symmetric(vertical: paddingVertical ?? 16, horizontal: paddingHorizontal ?? 10),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
+      margin: EdgeInsets.symmetric(vertical: marginVertical ?? 6, horizontal: marginHorizontal ?? 0),
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: paddingVertical ?? 10, horizontal: paddingHorizontal ?? 10),
+          child: Wrap(
+            spacing: 4,
+            children: [
+              if(title != null && title!.isNotEmpty)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if(title != null && title!.isNotEmpty)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 6),
-                            child: Icon(
-                              icon,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-
-                          Text(
-                              title!,
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold
-                              )
-                          )
-                        ],
+                    Padding(
+                      padding: EdgeInsets.only(right: 6),
+                      child: Icon(
+                        icon,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
+                    ),
+                    Text(
+                        title!,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold
+                        )
+                    )
+                  ],
+                ),
 
-                    ...children,
-                  ]
-              )
-          ),
-        )
+              ...children,
+            ]
+          )
+        ),
+      )
 
     );
   }

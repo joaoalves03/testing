@@ -18,7 +18,7 @@ class ListSection extends StatelessWidget {
               title!,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontSize: 18,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),

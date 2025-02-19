@@ -56,7 +56,7 @@ class ThemeSettings extends StatelessWidget {
 
               return Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Container(
                     width: 60,
                     height: 60,
@@ -76,7 +76,7 @@ class ThemeSettings extends StatelessWidget {
                       child: Center(
                         child: Text(
                           name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -90,7 +90,7 @@ class ThemeSettings extends StatelessWidget {
             }
 
             return Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -104,12 +104,12 @@ class ThemeSettings extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     "Escolher Escola",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Column(
                     children: [
                       Row(
@@ -118,7 +118,7 @@ class ThemeSettings extends StatelessWidget {
                             .map((school) => buildSchoolButton(school))
                             .toList(),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Row(
                         children: schools
                             .sublist(4)
@@ -127,7 +127,7 @@ class ThemeSettings extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                 ],
               ),
             );
@@ -300,7 +300,7 @@ class ExtraSettingsState extends State<ExtraSettings>{
     try {
       final response = await http
           .get(Uri.parse(serverUrl))
-          .timeout(const Duration(seconds: 5));
+          .timeout(Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -364,8 +364,8 @@ class ExtraSettingsState extends State<ExtraSettings>{
   Widget build(BuildContext context) {
     return ListSection(title: "Extra", children: [
       ListTile(
-        leading: const Icon(Icons.dns),
-        title: const Text("Server"),
+        leading: Icon(Icons.dns),
+        title: Text("Server"),
         trailing: ValueListenableBuilder<TextEditingValue>(
           valueListenable: _serverController,
           builder: (context, value, child) {

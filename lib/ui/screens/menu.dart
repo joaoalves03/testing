@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/ui/screens/menu/curricular_units.dart';
 import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
+import 'package:goipvc/ui/widgets/card.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/services/data_provider.dart';
@@ -14,9 +15,8 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Material(
+      child: ListView(
         children: [
           Padding(
             padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
@@ -170,31 +170,28 @@ class UserCardState extends State<UserCard> {
     final studentInfo = Provider.of<DataProvider>(context).studentInfo;
     final studentImage = Provider.of<DataProvider>(context).studentImage;
 
-    return GestureDetector(
-      onTap: () => {
+    return FilledCard(
+      icon: Icons.person,
+      title: "Perfil",
+      onTap: () {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()))
+            MaterialPageRoute(builder: (context) => const ProfileScreen()));
       },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
+      children: [
+        Row(
           children: [
             CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey.shade300,
               child: studentImage != null
                   ? ClipOval(
-                      child: Image.memory(
-                        studentImage,
-                        fit: BoxFit.cover,
-                        width: 48,
-                        height: 48,
-                      ),
-                    )
+                child: Image.memory(
+                  studentImage,
+                  fit: BoxFit.cover,
+                  width: 48,
+                  height: 48,
+                ),
+              )
                   : const Icon(Icons.person, color: Colors.grey),
             ),
             const SizedBox(width: 16),
@@ -217,7 +214,7 @@ class UserCardState extends State<UserCard> {
             const Icon(Icons.arrow_forward_ios, color: Colors.grey),
           ],
         ),
-      ),
+      ]
     );
   }
 }
