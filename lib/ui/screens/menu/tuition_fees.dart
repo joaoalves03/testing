@@ -54,6 +54,7 @@ class TuitionFeesState extends State<TuitionFeesScreen> {
           body: Column(
             children: [
               TabBar(
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
                 tabs: [
                   Tab(icon: Icon(Icons.payments), text: 'Dívidas'),
                   Tab(icon: Icon(Icons.paid), text: 'Pago'),

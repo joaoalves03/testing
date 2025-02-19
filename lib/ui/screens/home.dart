@@ -39,10 +39,20 @@ class HomeScreenState extends State<HomeScreen> {
               subtitle: 'Saldo atual',
             ),
             TabBar(
+              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
               tabs: [
-                Tab(icon: Icon(Icons.watch_later), text: 'Aulas'),
-                Tab(icon: Icon(Icons.task), text: 'Tarefas'),
-                Tab(icon: Icon(Icons.local_dining), text: 'Ementas'),
+                Tab(
+                    icon: Icon(Icons.watch_later),
+                    text: 'Aulas'
+                ),
+                Tab(
+                    icon: Icon(Icons.task),
+                    text: 'Tarefas'
+                ),
+                Tab(
+                    icon: Icon(Icons.local_dining),
+                    text: 'Ementas'
+                ),
               ],
             ),
             Expanded(
