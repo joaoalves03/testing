@@ -51,7 +51,7 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                             fontSize: 16,
                             color: Theme.of(context).colorScheme.onSurface),
                       ),
-                      buildDot(context),
+                      Dot(),
                       Text.rich(
                         TextSpan(
                           children: [
@@ -76,7 +76,7 @@ void showLessonBottomSheet(BuildContext context, Lesson lesson) {
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
-                      buildDot(context, textColor: Theme.of(context).colorScheme.onSurfaceVariant),
+                      Dot(textColor: Theme.of(context).colorScheme.onSurfaceVariant),
                       Text(
                         Lesson.getStatusFromColor(lesson.statusColor),
                         style: TextStyle(

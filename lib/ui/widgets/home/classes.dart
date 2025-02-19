@@ -261,9 +261,7 @@ class UpcomingClass extends StatelessWidget {
           Row(
             children: [
               if (!extend) Text(formatTimeToHours(lesson.start)),
-              if (!extend) buildDot(context),
-              Text(lesson.classType),
-              buildDot(context),
+              if (!extend) Dot(),
               Text(
                 lesson.className,
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
