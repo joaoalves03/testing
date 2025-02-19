@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/screens/menu/curricular_units.dart';
 import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +26,12 @@ class MenuScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.school),
               title: Text("Cadeiras"),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CurricularUnits()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.calendar_month),
