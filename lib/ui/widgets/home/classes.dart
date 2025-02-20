@@ -93,25 +93,24 @@ class ClassesTab extends ConsumerWidget {
               final lessonDate = DateFormat('yyyy-MM-dd').format(currentDate);
               final lessonsForDate = groupedLessons[lessonDate] ?? [];
 
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                child: Column(
-                  children: [
-                    if(currentDate == now && lessonsForDate.isEmpty)
-                      SizedBox.shrink()
-                    else ...[
-                      DateSection(date: currentDate),
+              if(currentDate != now || lessonsForDate.isNotEmpty) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: Column(
+                    children: [
+                        DateSection(date: currentDate),
 
-                      if (lessonsForDate.isNotEmpty) ...[
-                        _buildNowCard(lessonsForDate),
-                        _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
-                      ],
-                      SizedBox(height: 15)
-                    ]
-                  ],
-                ),
-              );
+                        if (lessonsForDate.isNotEmpty) ...[
+                          _buildNowCard(lessonsForDate),
+                          _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
+                        ],
+                        SizedBox(height: 15)
+                    ],
+                  ),
+                );
+              }
+              return SizedBox.shrink();
             },
           ),
         );
