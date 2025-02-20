@@ -41,7 +41,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               subtitle: 'Saldo atual',
             ),
             TabBar(
-              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
               tabs: [
                 Tab(
                     icon: Icon(Icons.watch_later),

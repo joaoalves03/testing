@@ -85,6 +85,12 @@ class MyApp extends StatelessWidget {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      tabBarTheme: TabBarTheme(
+          unselectedLabelColor: colorScheme.onSurfaceVariant
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        strokeCap: StrokeCap.round
+      )
     );
   }
 }

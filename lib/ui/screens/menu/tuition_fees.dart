@@ -42,7 +42,6 @@ class TuitionFeesScreen extends ConsumerWidget {
             return Column(
               children: [
                 TabBar(
-                  unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
                   tabs: [
                     Tab(icon: Icon(Icons.payments), text: 'Dívidas'),
                     Tab(icon: Icon(Icons.paid), text: 'Pago'),
@@ -77,7 +76,9 @@ class TuitionFeesScreen extends ConsumerWidget {
               ],
             );
           },
-          loading: () => Center(child: CircularProgressIndicator()),
+          loading: () => Center(
+              child: CircularProgressIndicator()
+          ),
           error: (e, stackTrace) =>
               Center(child: Text('Failed to load tuition fees')),
         ),

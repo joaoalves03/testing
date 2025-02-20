@@ -280,8 +280,7 @@ class CurricularUnitCard extends StatelessWidget {
                     child: CircularProgressIndicator(
                         value: grade! / 20,
                         backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-                        color: Theme.of(context).colorScheme.primary,
-                        strokeCap: StrokeCap.round
+                        color: Theme.of(context).colorScheme.primary
                     ),
                   ),
                   SizedBox(

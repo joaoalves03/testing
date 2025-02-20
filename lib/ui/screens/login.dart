@@ -255,84 +255,83 @@ class LoginState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              onPressed: () {
-                _showQuickSettings(context);
-              },
-              icon: const Icon(Icons.settings),
-            )
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              _showQuickSettings(context);
+            },
+            icon: const Icon(Icons.settings),
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/logo.svg',
+              height: 64,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            AutofillGroup(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: S.of(context).username,
+                      errorText: _usernameError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                    autofillHints: const [AutofillHints.username],
+                    autocorrect: false,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: S.of(context).password,
+                      errorText: _passwordError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.password],
+                    autocorrect: false,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            FilledButton.icon(
+              onPressed: _isLoggingIn ? null : _login,
+              label: Text("Login"),
+              icon: _isLoggingIn
+                  ? Container(
+                      width: 24,
+                      height: 24,
+                      padding: const EdgeInsets.all(2.0),
+                      child: CircularProgressIndicator(),
+                    )
+                  : const Icon(Icons.login),
+            ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SvgPicture.asset(
-                'assets/logo.svg',
-                height: 64,
-                colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.onSurface,
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              AutofillGroup(
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: S.of(context).username,
-                        errorText: _usernameError,
-                        errorStyle: const TextStyle(color: Colors.red),
-                      ),
-                      autofillHints: const [AutofillHints.username],
-                      autocorrect: false,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: S.of(context).password,
-                        errorText: _passwordError,
-                        errorStyle: const TextStyle(color: Colors.red),
-                      ),
-                      obscureText: true,
-                      autofillHints: const [AutofillHints.password],
-                      autocorrect: false,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              FilledButton.icon(
-                onPressed: _isLoggingIn ? null : _login,
-                label: Text("Login"),
-                icon: _isLoggingIn
-                    ? Container(
-                        width: 24,
-                        height: 24,
-                        padding: const EdgeInsets.all(2.0),
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      )
-                    : const Icon(Icons.login),
-              ),
-            ],
-          ),
-        ));
+      )
+    );
   }
 }
