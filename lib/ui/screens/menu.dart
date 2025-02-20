@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/providers/data_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:goipvc/ui/widgets/list_section.dart';
+import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/screens/menu/curricular_units.dart';
 import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
-import 'package:goipvc/ui/widgets/card.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:goipvc/services/data_provider.dart';
-import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/screens/menu/calendar.dart';
 import 'package:goipvc/ui/screens/menu/profile.dart';
 import 'package:goipvc/ui/screens/menu/settings.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends ConsumerWidget {
   const MenuScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Material(
       child: ListView(
         children: [
@@ -134,10 +134,12 @@ class MenuScreen extends StatelessWidget {
               leading: Icon(Icons.logout),
               title: Text("Logout"),
               onTap: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String? serverUrl = prefs.getString('server_url');
+                final prefs = await SharedPreferences.getInstance();
+                final serverUrl = prefs.getString('server_url');
                 await prefs.clear();
-                await prefs.setString('server_url', serverUrl!);
+                if (serverUrl != null) {
+                  await prefs.setString('server_url', serverUrl);
+                }
                 if (context.mounted) {
                   Navigator.pushReplacementNamed(context, '/login');
                 }
@@ -151,70 +153,77 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-class UserCard extends StatefulWidget {
+class UserCard extends ConsumerWidget {
   const UserCard({super.key});
 
   @override
-  UserCardState createState() => UserCardState();
-}
-
-class UserCardState extends State<UserCard> {
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<DataProvider>(context, listen: false).fetchStudentImage();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final studentInfo = Provider.of<DataProvider>(context).studentInfo;
-    final studentImage = Provider.of<DataProvider>(context).studentImage;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final studentInfoAsync = ref.watch(studentInfoProvider);
 
     return FilledCard(
-      icon: Icons.person,
-      title: "Perfil",
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()));
-      },
-      children: [
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.grey.shade300,
-              child: studentImage != null
-                  ? ClipOval(
-                child: Image.memory(
-                  studentImage,
-                  fit: BoxFit.cover,
-                  width: 48,
-                  height: 48,
-                ),
-              )
-                  : const Icon(Icons.person, color: Colors.grey),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${studentInfo?.fullName}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  Text(
-                      '${studentInfo?.courseInitials} - ${studentInfo?.schoolInitials}',
-                      style: TextStyle(fontSize: 14)),
-                  Text('Nº ${studentInfo?.studentId}',
-                      style: const TextStyle(fontSize: 14)),
-                ],
+        icon: Icons.person,
+        title: "Perfil",
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()));
+        },
+        children: [
+          Row(
+            children: [
+              studentInfoAsync.when(
+                data: (info) {
+                  final studentImageAsync = ref.watch(
+                    studentImageProvider,
+                  );
+
+                  return CircleAvatar(
+                    radius: 24,
+                    backgroundColor: Colors.grey.shade300,
+                    child: studentImageAsync.when(
+                      data: (image) => image.isNotEmpty
+                          ? ClipOval(
+                        child: Image.memory(
+                          image,
+                          fit: BoxFit.cover,
+                          width: 48,
+                          height: 48,
+                        ),
+                      )
+                          : Icon(Icons.person, color: Colors.grey),
+                      loading: () => CircularProgressIndicator(),
+                      error: (_, __) =>
+                      Icon(Icons.error, color: Colors.red),
+                    ),
+                  );
+                },
+                loading: () => CircularProgressIndicator(),
+                error: (_, __) => Icon(Icons.error, color: Colors.red),
               ),
-            ),
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-          ],
-        ),
-      ]
+              SizedBox(width: 16),
+              Expanded(
+                child: studentInfoAsync.when(
+                  data: (info) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        info.fullName,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Text('${info.courseInitials} - ${info.schoolInitials}',
+                          style: TextStyle(fontSize: 14)),
+                      Text('Nº ${info.studentId}',
+                          style: TextStyle(fontSize: 14)),
+                    ],
+                  ),
+                  loading: () => CircularProgressIndicator(),
+                  error: (_, __) => Text('Erro ao carregar informações'),
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.grey),
+            ],
+          ),
+        ]
     );
   }
 }

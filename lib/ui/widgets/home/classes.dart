@@ -1,55 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:goipvc/utils/globals.dart';
-import 'package:goipvc/ui/widgets/error_message.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goipvc/models/lesson.dart';
-import 'package:goipvc/services/data_provider.dart';
+import 'package:goipvc/providers/data_providers.dart';
+import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
-import 'package:provider/provider.dart';
-
+import 'package:intl/intl.dart';
+import 'package:goipvc/utils/globals.dart';
 import 'date_section.dart';
 
-class ClassesTab extends StatefulWidget {
+class ClassesTab extends ConsumerWidget {
   const ClassesTab({super.key});
 
-  @override
-  ClassesTabState createState() => ClassesTabState();
-}
-
-class ClassesTabState extends State<ClassesTab> {
-  @override
-  void initState() {
-    super.initState();
-    _initializeAndFetchLessons();
-  }
-
-  void fetchLessons() {
-    if (!mounted) return;
-    Provider.of<DataProvider>(context, listen: false).fetchLessons();
-  }
-
-  void _initializeAndFetchLessons() async {
-    await Provider.of<DataProvider>(context, listen: false)
-        .initializePreferences();
-    fetchLessons();
-  }
-
-  final now = DateTime.now();
-
   Widget _buildNowCard(List<Lesson> lessonsForDate) {
+    final now = DateTime.now();
     if (now.isAfter(DateTime.parse(lessonsForDate.first.start)) &&
         now.isBefore(DateTime.parse(lessonsForDate.first.end))) {
       return RightNowCard(lesson: lessonsForDate.first);
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   List<Widget> _buildNextClassesChildren(List<Lesson> lessonsForDate) {
-    return lessonsForDate
-        .asMap()
-        .entries
-        .map((entry) {
+    return lessonsForDate.asMap().entries.map((entry) {
       final lessonIndex = entry.key;
       final lesson = entry.value;
       return UpcomingClass(
@@ -61,11 +34,12 @@ class ClassesTabState extends State<ClassesTab> {
 
   Widget _buildNextOrUpcomingClasses(
       DateTime currentDate, List<Lesson> lessonsForDate) {
+    final now = DateTime.now();
     lessonsForDate = lessonsForDate
         .skip(now.isAfter(DateTime.parse(lessonsForDate.first.start)) &&
-        now.isBefore(DateTime.parse(lessonsForDate.first.end))
-        ? 1
-        : 0)
+                now.isBefore(DateTime.parse(lessonsForDate.first.end))
+            ? 1
+            : 0)
         .toList();
 
     if (currentDate.day == now.day && lessonsForDate.isNotEmpty) {
@@ -82,63 +56,72 @@ class ClassesTabState extends State<ClassesTab> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final lessons = Provider.of<DataProvider>(context).lessons;
-    if (lessons == null) {
-      // @TODO: add a retry button?
-      return ErrorMessage(
-        callback: fetchLessons,
-      );
-    }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lessonsAsync = ref.watch(lessonsProvider);
 
-    // filter upcoming lessons
-    final upcomingLessons = lessons.where((lesson) {
-      final lessonEnd = DateTime.parse(lesson.end);
-      return lessonEnd.isAfter(now);
-    }).toList();
-    upcomingLessons.sort(
-        (a, b) => DateTime.parse(a.start).compareTo(DateTime.parse(b.start)));
-    final displayedLessons = upcomingLessons.take(7).toList();
+    return lessonsAsync.when(
+      data: (lessons) {
+        final now = DateTime.now();
 
-    // group lessons by start date
-    final groupedLessons = <String, List<Lesson>>{};
-    for (var lesson in displayedLessons) {
-      final lessonDate =
-          DateFormat('yyyy-MM-dd').format(DateTime.parse(lesson.start));
-      if (groupedLessons.containsKey(lessonDate)) {
-        groupedLessons[lessonDate]!.add(lesson);
-      } else {
-        groupedLessons[lessonDate] = [lesson];
-      }
-    }
+        // filter upcoming lessons
+        final upcomingLessons = lessons.where((lesson) {
+          final lessonEnd = DateTime.parse(lesson.end);
+          return lessonEnd.isAfter(now);
+        }).toList();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await Provider.of<DataProvider>(context, listen: false).fetchLessons();
+        // sort lessons
+        upcomingLessons.sort((a, b) =>
+            DateTime.parse(a.start).compareTo(DateTime.parse(b.start)));
+        final displayedLessons = upcomingLessons.take(7).toList();
+
+        // group lessons by start date
+        final groupedLessons = <String, List<Lesson>>{};
+        for (var lesson in displayedLessons) {
+          final lessonDate =
+              DateFormat('yyyy-MM-dd').format(DateTime.parse(lesson.start));
+          groupedLessons.putIfAbsent(lessonDate, () => []).add(lesson);
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(lessonsProvider);
+          },
+          child: ListView.builder(
+            itemCount: 7,
+            itemBuilder: (context, index) {
+              final currentDate = now.add(Duration(days: index));
+              final lessonDate = DateFormat('yyyy-MM-dd').format(currentDate);
+              final lessonsForDate = groupedLessons[lessonDate] ?? [];
+
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                child: Column(
+                  children: [
+                    DateSection(date: currentDate),
+                    if (lessonsForDate.isNotEmpty) ...[
+                      _buildNowCard(lessonsForDate),
+                      _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
+                    ],
+
+                    SizedBox(height: 15)
+                  ],
+                ),
+              );
+            },
+          ),
+        );
       },
-      child: ListView.builder(
-        itemCount: 7,
-        itemBuilder: (context, index) {
-          final currentDate = now.add(Duration(days: index));
-          final lessonDate = DateFormat('yyyy-MM-dd').format(currentDate);
-          final lessonsForDate = groupedLessons[lessonDate] ?? [];
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-            child: Column(
-              children: [
-                DateSection(date: currentDate),
-                if (lessonsForDate.isNotEmpty) ...[
-                  _buildNowCard(lessonsForDate),
-                  _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
-                ],
-
-                SizedBox(height: 15)
-              ],
-            ),
-          );
-        },
+      loading: () => const Center(
+        child: SizedBox(
+          width: 50,
+          height: 50,
+          child: CircularProgressIndicator(),
+        ),
       ),
+      error: (error, stack) => ErrorMessage(callback: () {
+        ref.invalidate(lessonsProvider);
+      }),
     );
   }
 }
@@ -196,8 +179,9 @@ class RightNowCard extends StatelessWidget {
   Widget _buildProgressRow() {
     DateTime start = DateTime.parse(lesson.start);
     DateTime end = DateTime.parse(lesson.end);
-    double progress = (DateTime.now().millisecondsSinceEpoch - start.millisecondsSinceEpoch) /
-        (end.millisecondsSinceEpoch - start.millisecondsSinceEpoch);
+    double progress =
+        (DateTime.now().millisecondsSinceEpoch - start.millisecondsSinceEpoch) /
+            (end.millisecondsSinceEpoch - start.millisecondsSinceEpoch);
 
     if (progress <= 0 || progress > 1) {
       progress = 0;
