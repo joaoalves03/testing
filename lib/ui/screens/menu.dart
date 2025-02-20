@@ -161,48 +161,43 @@ class UserCard extends ConsumerWidget {
     final studentInfoAsync = ref.watch(studentInfoProvider);
 
     return FilledCard(
-        icon: Icons.person,
-        title: "Perfil",
-        onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ProfileScreen()));
-        },
-        children: [
-          Row(
-            children: [
-              studentInfoAsync.when(
-                data: (info) {
-                  final studentImageAsync = ref.watch(
-                    studentImageProvider,
-                  );
+      icon: Icons.person,
+      title: "Perfil",
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()));
+      },
+      children: [
+        studentInfoAsync.when(
+          data: (info) {
+            final studentImageAsync = ref.watch(
+              studentImageProvider,
+            );
 
-                  return CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Colors.grey.shade300,
-                    child: studentImageAsync.when(
-                      data: (image) => image.isNotEmpty
-                          ? ClipOval(
-                        child: Image.memory(
-                          image,
-                          fit: BoxFit.cover,
-                          width: 48,
-                          height: 48,
-                        ),
-                      )
-                          : Icon(Icons.person, color: Colors.grey),
-                      loading: () => CircularProgressIndicator(),
-                      error: (_, __) =>
-                      Icon(Icons.error, color: Colors.red),
-                    ),
-                  );
-                },
-                loading: () => CircularProgressIndicator(),
-                error: (_, __) => Icon(Icons.error, color: Colors.red),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: studentInfoAsync.when(
-                  data: (info) => Column(
+            return Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.grey.shade300,
+                  child: studentImageAsync.when(
+                    data: (image) => image.isNotEmpty
+                        ? ClipOval(
+                      child: Image.memory(
+                        image,
+                        fit: BoxFit.cover,
+                        width: 48,
+                        height: 48,
+                      ),
+                    )
+                        : Icon(Icons.person, color: Colors.grey),
+                    loading: () => CircularProgressIndicator(),
+                    error: (_, __) =>
+                        Icon(Icons.error, color: Colors.red),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -216,14 +211,25 @@ class UserCard extends ConsumerWidget {
                           style: TextStyle(fontSize: 14)),
                     ],
                   ),
-                  loading: () => CircularProgressIndicator(),
-                  error: (_, __) => Text('Erro ao carregar informações'),
                 ),
-              ),
-              Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                Icon(Icons.arrow_forward_ios, color: Colors.grey),
+              ],
+            );
+          },
+          loading: () => Expanded(
+              child: Center(
+                child: CircularProgressIndicator(),
+              )
+          ),
+          error: (_, __) => Wrap(
+            spacing: 4,
+            children: [
+              Icon(Icons.error, color: Colors.red),
+              Text('Erro ao carregar informações')
             ],
           ),
-        ]
+        ),
+      ]
     );
   }
 }
