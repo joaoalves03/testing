@@ -4,6 +4,7 @@ import 'package:goipvc/providers/data_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/widgets/card.dart';
+import 'package:goipvc/ui/widgets/profile_picture.dart';
 import 'package:goipvc/ui/screens/menu/curricular_units.dart';
 import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
 import 'package:goipvc/ui/screens/menu/calendar.dart';
@@ -170,31 +171,9 @@ class UserCard extends ConsumerWidget {
       children: [
         studentInfoAsync.when(
           data: (info) {
-            final studentImageAsync = ref.watch(
-              studentImageProvider,
-            );
-
             return Row(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.grey.shade300,
-                  child: studentImageAsync.when(
-                    data: (image) => image.isNotEmpty
-                        ? ClipOval(
-                      child: Image.memory(
-                        image,
-                        fit: BoxFit.cover,
-                        width: 48,
-                        height: 48,
-                      ),
-                    )
-                        : Icon(Icons.person, color: Colors.grey),
-                    loading: () => CircularProgressIndicator(),
-                    error: (_, __) =>
-                        Icon(Icons.error, color: Colors.red),
-                  ),
-                ),
+                ProfilePicture(),
                 SizedBox(width: 16),
                 Expanded(
                   child: Column(
