@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
-
-import 'package:goipvc/services/data_provider.dart';
+import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/ui/widgets/home/classes.dart';
 import 'package:goipvc/ui/widgets/home/tasks.dart';
 import 'package:goipvc/ui/widgets/home/meals.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
   HomeScreenState createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<DataProvider>(context, listen: false).initializePreferences();
+    ref.read(studentImageProvider);
   }
 
   @override
   Widget build(BuildContext context) {
-    final dataProvider = Provider.of<DataProvider>(context);
+    final firstNameAsync = ref.watch(firstNameProvider);
+    final balanceAsync = ref.watch(balanceProvider);
+
+    final firstName = firstNameAsync.value ?? 'utilizador';
+    final balance = balanceAsync.value ?? 0.00;
 
     return DefaultTabController(
       length: 3,
@@ -32,10 +35,9 @@ class HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Greeting(
-              title: 'Olá ${dataProvider.studentInfo?.firstName}!',
+              title: 'Olá $firstName!',
               slogan: 'O teu ● de partida',
-              money:
-                  '${dataProvider.balance.toString().replaceAll('.', ',')} €',
+              money: '$balance €',
               subtitle: 'Saldo atual',
             ),
             TabBar(

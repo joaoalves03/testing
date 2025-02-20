@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:goipvc/services/data_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
@@ -20,8 +19,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPrefsUtil.printPrefs();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => DataProvider(),
+    ProviderScope(
       child: MyApp(),
     ),
   );
@@ -42,9 +40,10 @@ class MyApp extends StatelessWidget {
         return FutureBuilder<bool>(
           future: _checkLoginStatus(),
           builder: (context, snapshot) {
-
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const MaterialApp(home: Scaffold(body: Center(child: CircularProgressIndicator())));
+              return const MaterialApp(
+                  home: Scaffold(
+                      body: Center(child: CircularProgressIndicator())));
             }
 
             final bool isLoggedIn = snapshot.data ?? false;
@@ -75,9 +74,7 @@ class MyApp extends StatelessWidget {
     ColorScheme colorScheme;
     if (dynamicColor != null) {
       colorScheme = ColorScheme.fromSeed(
-          seedColor: dynamicColor.primary,
-          brightness: brightness
-      );
+          seedColor: dynamicColor.primary, brightness: brightness);
     } else {
       colorScheme = ColorScheme.fromSeed(
         seedColor: Colors.blue,
@@ -91,5 +88,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

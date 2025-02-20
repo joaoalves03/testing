@@ -6,17 +6,17 @@ import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/models/task.dart';
 import 'package:goipvc/models/holiday.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
-import 'package:provider/provider.dart';
-import 'package:goipvc/services/data_provider.dart';
+import 'package:goipvc/providers/data_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ScheduleScreen extends StatefulWidget {
+class ScheduleScreen extends ConsumerStatefulWidget {
   const ScheduleScreen({super.key});
 
   @override
-  State<ScheduleScreen> createState() => _ScheduleScreenState();
+  ConsumerState<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> {
+class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   final CalendarController _calendarController = CalendarController();
   CalendarView _currentView = CalendarView.week;
   String _headerText = "Month Year";
@@ -45,18 +45,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<DataProvider>(context, listen: false).fetchLessons();
-  }
-
   MeetingDataSource _getDataSource(List<Lesson> lessons) {
     return MeetingDataSource(lessons, _tasks, _holidays);
   }
 
   List<TimeRegion> _getTimeRegions() {
     List<TimeRegion> regions = [];
+    final surfaceColor = Theme.of(context).colorScheme.surfaceContainer;
 
     if (_currentView == CalendarView.day) {
       return _holidays.map((holiday) {
@@ -64,7 +59,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           startTime: DateTime.parse(holiday.start).subtract(Duration(days: 1)),
           endTime: DateTime.parse(holiday.end).add(Duration(days: 1)),
           enablePointerInteraction: false,
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: surfaceColor,
         );
       }).toList();
     }
@@ -81,7 +76,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             startTime: date,
             endTime: date.add(Duration(days: 1)),
             enablePointerInteraction: false,
-            color: Theme.of(context).colorScheme.surfaceContainer,
+            color: surfaceColor,
           ),
         );
       }
@@ -131,117 +126,126 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Consumer<DataProvider>(
-      builder: (context, dataProvider, child) {
-        final lessons = dataProvider.lessons ?? [];
+    final lessonsAsync = ref.watch(lessonsProvider);
 
-        return Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: SizedBox(
-                height: 40,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Text(
-                            toBeginningOfSentenceCase(_headerText),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18),
-                          )
-                        ],
+    return Scaffold(
+      body: lessonsAsync.when(
+        data: (lessons) {
+          return Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  height: 40,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Text(
+                              toBeginningOfSentenceCase(_headerText),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.today),
-                      onPressed: () {
-                        _calendarController.displayDate = DateTime.now();
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.settings),
-                      onPressed: () {
-                        _showSettingsSheet(context);
-                      },
-                    ),
-                  ],
+                      IconButton(
+                        icon: Icon(Icons.today),
+                        onPressed: () {
+                          _calendarController.displayDate = DateTime.now();
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {
+                          _showSettingsSheet(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SfCalendar(
-                headerHeight: 0,
-                firstDayOfWeek: 1,
-                cellEndPadding: 0,
-                allowViewNavigation: true,
-                view: _currentView,
-                monthViewSettings: MonthViewSettings(
-                  showAgenda: true,
-                  appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-                ),
-                timeSlotViewSettings: TimeSlotViewSettings(
+              Expanded(
+                child: SfCalendar(
+                  headerHeight: 0,
+                  firstDayOfWeek: 1,
+                  cellEndPadding: 0,
+                  allowViewNavigation: true,
+                  view: _currentView,
+                  monthViewSettings: MonthViewSettings(
+                    showAgenda: true,
+                    appointmentDisplayMode:
+                        MonthAppointmentDisplayMode.indicator,
+                  ),
+                  timeSlotViewSettings: TimeSlotViewSettings(
                     dateFormat: 'd',
                     dayFormat: 'EEE',
                     timeFormat: 'H:mm',
                     startHour: 7,
-                    endHour: 24),
-                selectionDecoration: _currentView != CalendarView.month
-                    ? BoxDecoration(color: Colors.transparent)
-                    : null,
-
-
-                controller: _calendarController,
-                specialRegions: _getTimeRegions(),
-                dataSource: _getDataSource(lessons),
-                onTap: (CalendarTapDetails tap) {
-                  if (tap.targetElement == CalendarElement.appointment &&
-                      tap.appointments![0] is Lesson) {
-                    showLessonBottomSheet(context, tap.appointments![0]);
-                  }
-                },
-                onViewChanged: (ViewChangedDetails viewChangedDetails) {
-                  String newHeader = DateFormat('MMMM yyyy').format(
-                    viewChangedDetails.visibleDates[
-                        viewChangedDetails.visibleDates.length ~/ 2],
-                  );
-
-                  SchedulerBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        if (_currentView == CalendarView.month &&
-                            _calendarController.view == CalendarView.day) {
-                          _currentView = CalendarView.day;
-                        }
-
-                        if (_currentView == CalendarView.week &&
-                            _calendarController.view == CalendarView.day) {
-                          _currentView = CalendarView.day;
-                        }
-
-                        if (_currentView == CalendarView.workWeek &&
-                            _calendarController.view == CalendarView.day) {
-                          _currentView = CalendarView.day;
-                        }
-                        _headerText = newHeader;
-                      });
+                    endHour: 24,
+                  ),
+                  selectionDecoration: _currentView != CalendarView.month
+                      ? BoxDecoration(color: Colors.transparent)
+                      : null,
+                  controller: _calendarController,
+                  specialRegions: _getTimeRegions(),
+                  dataSource: _getDataSource(lessons),
+                  onTap: (CalendarTapDetails tap) {
+                    if (tap.targetElement == CalendarElement.appointment &&
+                        tap.appointments![0] is Lesson) {
+                      showLessonBottomSheet(context, tap.appointments![0]);
                     }
-                  });
-                },
+                  },
+                  onViewChanged: (ViewChangedDetails viewChangedDetails) {
+                    String newHeader = DateFormat('MMMM yyyy').format(
+                      viewChangedDetails.visibleDates[
+                          viewChangedDetails.visibleDates.length ~/ 2],
+                    );
+
+                    SchedulerBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          if (_currentView == CalendarView.month &&
+                              _calendarController.view == CalendarView.day) {
+                            _currentView = CalendarView.day;
+                          }
+
+                          if (_currentView == CalendarView.week &&
+                              _calendarController.view == CalendarView.day) {
+                            _currentView = CalendarView.day;
+                          }
+
+                          if (_currentView == CalendarView.workWeek &&
+                              _calendarController.view == CalendarView.day) {
+                            _currentView = CalendarView.day;
+                          }
+                          _headerText = newHeader;
+                        });
+                      }
+                    });
+                  },
+                ),
               ),
-            )
-          ],
-        );
-      },
-    ));
+            ],
+          );
+        },
+        loading: () => Center(
+            child: SizedBox(
+          width: 50,
+          height: 50,
+          child: CircularProgressIndicator(),
+        )),
+        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      ),
+    );
   }
 }
 
 class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
+  MeetingDataSource(
+      List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
     appointments = [];
-
     appointments!.addAll(lessons);
 
     appointments!.addAll(tasks.map((task) => Appointment(
@@ -386,7 +390,6 @@ class Settings extends StatelessWidget {
                               currentView == CalendarView.workWeek
                           ? value
                           : true,
-                      // This check is needed so u cant change value while in month or day view
                       onChanged: currentView == CalendarView.week ||
                               currentView == CalendarView.workWeek
                           ? (newValue) {
@@ -398,98 +401,47 @@ class Settings extends StatelessWidget {
                   },
                 ),
               ),
-              // SizedBox(height: 4),
-              // _buildOption(
-              //     context,
-              //     label: "Turma (WIP)",
-              //     tailing: Dropdown<String>(
-              //       value: "3A",
-              //       items: [
-              //         DropdownMenuItem<String>(
-              //           value: "3A",
-              //           child: Text("3A"),
-              //         ),
-              //         DropdownMenuItem<String>(
-              //           value: "3b",
-              //           child: Text("3B"),
-              //         ),
-              //         DropdownMenuItem<String>(
-              //           value: "3C",
-              //           child: Text("3C"),
-              //         ),
-              //       ],
-              //       onChanged: (Object? value) {  },
-              //     )
-              // )
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildViewOption(BuildContext context,
-      {required IconData icon,
-      required String label,
-      required CalendarView view}) {
+  Widget _buildViewOption(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required CalendarView view,
+  }) {
     return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => onViewChanged(view, context),
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  size: 32,
-                  color: currentView == view
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: currentView == view
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(1000),
-                  ),
-                  child: Text(label,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: currentView == view
-                            ? Theme.of(context).colorScheme.onPrimary
-                            : Theme.of(context).colorScheme.onSurfaceVariant,
-                      )),
-                )
-              ],
-            ),
+      child: InkWell(
+        onTap: () => onViewChanged(view, context),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(icon, size: 32),
+              SizedBox(height: 4),
+              Text(label),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildOption(BuildContext context,
-      {required String label, required Widget tailing}) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Row(
-        children: [
-          Text(label),
-          Spacer(),
-          tailing,
-        ],
-      ),
+  Widget _buildOption(
+    BuildContext context, {
+    required String label,
+    required Widget tailing,
+  }) {
+    return Row(
+      children: [
+        Text(label),
+        Spacer(),
+        tailing,
+      ],
     );
   }
 }

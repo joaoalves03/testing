@@ -1,47 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/providers/data_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:goipvc/services/data_provider.dart';
-import 'package:goipvc/ui/widgets/list_section.dart';
+import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
 import 'package:goipvc/ui/screens/menu/calendar.dart';
 import 'package:goipvc/ui/screens/menu/profile.dart';
 import 'package:goipvc/ui/screens/menu/settings.dart';
+import 'package:goipvc/ui/widgets/list_section.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends ConsumerWidget {
   const MenuScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
             child: UserCard(),
           ),
           ListSection(title: "Geral", children: [
             ListTile(
-              leading: Icon(Icons.school),
-              title: Text("Cadeiras"),
+              leading: const Icon(Icons.school),
+              title: const Text("Cadeiras"),
               onTap: () {},
             ),
             ListTile(
-              leading: Icon(Icons.calendar_month),
-              title: Text("Calendário Académico"),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CalendarScreen()));
-              },
+              leading: const Icon(Icons.calendar_month),
+              title: const Text("Calendário Académico"),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CalendarScreen())),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.people),
               title: Text("Corpo Docente"),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.watch_later),
               title: Text("Horário de Serviços"),
             )
@@ -53,20 +51,18 @@ class MenuScreen extends StatelessWidget {
                 width: 20,
                 height: 20,
               ),
-              title: Text("Académicos"),
-              trailing: Icon(Icons.launch),
+              title: const Text("Académicos"),
+              trailing: const Icon(Icons.launch),
             ),
             ListTile(
-              leading: Icon(Icons.local_atm),
-              title: Text("Propinas"),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TuitionFeesScreen()));
-              },
+              leading: const Icon(Icons.local_atm),
+              title: const Text("Propinas"),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TuitionFeesScreen())),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.calendar_today),
               title: Text("Exames"),
             )
@@ -78,10 +74,10 @@ class MenuScreen extends StatelessWidget {
                 width: 20,
                 height: 20,
               ),
-              title: Text("SASocial"),
-              trailing: Icon(Icons.launch),
+              title: const Text("SASocial"),
+              trailing: const Icon(Icons.launch),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.credit_card),
               title: Text("Conta"),
             )
@@ -93,8 +89,8 @@ class MenuScreen extends StatelessWidget {
                 width: 20,
                 height: 20,
               ),
-              title: Text("ON"),
-              trailing: Icon(Icons.launch),
+              title: const Text("ON"),
+              trailing: const Icon(Icons.launch),
             )
           ]),
           ListSection(title: "Moodle", children: [
@@ -104,40 +100,40 @@ class MenuScreen extends StatelessWidget {
                 width: 20,
                 height: 20,
               ),
-              title: Text("Moodle"),
-              trailing: Icon(Icons.launch),
+              title: const Text("Moodle"),
+              trailing: const Icon(Icons.launch),
             )
           ]),
-          Divider(),
+          const Divider(),
           ListSection(children: [
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.info),
               title: Text("Sobre"),
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Definições"),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SettingsScreen()));
-              },
+              leading: const Icon(Icons.settings),
+              title: const Text("Definições"),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsScreen())),
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
               onTap: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String? serverUrl = prefs.getString('server_url');
+                final prefs = await SharedPreferences.getInstance();
+                final serverUrl = prefs.getString('server_url');
                 await prefs.clear();
-                await prefs.setString('server_url', serverUrl!);
+                if (serverUrl != null) {
+                  await prefs.setString('server_url', serverUrl);
+                }
                 if (context.mounted) {
                   Navigator.pushReplacementNamed(context, '/login');
                 }
               },
             ),
-            SizedBox(height: 60)
+            const SizedBox(height: 60),
           ])
         ],
       ),
@@ -145,30 +141,16 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-class UserCard extends StatefulWidget {
+class UserCard extends ConsumerWidget {
   const UserCard({super.key});
 
   @override
-  UserCardState createState() => UserCardState();
-}
-
-class UserCardState extends State<UserCard> {
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<DataProvider>(context, listen: false).fetchStudentImage();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final studentInfo = Provider.of<DataProvider>(context).studentInfo;
-    final studentImage = Provider.of<DataProvider>(context).studentImage;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final studentInfoAsync = ref.watch(studentInfoProvider);
 
     return GestureDetector(
-      onTap: () => {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()))
-      },
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen())),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -177,35 +159,54 @@ class UserCardState extends State<UserCard> {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.grey.shade300,
-              child: studentImage != null
-                  ? ClipOval(
-                      child: Image.memory(
-                        studentImage,
-                        fit: BoxFit.cover,
-                        width: 48,
-                        height: 48,
-                      ),
-                    )
-                  : const Icon(Icons.person, color: Colors.grey),
+            studentInfoAsync.when(
+              data: (info) {
+                final studentImageAsync = ref.watch(
+                  studentImageProvider,
+                );
+
+                return CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.grey.shade300,
+                  child: studentImageAsync.when(
+                    data: (image) => image.isNotEmpty
+                        ? ClipOval(
+                            child: Image.memory(
+                              image,
+                              fit: BoxFit.cover,
+                              width: 48,
+                              height: 48,
+                            ),
+                          )
+                        : const Icon(Icons.person, color: Colors.grey),
+                    loading: () => const CircularProgressIndicator(),
+                    error: (_, __) =>
+                        const Icon(Icons.error, color: Colors.red),
+                  ),
+                );
+              },
+              loading: () => const CircularProgressIndicator(),
+              error: (_, __) => const Icon(Icons.error, color: Colors.red),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${studentInfo?.fullName}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  Text(
-                      '${studentInfo?.courseInitials} - ${studentInfo?.schoolInitials}',
-                      style: TextStyle(fontSize: 14)),
-                  Text('Nº ${studentInfo?.studentId}',
-                      style: const TextStyle(fontSize: 14)),
-                ],
+              child: studentInfoAsync.when(
+                data: (info) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      info.fullName,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    Text('${info.courseInitials} - ${info.schoolInitials}',
+                        style: const TextStyle(fontSize: 14)),
+                    Text('Nº ${info.studentId}',
+                        style: const TextStyle(fontSize: 14)),
+                  ],
+                ),
+                loading: () => const CircularProgressIndicator(),
+                error: (_, __) => const Text('Erro ao carregar informações'),
               ),
             ),
             const Icon(Icons.arrow_forward_ios, color: Colors.grey),

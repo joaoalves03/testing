@@ -1,199 +1,198 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:goipvc/main.dart';
-import 'package:goipvc/models/tuition_fee.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../main.dart';
+import '../providers/data_providers.dart';
 import '../models/lesson.dart';
 import '../models/student.dart';
+import '../models/tuition_fee.dart';
 
 class DataService {
-  static final DataService _instance = DataService._internal();
-  factory DataService() => _instance;
-  DataService._internal();
+  final Ref ref;
+  DataService(this.ref);
 
-  List<Lesson>? _lessons;
-  Student? _studentInfo;
-  double? _balance;
-  Uint8List? _studentImage;
-  List<TuitionFee>? _tuitionFees;
+  Future<void> _refreshToken(String url) async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = Uri.parse(url).origin;
 
-  Future<void> fetchLessons() async {
-    final prefs = await SharedPreferences.getInstance();
-    final serverUrl = prefs.getString('server_url')!;
-    final studentId = prefs.getInt('student_id')!;
-    final onToken = prefs.getString('on_token')!;
+    String tokenType = '';
+    final username = prefs['username'] ?? '';
+    final password = prefs['password'] ?? '';
+
+    if (url.contains("on")) {
+      tokenType = 'on';
+    } else if (url.contains("academicos")) {
+      tokenType = 'academicos';
+    } else if (url.contains("moodle")) {
+      tokenType = 'moodle';
+    } else if (url.contains("sas")) {
+      tokenType = 'sas';
+    }
 
     final response = await http.post(
-      Uri.parse('$serverUrl/on/schedule'),
-      body: 'studentId=$studentId',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': onToken,
+      Uri.parse('$serverUrl/auth'),
+      body: {
+        'username': username,
+        'password': password,
+        tokenType: 'true',
       },
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as List;
-      _lessons = data.map((e) => Lesson.fromJson(e)).toList();
-    } else if (response.statusCode == 401) {
-      final refreshToken = await http.post(
-        Uri.parse('$serverUrl/auth/refresh-token'),
-        body: jsonEncode({
-          'username': prefs.getString('username')!,
-          'password': prefs.getString('password')!,
-          'strategy': 2,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
+      final responseBody = jsonDecode(response.body);
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
 
-      if (refreshToken.statusCode == 200) {
-        var json = jsonDecode(refreshToken.body);
-        await prefs.setString('on_token', json['token']);
-        // await fetchLessons();
+      if (tokenType == 'sas') {
+        final token = responseBody[tokenType]['token'];
+        final refreshToken = responseBody[tokenType]['refreshToken'];
+
+        await sharedPreferences.setString('sas_token', token);
+        await sharedPreferences.setString('sas_refresh_token', refreshToken);
+      } else {
+        final token = responseBody[tokenType];
+        await sharedPreferences.setString('${tokenType}_token', token);
       }
+      logger.d('Token refreshed: $tokenType');
+    } else {
+      throw Exception('Failed to refresh $tokenType token');
     }
   }
 
-  List<Lesson>? get lessons => _lessons;
+  Future<http.Response> request(
+      String method, String url, Map<String, String> headers,
+      {String? body, bool retry = true}) async {
+    final response = await (method == 'GET'
+        ? http.get(Uri.parse(url), headers: headers)
+        : http.post(Uri.parse(url), headers: headers, body: body));
 
-  Future<void> fetchStudentInfo(
-      String serverUrl, String academicosToken, SharedPreferences prefs) async {
-    if (_studentInfo == null) {
-      final response = await http.get(
-        Uri.parse('$serverUrl/academicos/student-info'),
-        headers: {
-          'Cookie': academicosToken,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        _studentInfo = Student.fromJson(jsonDecode(response.body));
-      } else if (response.statusCode == 401) {
-        final refreshToken = await http.post(
-          Uri.parse('$serverUrl/auth/refresh-token'),
-          body: jsonEncode({
-            'username': prefs.getString('username')!,
-            'password': prefs.getString('password')!,
-            'strategy': 0,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        if (refreshToken.statusCode == 200) {
-          var json = jsonDecode(refreshToken.body);
-          prefs.setString('academicos_token', json['token']);
-          await fetchStudentInfo(serverUrl, json['token'], prefs);
-        } else {
-          logger.d('Failed to refresh token..?');
-        }
-      }
+    if (response.statusCode == 401 && retry) {
+      await _refreshToken(url);
+      return await request(method, url, headers, body: body, retry: false);
     }
+
+    if (response.statusCode != 200 && response.statusCode != 401) {
+      logger.d('$method $url');
+      logger.d(response.body);
+      throw Exception('Failed to load data');
+    }
+
+    return response;
   }
 
-  Student? get studentInfo => _studentInfo;
+  Future<String> getFirstName() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final onToken = prefs['on_token'] ?? '';
 
-  Future<void> fetchBalance(String serverUrl, String sasToken,
-      String sasRefreshToken, SharedPreferences prefs) async {
-    if (_balance == null) {
-      final response = await http.get(
-        Uri.parse('$serverUrl/sas/balance'),
-        headers: {
-          'Authorization': sasToken,
-          'Cookie': sasRefreshToken,
-        },
-      );
+    final response = await request(
+      'GET',
+      '$serverUrl/on/first-name',
+      {'Cookie': onToken},
+    );
 
-      if (response.statusCode == 200) {
-        _balance = double.parse(response.body);
-      } else if (response.statusCode == 401) {
-        final refreshToken = await http.post(
-          Uri.parse('$serverUrl/auth/refresh-token'),
-          body: jsonEncode({
-            'username': prefs.getString('username')!,
-            'password': prefs.getString('password')!,
-            'strategy': 3,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        if (refreshToken.statusCode == 200) {
-          var tokens = jsonDecode(refreshToken.body)['tokens'];
-          prefs.setString('sas_token', tokens["sas"]);
-          prefs.setString('sas_refresh_token', tokens["sasRefresh"]);
-          await fetchBalance(
-              serverUrl, tokens["sas"], tokens["sasRefresh"], prefs);
-        } else {
-          logger.d('Failed to refresh token..?');
-        }
-      }
-    }
+    return response.body;
   }
 
-  double? get balance => _balance;
+  Future<double> getBalance() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final sasToken = prefs['sas_token'] ?? '';
+    final sasRefreshToken = prefs['sas_refresh_token'] ?? '';
 
-  Future<void> fetchStudentImage(
-      String studentId, String courseId, String academicosToken) async {
-    if (_studentImage == null) {
-      final url =
-          'https://academicos.ipvc.pt/netpa/PhotoLoader?codAluno=$studentId&codCurso=$courseId';
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Cookie': academicosToken,
-        },
-      );
+    final response = await request(
+      'GET',
+      '$serverUrl/sas/balance',
+      {
+        'Authorization': sasToken,
+        'Cookie': sasRefreshToken,
+      },
+    );
 
-      if (response.statusCode == 200) {
-        _studentImage = response.bodyBytes;
-      }
-    }
+    return double.parse(response.body);
   }
 
-  Uint8List? get studentImage => _studentImage;
+  Future<int> getStudentId() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final sasToken = prefs['sas_token'] ?? '';
+    final sasRefreshToken = prefs['sas_refresh_token'] ?? '';
 
-  Future<void> fetchTuitionFees(
-      String serverUrl, String academicosToken, SharedPreferences prefs) async {
-    if (_tuitionFees == null) {
-      final response = await http.get(
-        Uri.parse('$serverUrl/academicos/tuition'),
-        headers: {
-          'Cookie': academicosToken,
-        },
-      );
+    final response = await request(
+      'GET',
+      '$serverUrl/sas/student-id',
+      {
+        'Authorization': sasToken,
+        'Cookie': sasRefreshToken,
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as List;
-        _tuitionFees = data.map((e) => TuitionFee.fromJson(e)).toList();
-      } else if (response.statusCode == 401) {
-        final refreshToken = await http.post(
-          Uri.parse('$serverUrl/auth/refresh-token'),
-          body: jsonEncode({
-            'username': prefs.getString('username')!,
-            'password': prefs.getString('password')!,
-            'strategy': 0,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        if (refreshToken.statusCode == 200) {
-          var json = jsonDecode(refreshToken.body);
-          prefs.setString('academicos_token', json['token']);
-          await fetchTuitionFees(serverUrl, json['token'], prefs);
-        } else {
-          logger.d('Failed to refresh token..?');
-        }
-      }
-    }
+    return int.parse(response.body);
   }
 
-  List<TuitionFee>? get tuitionFees => _tuitionFees;
+  Future<List<Lesson>> getLessons(int studentId) async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final onToken = prefs['on_token'] ?? '';
+
+    final response = await request(
+      'POST',
+      '$serverUrl/on/schedule',
+      {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': onToken,
+      },
+      body: 'studentId=$studentId',
+    );
+
+    final data = jsonDecode(response.body) as List;
+    return data.map((e) => Lesson.fromJson(e)).toList();
+  }
+
+  Future<Student> getStudentInfo() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final academicosToken = prefs['academicos_token'] ?? 'JSESSIONID=...';
+
+    final response = await request(
+      'GET',
+      '$serverUrl/academicos/student-info',
+      {'Cookie': academicosToken},
+    );
+
+    return Student.fromJson(jsonDecode(response.body));
+  }
+
+  Future<Uint8List> getStudentImage(int studentId, int courseId) async {
+    final prefs = await ref.read(prefsProvider.future);
+    final academicosToken = prefs['academicos_token'] ?? 'JSESSIONID=...';
+
+    final url =
+        'https://academicos.ipvc.pt/netpa/PhotoLoader?codAluno=$studentId&codCurso=$courseId';
+    final response = await request(
+      'GET',
+      url,
+      {'Cookie': academicosToken},
+    );
+
+    return response.bodyBytes;
+  }
+
+  Future<List<TuitionFee>> getTuitionFees() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final academicosToken = prefs['academicos_token'] ?? '';
+
+    final response = await request(
+      'GET',
+      '$serverUrl/academicos/tuition',
+      {'Cookie': academicosToken},
+    );
+
+    final data = jsonDecode(response.body) as List;
+    return data.map((e) => TuitionFee.fromJson(e)).toList();
+  }
 }
