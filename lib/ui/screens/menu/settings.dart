@@ -196,7 +196,7 @@ class NotificationSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListSection(title: "Notifações", children: [
+    return ListSection(title: "Notificações", children: [
       ListTile(
         leading: Icon(Icons.notifications_on),
         title: Text("Notificações"),
