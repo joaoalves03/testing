@@ -98,13 +98,17 @@ class ClassesTab extends ConsumerWidget {
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 child: Column(
                   children: [
-                    DateSection(date: currentDate),
-                    if (lessonsForDate.isNotEmpty) ...[
-                      _buildNowCard(lessonsForDate),
-                      _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
-                    ],
+                    if(currentDate == now && lessonsForDate.isEmpty)
+                      SizedBox.shrink()
+                    else ...[
+                      DateSection(date: currentDate),
 
-                    SizedBox(height: 15)
+                      if (lessonsForDate.isNotEmpty) ...[
+                        _buildNowCard(lessonsForDate),
+                        _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
+                      ],
+                      SizedBox(height: 15)
+                    ]
                   ],
                 ),
               );
