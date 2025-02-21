@@ -189,7 +189,7 @@ class DataService {
 
     final response = await request(
       'GET',
-      '$serverUrl/academicos/curricular_units',
+      '$serverUrl/academicos/curricular-units',
       {'Cookie': academicosToken},
     );
 
