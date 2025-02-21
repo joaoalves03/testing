@@ -31,7 +31,9 @@ class MenuScreen extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CurricularUnits()));
+                        builder: (context) => CurricularUnitsScreen()
+                    )
+                );
               },
             ),
             ListTile(
@@ -41,7 +43,9 @@ class MenuScreen extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CalendarScreen()));
+                        builder: (context) => CalendarScreen()
+                    )
+                );
               },
             ),
             ListTile(
@@ -70,7 +74,9 @@ class MenuScreen extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TuitionFeesScreen()));
+                        builder: (context) => TuitionFeesScreen()
+                    )
+                );
               },
             ),
             ListTile(
@@ -128,7 +134,9 @@ class MenuScreen extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SettingsScreen()));
+                        builder: (context) => SettingsScreen()
+                    )
+                );
               },
             ),
             ListTile(

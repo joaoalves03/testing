@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/models/curricular_unit.dart';
-import 'package:goipvc/utils/globals.dart';
-import 'package:goipvc/ui/widgets/card.dart';
+import 'package:goipvc/ui/screens/menu/curricular_unit.dart';
 import 'package:goipvc/ui/widgets/list_section.dart';
+import 'package:goipvc/ui/widgets/card.dart';
+import 'package:goipvc/ui/widgets/dot.dart';
+import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
 
 
 final selectedChipProvider = StateProvider.autoDispose<int>((ref) => -1);
 
-class CurricularUnits extends ConsumerWidget {
-  const CurricularUnits({super.key});
+class CurricularUnitsScreen extends ConsumerWidget {
+  const CurricularUnitsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -133,7 +135,16 @@ class CurricularUnits extends ConsumerWidget {
                                 semester: curricularUnit.semester,
                                 ects: curricularUnit.ects,
                                 grade: curricularUnit.finalGrade,
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CurricularUnitScreen(
+                                        curricularUnit: curricularUnit,
+                                      )
+                                    )
+                                  );
+                                },
                               ),
                           ],
                         ),
@@ -297,31 +308,7 @@ class CurricularUnitCard extends StatelessWidget {
             ),
             if (grade != null) ...[
               SizedBox(width: 10),
-              Stack(
-                children: [
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: CircularProgressIndicator(
-                      value: grade! / 20,
-                      backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: Text(
-                        '$grade',
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              Grade(grade: grade!)
             ]
           ],
         ),
