@@ -1,136 +1,157 @@
 import 'package:flutter/material.dart';
-import 'package:goipvc/ui/widgets/card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/providers/data_providers.dart';
+import 'package:goipvc/models/curricular_unit.dart';
 import 'package:goipvc/utils/globals.dart';
+import 'package:goipvc/ui/widgets/card.dart';
+import 'package:goipvc/ui/widgets/list_section.dart';
 
-class CurricularUnits extends StatefulWidget {
+
+final selectedChipProvider = StateProvider.autoDispose<int>((ref) => -1);
+
+class CurricularUnits extends ConsumerWidget {
   const CurricularUnits({super.key});
 
   @override
-  State<CurricularUnits> createState() => _CurricularUnitsState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedChip = ref.watch(selectedChipProvider);
+    final curricularUnitsAsync = ref.watch(curricularUnitsProvider);
 
-class _CurricularUnitsState extends State<CurricularUnits> {
-  int selectedChip = 0;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cadeiras"),
+        title: Text("Cadeiras"),
       ),
-      body: ListView(
-        children: [
-          const GradeAverage(
-            grade: 16.22,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 8,
-                children: [
-                  OptionChip(
-                    label: "Este Semestre",
-                    selected: selectedChip == -1,
-                    onSelected: (isSelected) {
-                      if (isSelected) {
-                        setState(() {
-                          selectedChip = -1;
-                        });
-                      }
-                    },
-                  ),
-                  Container(
-                    width: 2,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.outline,
-                      borderRadius: BorderRadius.circular(2),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(curricularUnitsProvider);
+        },
+        child: ListView(
+          children: [
+            const GradeAverage(
+              grade: 16.22,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: [
+                    OptionChip(
+                      label: "Este Semestre",
+                      selected: selectedChip == -1,
+                      onSelected: (isSelected) {
+                        if (isSelected) {
+                          ref.read(selectedChipProvider.notifier).state = -1;
+                        }
+                      },
                     ),
-                  ),
-                  OptionChip(
-                    label: "Tudo",
-                    selected: selectedChip == 0,
-                    onSelected: (isSelected) {
-                      if (isSelected) {
-                        setState(() {
-                          selectedChip = 0;
-                        });
-                      }
-                    },
-                  ),
-                  OptionChip(
-                    label: "1º ano",
-                    selected: selectedChip == 1,
-                    onSelected: (isSelected) {
-                      if (isSelected) {
-                        setState(() {
-                          selectedChip = 1;
-                        });
-                      }
-                    },
-                  ),
-                  OptionChip(
-                    label: "2º ano",
-                    selected: selectedChip == 2,
-                    onSelected: (isSelected) {
-                      if (isSelected) {
-                        setState(() {
-                          selectedChip = 2;
-                        });
-                      }
-                    },
-                  ),
-                  OptionChip(
-                    label: "3º ano",
-                    selected: selectedChip == 3,
-                    onSelected: (isSelected) {
-                      if (isSelected) {
-                        setState(() {
-                          selectedChip = 3;
-                        });
-                      }
-                    },
-                  ),
-                ],
+                    Container(
+                      width: 2,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.outline,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    OptionChip(
+                      label: "Tudo",
+                      selected: selectedChip == 0,
+                      onSelected: (isSelected) {
+                        if (isSelected) {
+                          ref.read(selectedChipProvider.notifier).state = 0;
+                        }
+                      },
+                    ),
+                    OptionChip(
+                      label: "1º ano",
+                      selected: selectedChip == 1,
+                      onSelected: (isSelected) {
+                        if (isSelected) {
+                          ref.read(selectedChipProvider.notifier).state = 1;
+                        }
+                      },
+                    ),
+                    OptionChip(
+                      label: "2º ano",
+                      selected: selectedChip == 2,
+                      onSelected: (isSelected) {
+                        if (isSelected) {
+                          ref.read(selectedChipProvider.notifier).state = 2;
+                        }
+                      },
+                    ),
+                    OptionChip(
+                      label: "3º ano",
+                      selected: selectedChip == 3,
+                      onSelected: (isSelected) {
+                        if (isSelected) {
+                          ref.read(selectedChipProvider.notifier).state = 3;
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                CurricularUnitCard(
-                  name: "Admistração de Base de Dados",
-                  semester: 2,
-                  ects: 5,
-                  grade: 18,
-                  onTap: () {},
-                ),
-                CurricularUnitCard(
-                  name: "Projeto II",
-                  semester: 2,
-                  ects: 5,
-                  grade: 19,
-                ),
-                CurricularUnitCard(
-                  name: "Inteligência Artificial",
-                  semester: 2,
-                  ects: 5,
-                ),
-                CurricularUnitCard(
-                  name: "Engenharia de Software II",
-                  semester: 2,
-                  ects: 5,
-                  grade: 20,
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+            curricularUnitsAsync.when(
+              data: (curricularUnits) {
+                List<CurricularUnit> filteredUnits = [];
+                if (selectedChip == -1) {
+                  if (curricularUnits.isNotEmpty) {
+                    final academicYear = curricularUnits.first.academicYear;
+                    filteredUnits = curricularUnits.where(
+                            (unit) => unit.academicYear == academicYear
+                                      && unit.semester == 2 //todo: actually use a good check
+                    ).toList();
+                  }
+                } else if (selectedChip == 0) {
+                  filteredUnits = curricularUnits;
+                } else {
+                  filteredUnits = curricularUnits.where(
+                          (unit) => unit.studyYear == selectedChip
+                  ).toList();
+                }
+
+                Map<int, List<CurricularUnit>> unitsByYear = {};
+                for (var unit in filteredUnits) {
+                  unitsByYear.putIfAbsent(unit.studyYear, () => []).add(unit);
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    children: [
+                      for (var year in unitsByYear.keys)
+                        ListSection(
+                          title: "$yearº ano",
+                          children: [
+                            for (var curricularUnit in unitsByYear[year]!)
+                              CurricularUnitCard(
+                                name: curricularUnit.name,
+                                semester: curricularUnit.semester,
+                                ects: curricularUnit.ects,
+                                grade: curricularUnit.finalGrade,
+                                onTap: () {},
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
+                );
+              },
+              loading: () => Center(
+                  child: CircularProgressIndicator()
+              ),
+              error: (e, stackTrace) =>
+                  Center(
+                      child: Text('Failed to load curricular units')
+                  ),
+            )
+          ],
+        ),
+      )
     );
   }
 }
@@ -229,78 +250,82 @@ class CurricularUnitCard extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Wrap(
-                spacing: 6,
-                alignment: WrapAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
                     Icons.school,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  Wrap(
-                    direction: Axis.vertical,
-                    children: [
-                      Text(
-                        name,
-                        style: TextStyle(
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 16,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            '$semesterº Semestre',
-                            style: TextStyle(
-                              fontSize: 10,
-                            ),
+                            fontWeight: FontWeight.bold,
                           ),
-                          Dot(size: 16),
-                          Text(
-                            '$ects ECTS',
-                            style: TextStyle(
-                              fontSize: 10,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              '$semesterº Semestre',
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
                             ),
-                          )
-                        ],
-                      )
-                    ],
-                  )
+                            Dot(size: 16),
+                            Text(
+                              '$ects ECTS',
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-
-            if (grade != null)
+            if (grade != null) ...[
+              SizedBox(width: 10),
               Stack(
                 children: [
                   SizedBox(
                     width: 48,
                     height: 48,
                     child: CircularProgressIndicator(
-                        value: grade! / 20,
-                        backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-                        color: Theme.of(context).colorScheme.primary
+                      value: grade! / 20,
+                      backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   SizedBox(
                     width: 48,
                     height: 48,
                     child: Center(
-                        child: Text(
-                          '$grade',
-                          style: TextStyle(
-                              fontSize: 18
-                          ),
-                        )
+                      child: Text(
+                        '$grade',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
+            ]
           ],
-        )
-      ]
+        ),
+      ],
     );
   }
-
 }

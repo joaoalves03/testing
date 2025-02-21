@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/models/curricular_unit.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -179,6 +180,21 @@ class DataService {
     );
 
     return response.bodyBytes;
+  }
+
+  Future<List<CurricularUnit>> getCurricularUnits() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final academicosToken = prefs['academicos_token'] ?? '';
+
+    final response = await request(
+      'GET',
+      '$serverUrl/academicos/classes',
+      {'Cookie': academicosToken},
+    );
+
+    final data = jsonDecode(response.body) as List;
+    return data.map((e) => CurricularUnit.fromJson(e)).toList();
   }
 
   Future<List<TuitionFee>> getTuitionFees() async {

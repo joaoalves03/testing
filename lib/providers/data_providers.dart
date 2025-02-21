@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/models/curricular_unit.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/models/student.dart';
 import 'package:goipvc/models/tuition_fee.dart';
@@ -59,6 +60,11 @@ final studentImageProvider = FutureProvider<Uint8List>((ref) async {
   final courseId =
       await dataService.getStudentInfo().then((info) => info.courseId);
   return dataService.getStudentImage(studentId, courseId);
+});
+
+final curricularUnitsProvider = FutureProvider<List<CurricularUnit>>((ref) async {
+  final dataService = ref.read(dataServiceProvider);
+  return dataService.getCurricularUnits();
 });
 
 final tuitionsProvider = FutureProvider<List<TuitionFee>>((ref) async {
