@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:goipvc/utils/globals.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
-import 'package:intl/intl.dart';
-import 'package:goipvc/utils/globals.dart';
+import 'package:goipvc/ui/widgets/dot.dart';
 import 'date_section.dart';
 
 class ClassesTab extends ConsumerWidget {

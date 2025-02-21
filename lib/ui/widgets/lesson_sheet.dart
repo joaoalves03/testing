@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:goipvc/models/lesson.dart';
-import 'package:goipvc/utils/globals.dart';
 import 'package:intl/intl.dart';
+import 'package:goipvc/utils/globals.dart';
+import 'package:goipvc/models/lesson.dart';
+import 'dot.dart';
 
 void showLessonBottomSheet(BuildContext context, Lesson lesson) {
   String day = DateFormat.EEEE('pt').format(DateTime.parse(lesson.start));
-  String startHour = DateFormat.Hm().format(DateTime.parse(lesson.start));
-  String endHour = DateFormat.Hm().format(DateTime.parse(lesson.end));
+  String startHour = formatTimeToHours(lesson.start);
+  String endHour = formatTimeToHours(lesson.end);
 
   showModalBottomSheet(
     context: context,
