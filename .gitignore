@@ -42,5 +42,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# ?
+/android/app/.cxx
+
 # Visual Studio Code
 .vscode/
