@@ -5,6 +5,8 @@ import 'package:goipvc/models/curricular_unit.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:goipvc/utils/shared_prefs.dart';
+
 import '../main.dart';
 import '../providers/data_providers.dart';
 import '../models/lesson.dart';
@@ -47,17 +49,22 @@ class DataService {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
 
+      await SharedPrefsUtil.printPrefs();
       if (tokenType == 'sas') {
-        final token = responseBody[tokenType]['token'];
-        final refreshToken = responseBody[tokenType]['refreshToken'];
+        final data = responseBody[tokenType];
 
-        await sharedPreferences.setString('sas_token', token);
-        await sharedPreferences.setString('sas_refresh_token', refreshToken);
+        await sharedPreferences.setString('sas_token', data['token']);
+        await sharedPreferences.setString(
+            'sas_refresh_token', data['refreshToken']);
+        prefs['sas_token'] = data['token'];
+        prefs['sas_refresh_token'] = data['refreshToken'];
       } else {
         final token = responseBody[tokenType];
+
         await sharedPreferences.setString('${tokenType}_token', token);
+        prefs['${tokenType}_token'] = token;
       }
-      logger.d('Token refreshed: $tokenType');
+      await SharedPrefsUtil.printPrefs();
     } else {
       throw Exception('Failed to refresh $tokenType token');
     }
@@ -70,7 +77,7 @@ class DataService {
         ? http.get(Uri.parse(url), headers: headers)
         : http.post(Uri.parse(url), headers: headers, body: body));
 
-    if (response.statusCode == 401 && retry) {
+    if ((response.statusCode == 401) && retry) {
       await _refreshToken(url);
       return await request(method, url, headers, body: body, retry: false);
     }
@@ -85,6 +92,10 @@ class DataService {
   }
 
   Future<String> getFirstName() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var firstName = sharedPreferences.getString('first_name');
+
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
     final onToken = prefs['on_token'] ?? '';
@@ -95,10 +106,21 @@ class DataService {
       {'Cookie': onToken},
     );
 
-    return response.body;
+    firstName = response.body;
+    await sharedPreferences.setString('first_name', firstName);
+
+    return firstName;
   }
 
-  Future<double> getBalance() async {
+  Future<String> getBalance() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var balance = sharedPreferences.getString('balance');
+
+    if (balance != null) {
+      return balance;
+    }
+
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
     final sasToken = prefs['sas_token'] ?? '';
@@ -113,10 +135,21 @@ class DataService {
       },
     );
 
-    return double.parse(response.body);
+    balance = response.body;
+    await sharedPreferences.setString('balance', balance);
+
+    return balance;
   }
 
   Future<int> getStudentId() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var studentId = sharedPreferences.getInt('student_id');
+
+    if (studentId != null) {
+      return studentId;
+    }
+
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
     final sasToken = prefs['sas_token'] ?? '';
@@ -131,7 +164,10 @@ class DataService {
       },
     );
 
-    return int.parse(response.body);
+    studentId = int.parse(response.body);
+    await sharedPreferences.setInt('student_id', studentId);
+
+    return studentId;
   }
 
   Future<List<Lesson>> getLessons(int studentId) async {

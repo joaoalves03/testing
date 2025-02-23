@@ -55,14 +55,14 @@ final studentInfoProvider = FutureProvider<Student>((ref) async {
 
 final studentImageProvider = FutureProvider<Uint8List>((ref) async {
   final dataService = ref.read(dataServiceProvider);
-  final studentId =
-      await dataService.getStudentInfo().then((info) => info.studentId);
+  final studentId = await dataService.getStudentId();
   final courseId =
       await dataService.getStudentInfo().then((info) => info.courseId);
   return dataService.getStudentImage(studentId, courseId);
 });
 
-final curricularUnitsProvider = FutureProvider<List<CurricularUnit>>((ref) async {
+final curricularUnitsProvider =
+    FutureProvider<List<CurricularUnit>>((ref) async {
   final dataService = ref.read(dataServiceProvider);
   return dataService.getCurricularUnits();
 });
