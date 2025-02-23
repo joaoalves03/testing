@@ -4,25 +4,41 @@ import 'package:goipvc/models/curricular_unit.dart';
 import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
 
 class CurricularUnitScreen extends ConsumerWidget {
-  final CurricularUnit curricularUnit;
+  final int curricularUnitId;
 
   const CurricularUnitScreen({
     super.key,
-    required this.curricularUnit
+    required this.curricularUnitId
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final curricularUnitAsync = ref.watch(curricularUnitProvider(curricularUnitId));
+
+    return curricularUnitAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text("Disciplina")),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(title: const Text("Disciplina")),
+        body: Center(child: Text('Error: $error')),
+      ),
+      data: (curricularUnit) => _buildContent(context, curricularUnit),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, CurricularUnit curricularUnit) {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Disciplina"),
+          title: const Text("Disciplina"),
         ),
         body: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -81,7 +97,7 @@ class CurricularUnitScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            TabBar(
+            const TabBar(
                 tabs: [
                   Tab(icon: Icon(Icons.home), text: 'Geral'),
                   Tab(icon: Icon(Icons.date_range), text: 'Sumários'),
@@ -91,7 +107,7 @@ class CurricularUnitScreen extends ConsumerWidget {
             )
           ],
         ),
-      )
+      ),
     );
   }
 }

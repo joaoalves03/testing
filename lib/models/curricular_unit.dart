@@ -9,7 +9,7 @@ class CurricularUnit {
     required this.ects,
   });
 
-  String id;
+  int id;
   String name;
   int? finalGrade;
   String academicYear;
@@ -19,7 +19,7 @@ class CurricularUnit {
 
   factory CurricularUnit.fromJson(Map<String, dynamic> json) {
     return CurricularUnit(
-      id: json['id'].toString(),
+      id: json['id'].toInt(),
       name: json['name'] as String,
       finalGrade: _parseFinalGrade(json['finalGrade']),
       academicYear: json['academicYear'] as String,

@@ -140,7 +140,7 @@ class CurricularUnitsScreen extends ConsumerWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CurricularUnitScreen(
-                                        curricularUnit: curricularUnit,
+                                        curricularUnitId: curricularUnit.id,
                                       )
                                     )
                                   );
