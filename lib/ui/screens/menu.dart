@@ -31,21 +31,15 @@ class MenuScreen extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CurricularUnitsScreen()
-                    )
-                );
+                        builder: (context) => CurricularUnitsScreen()));
               },
             ),
             ListTile(
               leading: Icon(Icons.calendar_month),
               title: Text("Calendário Académico"),
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CalendarScreen()
-                    )
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CalendarScreen()));
               },
             ),
             ListTile(
@@ -74,9 +68,7 @@ class MenuScreen extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TuitionFeesScreen()
-                    )
-                );
+                        builder: (context) => TuitionFeesScreen()));
               },
             ),
             ListTile(
@@ -131,18 +123,24 @@ class MenuScreen extends ConsumerWidget {
               leading: Icon(Icons.settings),
               title: Text("Definições"),
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SettingsScreen()
-                    )
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()));
               },
             ),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text("Logout"),
               onTap: () async {
+                ref.invalidate(prefsProvider);
+                ref.invalidate(firstNameProvider);
+                ref.invalidate(balanceProvider);
+                ref.invalidate(studentIdProvider);
+                ref.invalidate(studentInfoProvider);
+                ref.invalidate(studentImageProvider);
+                ref.invalidate(lessonsProvider);
+                ref.invalidate(curricularUnitsProvider);
+                ref.invalidate(tuitionsProvider);
+
                 final prefs = await SharedPreferences.getInstance();
                 final serverUrl = prefs.getString('server_url');
                 await prefs.clear();
@@ -170,53 +168,51 @@ class UserCard extends ConsumerWidget {
     final studentInfoAsync = ref.watch(studentInfoProvider);
 
     return FilledCard(
-      icon: Icons.person,
-      title: "Perfil",
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()));
-      },
-      children: [
-        studentInfoAsync.when(
-          data: (info) {
-            return Row(
-              children: [
-                ProfilePicture(),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        info.fullName,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Text('${info.courseInitials} - ${info.schoolInitials}',
-                          style: TextStyle(fontSize: 14)),
-                      Text('Nº ${info.studentId}',
-                          style: TextStyle(fontSize: 14)),
-                    ],
+        icon: Icons.person,
+        title: "Perfil",
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()));
+        },
+        children: [
+          studentInfoAsync.when(
+            data: (info) {
+              return Row(
+                children: [
+                  ProfilePicture(),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          info.fullName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Text('${info.courseInitials} - ${info.schoolInitials}',
+                            style: TextStyle(fontSize: 14)),
+                        Text('Nº ${info.studentId}',
+                            style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
                   ),
-                ),
-                Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                  Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                ],
+              );
+            },
+            loading: () => Expanded(
+                child: Center(
+              child: CircularProgressIndicator(),
+            )),
+            error: (_, __) => Wrap(
+              spacing: 4,
+              children: [
+                Icon(Icons.error, color: Colors.red),
+                Text('Erro ao carregar informações')
               ],
-            );
-          },
-          loading: () => Expanded(
-              child: Center(
-                child: CircularProgressIndicator(),
-              )
+            ),
           ),
-          error: (_, __) => Wrap(
-            spacing: 4,
-            children: [
-              Icon(Icons.error, color: Colors.red),
-              Text('Erro ao carregar informações')
-            ],
-          ),
-        ),
-      ]
-    );
+        ]);
   }
 }
