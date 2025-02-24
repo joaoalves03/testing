@@ -201,10 +201,9 @@ class UserCard extends ConsumerWidget {
                 ],
               );
             },
-            loading: () => Expanded(
-                child: Center(
+            loading: () => Center(
               child: CircularProgressIndicator(),
-            )),
+            ),
             error: (_, __) => Wrap(
               spacing: 4,
               children: [
