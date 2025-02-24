@@ -28,7 +28,7 @@ final prefsProvider = FutureProvider<Map<String, String?>>((ref) async {
 
 final firstNameProvider = FutureProvider<String>((ref) async {
   final dataService = ref.read(dataServiceProvider);
-  return await dataService.getFirstName();
+  return await dataService.getFirstName() ?? 'utilizador';
 });
 
 final balanceProvider = FutureProvider<String>((ref) async {
@@ -62,7 +62,7 @@ final studentImageProvider = FutureProvider<Uint8List>((ref) async {
 });
 
 final curricularUnitProvider =
-FutureProvider.family<CurricularUnit, int>((ref, curricularUnitId) async {
+    FutureProvider.family<CurricularUnit, int>((ref, curricularUnitId) async {
   final dataService = ref.read(dataServiceProvider);
   return dataService.getCurricularUnit(curricularUnitId);
 });

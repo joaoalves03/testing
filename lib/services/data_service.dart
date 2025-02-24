@@ -91,10 +91,14 @@ class DataService {
     return response;
   }
 
-  Future<String> getFirstName() async {
+  Future<String?> getFirstName() async {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var firstName = sharedPreferences.getString('first_name');
+
+    if (firstName != null && firstName != "Unauthorized") {
+      return firstName;
+    }
 
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
