@@ -45,93 +45,95 @@ class ThemeSettings extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            String? selectedSchool = "IPVC";
+        return SafeArea(
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              String? selectedSchool = "IPVC";
 
-            Widget buildSchoolButton(Map<String, String> school) {
-              final name = school.keys.first;
-              final color = Color(int.parse(school.values.first));
-              final isSelected = selectedSchool == name;
+              Widget buildSchoolButton(Map<String, String> school) {
+                final name = school.keys.first;
+                final color = Color(int.parse(school.values.first));
+                final isSelected = selectedSchool == name;
 
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: isSelected
-                          ? Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 4
-                            )
-                          : null,
-                    ),
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      onTap: () => setState(() => selectedSchool = name),
-                      child: Center(
-                        child: Text(
-                          name,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 4
+                        )
+                            : null,
+                      ),
+                      clipBehavior: Clip.hardEdge,
+                      child: InkWell(
+                        onTap: () => setState(() => selectedSchool = name),
+                        child: Center(
+                          child: Text(
+                            name,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }
+                );
+              }
 
-            return Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outline,
-                        borderRadius: BorderRadius.circular(2),
+              return Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.outline,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    "Escolher Escola",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 24),
-                  Column(
-                    children: [
-                      Row(
-                        children: schools
-                            .sublist(0, 4)
-                            .map((school) => buildSchoolButton(school))
-                            .toList(),
-                      ),
-                      SizedBox(height: 16),
-                      Row(
-                        children: schools
-                            .sublist(4)
-                            .map((school) => buildSchoolButton(school))
-                            .toList(),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                ],
-              ),
-            );
-          },
+                    SizedBox(height: 16),
+                    Text(
+                      "Escolher Escola",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 24),
+                    Column(
+                      children: [
+                        Row(
+                          children: schools
+                              .sublist(0, 4)
+                              .map((school) => buildSchoolButton(school))
+                              .toList(),
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          children: schools
+                              .sublist(4)
+                              .map((school) => buildSchoolButton(school))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
+              );
+            },
+          )
         );
       },
     );

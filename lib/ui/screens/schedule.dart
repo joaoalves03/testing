@@ -152,11 +152,13 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        return Settings(
-          onViewChanged: _updateView,
-          currentView: _currentView,
-          showWeekends: _showWeekends,
-          onToggleWeekends: _toggleWeekends,
+        return SafeArea(
+          child: Settings(
+            onViewChanged: _updateView,
+            currentView: _currentView,
+            showWeekends: _showWeekends,
+            onToggleWeekends: _toggleWeekends,
+          ),
         );
       },
     );
