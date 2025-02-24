@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/models/task.dart';
@@ -21,6 +22,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   CalendarView _currentView = CalendarView.week;
   String _headerText = "Month Year";
   final ValueNotifier<bool> _showWeekends = ValueNotifier<bool>(true);
+
+  static const String calendarViewKey = 'calendar_view';
 
   // todo: THIS IS TEMPORARY SHOULD BE SWITCHED TO ACTUAL DATA FROM API
   final List<Holiday> _holidays = [
@@ -44,6 +47,62 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       type: "Project",
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String? savedViewString = prefs.getString("calendar_view");
+
+    setState(() {
+      if (savedViewString != null) {
+        _currentView = _getCalendarViewFromString(savedViewString);
+        _showWeekends.value = _currentView != CalendarView.workWeek;
+      }
+    });
+
+    _calendarController.view = _currentView;
+  }
+
+  CalendarView _getCalendarViewFromString(String viewString) {
+    switch (viewString) {
+      case 'day':
+        return CalendarView.day;
+      case 'week':
+        return CalendarView.week;
+      case 'workWeek':
+        return CalendarView.workWeek;
+      case 'month':
+        return CalendarView.month;
+      default:
+        return CalendarView.week;
+    }
+  }
+
+  String _getStringFromCalendarView(CalendarView view) {
+    switch (view) {
+      case CalendarView.day:
+        return 'day';
+      case CalendarView.week:
+        return 'week';
+      case CalendarView.workWeek:
+        return 'workWeek';
+      case CalendarView.month:
+        return 'month';
+      default:
+        return 'week';
+    }
+  }
+
+  Future<void> _savePreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(calendarViewKey, _getStringFromCalendarView(_currentView));
+  }
 
   MeetingDataSource _getDataSource(List<Lesson> lessons) {
     return MeetingDataSource(lessons, _tasks, _holidays);
@@ -110,6 +169,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     _calendarController.view = _currentView;
     _calendarController.displayDate = DateTime.now();
     _calendarController.selectedDate = DateTime.now();
+    _savePreferences();
     Navigator.pop(context);
   }
 
@@ -122,6 +182,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       }
     });
     _calendarController.view = _currentView;
+    _savePreferences();
   }
 
   @override
@@ -209,16 +270,19 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                           if (_currentView == CalendarView.month &&
                               _calendarController.view == CalendarView.day) {
                             _currentView = CalendarView.day;
+                            _savePreferences();
                           }
 
                           if (_currentView == CalendarView.week &&
                               _calendarController.view == CalendarView.day) {
                             _currentView = CalendarView.day;
+                            _savePreferences();
                           }
 
                           if (_currentView == CalendarView.workWeek &&
                               _calendarController.view == CalendarView.day) {
                             _currentView = CalendarView.day;
+                            _savePreferences();
                           }
                           _headerText = newHeader;
                         });
@@ -415,16 +479,41 @@ class Settings extends StatelessWidget {
     required CalendarView view,
   }) {
     return Expanded(
-      child: InkWell(
-        onTap: () => onViewChanged(view, context),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Icon(icon, size: 32),
-              SizedBox(height: 4),
-              Text(label),
-            ],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onViewChanged(view, context),
+          child: Container(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 32,
+                  color: currentView == view
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: currentView == view
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(1000),
+                  ),
+                  child: Text(label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: currentView == view
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      )),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -436,12 +525,20 @@ class Settings extends StatelessWidget {
     required String label,
     required Widget tailing,
   }) {
-    return Row(
-      children: [
-        Text(label),
-        Spacer(),
-        tailing,
-      ],
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Row(
+        children: [
+          Text(label),
+          Spacer(),
+          tailing,
+        ],
+      )
     );
   }
 }
