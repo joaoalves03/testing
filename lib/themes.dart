@@ -31,6 +31,7 @@ FlexSubThemesData createFlexSubThemesData() {
     navigationBarIndicatorSchemeColor: SchemeColor.primaryContainer,
     scaffoldBackgroundSchemeColor: SchemeColor.surface,
     switchThumbSchemeColor: SchemeColor.surfaceDim,
+    tabBarUnselectedItemSchemeColor: SchemeColor.onSurfaceVariant,
   );
 }
 
@@ -50,19 +51,26 @@ CupertinoThemeData createCupertinoThemeData() {
 }
 
 ThemeData createFlexTheme(Color color, bool isDark) {
-  return isDark
+  // Create the base FlexThemeData
+  ThemeData baseTheme = isDark
       ? FlexThemeData.dark(
-          colors: createFlexSchemeColor(color),
-          subThemesData: createFlexSubThemesData(),
-          keyColors: createFlexKeyColors(),
-          cupertinoOverrideTheme: createCupertinoThemeData(),
-        )
+    colors: createFlexSchemeColor(color),
+    subThemesData: createFlexSubThemesData(),
+    keyColors: createFlexKeyColors(),
+    cupertinoOverrideTheme: createCupertinoThemeData(),
+  )
       : FlexThemeData.light(
-          colors: createFlexSchemeColor(color),
-          subThemesData: createFlexSubThemesData(),
-          keyColors: createFlexKeyColors(),
-          cupertinoOverrideTheme: createCupertinoThemeData(),
-        );
+    colors: createFlexSchemeColor(color),
+    subThemesData: createFlexSubThemesData(),
+    keyColors: createFlexKeyColors(),
+    cupertinoOverrideTheme: createCupertinoThemeData(),
+  );
+
+  return baseTheme.copyWith(
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      strokeCap: StrokeCap.round,
+    ),
+  );
 }
 
 Map<String, ThemeData> genTheme(Color color) {
@@ -87,4 +95,14 @@ var estgTheme = genTheme(Color(0xfff3ab1d));
 var ipvcTheme = {
   'light': genIPVCTheme(false),
   'dark': genIPVCTheme(true),
+};
+
+final Map<String, dynamic> schoolThemes = {
+  "ESA": esaTheme,
+  "ESCE": esceTheme,
+  "ESDL": esdlTheme,
+  "ESE": eseTheme,
+  "ESS": essTheme,
+  "ESTG": estgTheme,
+  "IPVC": ipvcTheme,
 };
