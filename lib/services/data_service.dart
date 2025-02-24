@@ -218,6 +218,21 @@ class DataService {
     return response.bodyBytes;
   }
 
+  Future<CurricularUnit> getCurricularUnit(int curricularUnitId) async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final academicosToken = prefs['academicos_token'] ?? '';
+
+    final response = await request(
+      'GET',
+      '$serverUrl/academicos/curricular-unit',
+      {'Cookie': academicosToken},
+    );
+
+    final data = jsonDecode(response.body);
+    return CurricularUnit.fromJson(data);
+  }
+
   Future<List<CurricularUnit>> getCurricularUnits() async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';

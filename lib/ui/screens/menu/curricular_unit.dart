@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/models/curricular_unit.dart';
 import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
 
@@ -17,11 +18,11 @@ class CurricularUnitScreen extends ConsumerWidget {
 
     return curricularUnitAsync.when(
       loading: () => Scaffold(
-        appBar: AppBar(title: const Text("Disciplina")),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: Text("Disciplina")),
+        body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(title: const Text("Disciplina")),
+        appBar: AppBar(title: Text("Disciplina")),
         body: Center(child: Text('Error: $error')),
       ),
       data: (curricularUnit) => _buildContent(context, curricularUnit),
