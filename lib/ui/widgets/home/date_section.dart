@@ -3,10 +3,12 @@ import 'package:intl/intl.dart';
 
 class DateSection extends StatelessWidget {
   final DateTime date;
+  final Color? textColor;
 
   const DateSection({
     super.key,
-    required this.date
+    required this.date,
+    this.textColor
   });
 
   @override
@@ -35,6 +37,7 @@ class DateSection extends StatelessWidget {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
+            color: textColor ?? Theme.of(context).colorScheme.onSurface
           ),
         ),
 
