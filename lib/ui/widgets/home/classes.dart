@@ -170,12 +170,47 @@ class RightNowCard extends StatelessWidget {
     );
   }
 
+  String _formatTeacherName(String name) {
+    final parts = name.split(' ');
+    if (parts.length <= 1) return name;
+    return '${parts.first} ${parts.last}';
+  }
+
+  String _buildTeacherText(List<String> teachers) {
+    if (teachers.isEmpty) return '';
+    final formattedName = _formatTeacherName(teachers[0]);
+    if (teachers.length == 1) return formattedName;
+    return '$formattedName, +${teachers.length - 1}';
+  }
+
   Widget _buildInfoRow() {
     return Row(
       children: [
-        Text(lesson.teachers[0], style: const TextStyle(fontSize: 13)),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 2,
+          children: [
+            Icon(Icons.location_pin, size: 16),
+            Text(lesson.room, style: const TextStyle(fontSize: 13)),
+          ],
+        ),
+
         Dot(),
-        Text(lesson.room, style: const TextStyle(fontSize: 13)),
+
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 2,
+          children: [
+            Icon(
+                lesson.teachers.length == 1 ? Icons.person : Icons.people,
+                size: 16
+            ),
+            Text(
+                _buildTeacherText(lesson.teachers),
+                style: const TextStyle(fontSize: 13)
+            ),
+          ],
+        ),
       ],
     );
   }
