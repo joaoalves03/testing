@@ -8,7 +8,7 @@ import 'dart:async';
 
 import 'package:goipvc/generated/l10n.dart';
 import 'package:goipvc/ui/widgets/containers.dart';
-import '../init_view.dart';
+import 'package:goipvc/ui/first_time.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -104,7 +104,7 @@ class LoginState extends State<LoginScreen> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) {
-                return InitView();
+                return FirstTimeScreen();
               },
 
               //Transition
