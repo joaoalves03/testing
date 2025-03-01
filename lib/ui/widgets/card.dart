@@ -86,34 +86,31 @@ class ExpandableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card.filled(
-          color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
-          margin: EdgeInsets.symmetric(vertical: 6),
-          clipBehavior: Clip.hardEdge,
-          child: Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              title: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+    return Card.filled(
+      color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer,
+      margin: EdgeInsets.symmetric(vertical: 6),
+      clipBehavior: Clip.hardEdge,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: body,
+                ),
               ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: body,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-      ),
+            )
+          ],
+        ),
+      )
     );
   }
 }
