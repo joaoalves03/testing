@@ -5,11 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/profile_picture.dart';
-import 'package:goipvc/ui/screens/menu/curricular_units.dart';
-import 'package:goipvc/ui/screens/menu/tuition_fees.dart';
-import 'package:goipvc/ui/screens/menu/calendar.dart';
-import 'package:goipvc/ui/screens/menu/profile.dart';
-import 'package:goipvc/ui/screens/menu/settings.dart';
+
+import 'menu/profile.dart';
+import 'menu/curricular_units.dart';
+import 'menu/calendar.dart';
+import 'menu/teachers.dart';
+import 'menu/tuition_fees.dart';
+import 'menu/settings.dart';
 
 class MenuScreen extends ConsumerWidget {
   const MenuScreen({super.key});
@@ -45,6 +47,10 @@ class MenuScreen extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.people),
               title: Text("Corpo Docente"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TeachersScreen()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.watch_later),
