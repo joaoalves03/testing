@@ -196,6 +196,7 @@ class DataService {
   Future<Student> getStudentInfo() async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
+    final username = prefs['username'] ?? '';
     final academicosToken = prefs['academicos_token'] ?? 'JSESSIONID=...';
 
     final response = await request(
@@ -204,7 +205,10 @@ class DataService {
       {'Cookie': academicosToken},
     );
 
-    return Student.fromJson(jsonDecode(response.body));
+    var student = Student.fromJson(jsonDecode(response.body));
+    student.email = "$username@ipvc.pt";
+
+    return student;
   }
 
   Future<Uint8List> getStudentImage(int studentId, int courseId) async {

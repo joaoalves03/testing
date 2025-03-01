@@ -4,8 +4,8 @@ class Student {
     required this.course,
     required this.courseId,
     required this.courseInitials,
-    required this.firstName,
     required this.fullName,
+    this.email = "",
     required this.schoolName,
     required this.schoolInitials,
   });
@@ -14,8 +14,8 @@ class Student {
   String course;
   int courseId;
   String courseInitials;
-  String firstName;
   String fullName;
+  String email;
   String schoolName;
   String schoolInitials;
 
@@ -25,7 +25,6 @@ class Student {
       course: json['course'],
       courseId: json['courseId'],
       courseInitials: json['courseInitials'],
-      firstName: json['firstName'],
       fullName: json['fullName'],
       schoolName: json['schoolName'],
       schoolInitials: json['schoolInitials'],
