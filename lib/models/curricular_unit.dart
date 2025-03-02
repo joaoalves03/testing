@@ -4,7 +4,6 @@ class CurricularUnit {
   int year;
   int semester;
   int ects;
-  String? evaluationType;
   List<UnitGrade> grades;
   int? finalGrade;
 
@@ -14,7 +13,6 @@ class CurricularUnit {
     required this.year,
     required this.semester,
     required this.ects,
-    this.evaluationType,
     required this.grades,
     this.finalGrade,
   });
@@ -25,10 +23,9 @@ class CurricularUnit {
 
     return CurricularUnit(
       id: json['id'],
-      name: json['name'] as String,
+      name: json['name'],
       year: json['year'],
       semester: json['semester'],
-      evaluationType: json['evaluationType'],
       grades: grades,
       finalGrade: json['highestGrade'],
       ects: json['ects'],
@@ -38,12 +35,14 @@ class CurricularUnit {
 
 class UnitGrade {
   final int? value;
+  final String evaluationType;
   final String status;
   final String? date;
   final String academicYear;
 
   UnitGrade({
     required this.value,
+    required this.evaluationType,
     required this.status,
     required this.date,
     required this.academicYear,
@@ -52,9 +51,10 @@ class UnitGrade {
   factory UnitGrade.fromJson(List<dynamic> json) {
     return UnitGrade(
       value: json[0],
-      status: json[1] as String,
-      date: json[2],
-      academicYear: json[3] as String,
+      evaluationType: json[1],
+      status: json[2],
+      date: json[3],
+      academicYear: json[4],
     );
   }
 }
