@@ -17,7 +17,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(studentImageProvider);
+    // ref.read(studentImageProvider);
   }
 
   @override
@@ -42,18 +42,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             TabBar(
               tabs: [
-                Tab(
-                    icon: Icon(Icons.watch_later),
-                    text: 'Aulas'
-                ),
-                Tab(
-                    icon: Icon(Icons.task),
-                    text: 'Tarefas'
-                ),
-                Tab(
-                    icon: Icon(Icons.local_dining),
-                    text: 'Ementas'
-                ),
+                Tab(icon: Icon(Icons.watch_later), text: 'Aulas'),
+                Tab(icon: Icon(Icons.task), text: 'Tarefas'),
+                Tab(icon: Icon(Icons.local_dining), text: 'Ementas'),
               ],
             ),
             Expanded(
