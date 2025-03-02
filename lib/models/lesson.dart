@@ -1,23 +1,25 @@
 import 'dart:collection';
 
 class Lesson {
+  final String id;
+  final int curricularUnitId;
   final String shortName;
   final String className;
   final String classType;
   final String start;
   final String end;
-  final String id;
   final List<String> teachers;
   final String room;
   final String statusColor;
 
   Lesson({
+    required this.id,
+    required this.curricularUnitId,
     required this.shortName,
     required this.className,
     required this.classType,
     required this.start,
     required this.end,
-    required this.id,
     required this.teachers,
     required this.room,
     required this.statusColor,
@@ -25,30 +27,17 @@ class Lesson {
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
     return Lesson(
-      shortName: json['shortName'] as String,
-      className: json['className'] as String,
-      classType: json['classType'] as String,
-      start: json['start'] as String,
-      end: json['end'] as String,
-      id: json['id'] as String,
+      id: json['id'],
+      curricularUnitId: json['curricularUnitId'],
+      shortName: json['shortName'],
+      className: json['className'],
+      classType: json['classType'],
+      start: json['start'],
+      end: json['end'],
       teachers: (json['teachers'] as List<dynamic>).cast<String>(),
-      room: json['room'] as String,
-      statusColor: json['statusColor'] as String,
+      room: json['room'],
+      statusColor: json['statusColor'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'shortName': shortName,
-      'className': className,
-      'classType': classType,
-      'start': start,
-      'end': end,
-      'id': id,
-      'teachers': teachers,
-      'room': room,
-      'statusColor': statusColor,
-    };
   }
 
   static String getStatusFromColor(String color) {
