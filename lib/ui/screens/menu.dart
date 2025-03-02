@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:goipvc/providers/data_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/profile_picture.dart';
@@ -66,6 +68,15 @@ class MenuScreen extends ConsumerWidget {
               ),
               title: Text("Académicos"),
               trailing: Icon(Icons.launch),
+              onTap: () async {
+                final url = Uri.parse(
+                    'https://academicos.ipvc.pt/netpa/page?stage=difhomestage');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
             ),
             ListTile(
               leading: Icon(Icons.local_atm),
@@ -91,6 +102,14 @@ class MenuScreen extends ConsumerWidget {
               ),
               title: Text("SASocial"),
               trailing: Icon(Icons.launch),
+              onTap: () async {
+                final url = Uri.parse('https://sasocial.sas.ipvc.pt/dashboard');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
             ),
             ListTile(
               leading: Icon(Icons.credit_card),
@@ -106,6 +125,14 @@ class MenuScreen extends ConsumerWidget {
               ),
               title: Text("ON"),
               trailing: Icon(Icons.launch),
+              onTap: () async {
+                final url = Uri.parse('https://on.ipvc.pt/dash.php');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
             )
           ]),
           ListSection(title: "Moodle", children: [
@@ -117,6 +144,14 @@ class MenuScreen extends ConsumerWidget {
               ),
               title: Text("Moodle"),
               trailing: Icon(Icons.launch),
+              onTap: () async {
+                final url = Uri.parse('https://elearning.ipvc.pt/ipvc2024/my/');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
             )
           ]),
           Divider(),
