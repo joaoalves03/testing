@@ -94,7 +94,7 @@ class ClassesTab extends ConsumerWidget {
               final lessonDate = DateFormat('yyyy-MM-dd').format(currentDate);
               final lessonsForDate = groupedLessons[lessonDate] ?? [];
 
-              if(currentDate != now || lessonsForDate.isNotEmpty) {
+              if (currentDate != now || lessonsForDate.isNotEmpty) {
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -103,13 +103,13 @@ class ClassesTab extends ConsumerWidget {
                       DateSection(
                         date: currentDate,
                         textColor: lessonsForDate.isNotEmpty
-                          ? null
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                            ? null
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-
                       if (lessonsForDate.isNotEmpty) ...[
                         _buildNowCard(lessonsForDate),
-                        _buildNextOrUpcomingClasses(currentDate, lessonsForDate),
+                        _buildNextOrUpcomingClasses(
+                            currentDate, lessonsForDate),
                       ],
                       SizedBox(height: 15)
                     ],
@@ -128,9 +128,12 @@ class ClassesTab extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
       ),
-      error: (error, stack) => ErrorMessage(callback: () {
-        ref.invalidate(lessonsProvider);
-      }),
+      error: (error, stackTrace) => ErrorMessage(
+          error: error.toString(),
+          stackTrace: stackTrace.toString(),
+          callback: () {
+            ref.invalidate(lessonsProvider);
+          }),
     );
   }
 }
@@ -199,21 +202,15 @@ class RightNowCard extends StatelessWidget {
             Text(lesson.room, style: const TextStyle(fontSize: 13)),
           ],
         ),
-
         Dot(),
-
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 2,
           children: [
-            Icon(
-                lesson.teachers.length == 1 ? Icons.person : Icons.people,
-                size: 16
-            ),
-            Text(
-                _buildTeacherText(lesson.teachers),
-                style: const TextStyle(fontSize: 13)
-            ),
+            Icon(lesson.teachers.length == 1 ? Icons.person : Icons.people,
+                size: 16),
+            Text(_buildTeacherText(lesson.teachers),
+                style: const TextStyle(fontSize: 13)),
           ],
         ),
       ],
@@ -241,8 +238,7 @@ class RightNowCard extends StatelessWidget {
             child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 20,
-                borderRadius: BorderRadius.circular(4)
-            ),
+                borderRadius: BorderRadius.circular(4)),
           ),
         ),
         Text(formatTimeToHours(lesson.end)),
@@ -291,23 +287,17 @@ class UpcomingClass extends StatelessWidget {
               if (!extend) Dot(),
               Text(
                 lesson.classType,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Dot(),
               Expanded(
-                child: Text(
-                  lesson.className,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: extend
-                          ? FontWeight.bold
-                          : FontWeight.normal
-                  ),
-                )
-              ),
+                  child: Text(
+                lesson.className,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: extend ? FontWeight.bold : FontWeight.normal),
+              )),
             ],
           ),
           if (extend)
@@ -326,8 +316,8 @@ class UpcomingClass extends StatelessWidget {
                           children: [
                             TextSpan(text: formatTimeToHours(lesson.start)),
                             WidgetSpan(
-                              child: Icon(Icons.arrow_forward_rounded, size: 16)
-                            ),
+                                child: Icon(Icons.arrow_forward_rounded,
+                                    size: 16)),
                             TextSpan(text: formatTimeToHours(lesson.end)),
                           ],
                         ),
