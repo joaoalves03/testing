@@ -35,7 +35,7 @@ class CurricularUnit {
 
 class UnitGrade {
   final int? value;
-  final String evaluationType;
+  final String? evaluationType;
   final String status;
   final String? date;
   final String academicYear;
