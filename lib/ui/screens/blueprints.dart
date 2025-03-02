@@ -86,6 +86,7 @@ class _BlueprintScreenState extends ConsumerState<BlueprintScreen> {
                     ),
                     minScale: 1.0,
                     maxScale: 10.0,
+                    // enableRotation: true, FOR V999 (Copium Edition)
                     child: Center(
                       child: Image.network(
                         currentBlueprint.imageUrl,
@@ -119,7 +120,7 @@ class _BlueprintScreenState extends ConsumerState<BlueprintScreen> {
                               color: Theme.of(context)
                                   .colorScheme
                                   .shadow
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               blurRadius: 16,
                             ),
                           ],
@@ -145,7 +146,7 @@ class _BlueprintScreenState extends ConsumerState<BlueprintScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Legenda - ${_currentSchool} Piso ${currentBlueprint.index}',
+                                    'Legenda - $_currentSchool Piso ${currentBlueprint.index}',
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -186,7 +187,7 @@ class _BlueprintScreenState extends ConsumerState<BlueprintScreen> {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .shadow
-                                    .withOpacity(0.2),
+                                    .withValues(alpha: 0.1),
                                 blurRadius: 8,
                               ),
                             ],
@@ -277,13 +278,15 @@ class LegendItem extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(4),
             ),
             child: Center(
               child: Text(
                 abbreviation,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ),

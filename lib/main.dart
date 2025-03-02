@@ -70,8 +70,8 @@ class MyApp extends StatelessWidget {
             final ThemeMode themeMode = theme == 'system'
                 ? ThemeMode.system
                 : theme == 'dark'
-                  ? ThemeMode.dark
-                  : ThemeMode.light;
+                    ? ThemeMode.dark
+                    : ThemeMode.light;
 
             return MaterialApp(
               title: 'goIPVC',
@@ -109,11 +109,11 @@ class MyApp extends StatelessWidget {
   }
 
   ThemeData _buildTheme(
-      ColorScheme? dynamicColor,
-      Brightness brightness,
-      String colorSchemePref,
-      String schoolTheme,
-      ) {
+    ColorScheme? dynamicColor,
+    Brightness brightness,
+    String colorSchemePref,
+    String schoolTheme,
+  ) {
     ColorScheme colorScheme;
     if (colorSchemePref == 'system' && dynamicColor != null) {
       colorScheme = ColorScheme.fromSeed(
@@ -121,7 +121,8 @@ class MyApp extends StatelessWidget {
         brightness: brightness,
       );
     } else {
-      return schoolThemes[schoolTheme][brightness == Brightness.dark ? 'dark' : 'light']!;
+      return schoolThemes[schoolTheme]
+          [brightness == Brightness.dark ? 'dark' : 'light']!;
     }
 
     return ThemeData(
