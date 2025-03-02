@@ -177,7 +177,7 @@ class CurricularUnitsScreen extends ConsumerWidget {
                   SizedBox(height: 60),
                   ErrorMessage(
                     error: error.toString(),
-                    stackTrace: stackTrace,
+                    stackTrace: stackTrace.toString(),
                     callback: () async {
                       ref.invalidate(curricularUnitsResponseProvider);
                     }

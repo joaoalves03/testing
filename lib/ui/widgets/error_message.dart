@@ -3,7 +3,7 @@ import 'package:goipvc/ui/widgets/card.dart';
 
 class ErrorMessage extends StatelessWidget {
   final String? error;
-  final StackTrace? stackTrace;
+  final String? stackTrace;
   final VoidCallback? callback;
   final bool shouldBeLogged;
   final IconData icon;
@@ -55,18 +55,27 @@ class ErrorMessage extends StatelessWidget {
                     backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                     title: "Stack Trace",
                     body: [
-                      SingleChildScrollView(
-                        child: Text(
-                          stackTrace.toString(),
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant
-                          ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.6,
+                        ),
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SelectableText(
+                              stackTrace!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ]
-                  )
-                ],
+                    ],
+                  ),
+                ]
               ],
             ),
           ),

@@ -70,7 +70,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           error: (error, stackTrace) => ErrorMessage(
             error: error.toString(),
-            stackTrace: stackTrace,
+            stackTrace: stackTrace.toString(),
             callback: () async {
               ref.invalidate(studentInfoProvider);
               ref.invalidate(studentImageProvider);
