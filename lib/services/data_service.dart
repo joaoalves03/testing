@@ -208,12 +208,22 @@ class DataService {
     var student = Student.fromJson(jsonDecode(response.body));
     student.email = "$username@ipvc.pt";
 
+    final SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+    if (!sharedPreferences.containsKey('course_id')) {
+      await sharedPreferences.setInt('course_id', student.courseId);
+    }
+
     return student;
   }
 
-  Future<Uint8List> getStudentImage(int studentId, int courseId) async {
+  Future<Uint8List> getStudentImage(int studentId) async {
     final prefs = await ref.read(prefsProvider.future);
     final academicosToken = prefs['academicos_token'] ?? 'JSESSIONID=...';
+
+    final SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+    var courseId = sharedPreferences.getInt('course_id');
 
     final url =
         'https://academicos.ipvc.pt/netpa/PhotoLoader?codAluno=$studentId&codCurso=$courseId';
@@ -226,19 +236,37 @@ class DataService {
     return response.bodyBytes;
   }
 
-  Future<CurricularUnit> getCurricularUnit(int curricularUnitId) async {
+  Future<Map<String, dynamic>> getCurricularUnit(int curricularUnitId) async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
-    final academicosToken = prefs['academicos_token'] ?? '';
+    final onToken = prefs['on_token'] ?? '';
+
+    final SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+    var courseId = sharedPreferences.getInt('course_id');
+
+    final curricularUnits = await ref.read(curricularUnitsProvider.future);
+    final curricularUnit = curricularUnits.firstWhere(
+          (unit) => unit.id == curricularUnitId,
+      orElse: () => throw Exception('Curricular unit $curricularUnitId not found'),
+    );
 
     final response = await request(
-      'GET',
-      '$serverUrl/academicos/curricular-unit',
-      {'Cookie': academicosToken},
+      'POST',
+      '$serverUrl/on/curricular-unit',
+      {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': onToken
+      },
+      body: 'courseId=$courseId&classId=$curricularUnitId'
     );
 
     final data = jsonDecode(response.body);
-    return CurricularUnit.fromJson(data);
+
+    return {
+      'unit': curricularUnit,
+      'puc': data,
+    };
   }
 
   Future<Map<String, dynamic>> getCurricularUnits() async {
