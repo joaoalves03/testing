@@ -21,6 +21,11 @@ class MenuScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Material(
+        child: RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(studentInfoProvider);
+        ref.invalidate(studentImageProvider);
+      },
       child: ListView(
         children: [
           Padding(
@@ -176,10 +181,13 @@ class MenuScreen extends ConsumerWidget {
                 ref.invalidate(firstNameProvider);
                 ref.invalidate(balanceProvider);
                 ref.invalidate(studentIdProvider);
+                ref.invalidate(lessonsProvider);
                 ref.invalidate(studentInfoProvider);
                 ref.invalidate(studentImageProvider);
-                ref.invalidate(lessonsProvider);
+                ref.invalidate(curricularUnitProvider);
+                ref.invalidate(curricularUnitsResponseProvider);
                 ref.invalidate(curricularUnitsProvider);
+                ref.invalidate(averageGradeProvider);
                 ref.invalidate(tuitionsProvider);
 
                 final prefs = await SharedPreferences.getInstance();
@@ -197,7 +205,7 @@ class MenuScreen extends ConsumerWidget {
           ])
         ],
       ),
-    );
+    ));
   }
 }
 
