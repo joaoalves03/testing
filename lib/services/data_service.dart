@@ -241,19 +241,26 @@ class DataService {
     return CurricularUnit.fromJson(data);
   }
 
-  Future<List<CurricularUnit>> getCurricularUnits() async {
+  Future<Map<String, dynamic>> getCurricularUnits() async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
     final academicosToken = prefs['academicos_token'] ?? '';
 
     final response = await request(
-      'GET',
+      'POST',
       '$serverUrl/academicos/curricular-units',
       {'Cookie': academicosToken},
     );
 
-    final data = jsonDecode(response.body) as List;
-    return data.map((e) => CurricularUnit.fromJson(e)).toList();
+    final data = jsonDecode(response.body);
+    List<CurricularUnit> units = [];
+    final cuList = data['curricularUnits'] as List;
+    units.addAll(cuList.map((e) => CurricularUnit.fromJson(e)).toList());
+
+    return {
+      "avgGrade": data['avgGrade'],
+      "curricularUnits": units
+    };
   }
 
   Future<List<TuitionFee>> getTuitionFees() async {

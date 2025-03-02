@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/models/curricular_unit.dart';
 import 'package:goipvc/ui/screens/menu/curricular_unit.dart';
+import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/dot.dart';
@@ -11,6 +12,16 @@ import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
 
 final selectedChipProvider = StateProvider.autoDispose<int>((ref) => -1);
 
+final curricularUnitsProvider = FutureProvider<List<CurricularUnit>>((ref) async {
+  final response = await ref.watch(curricularUnitsResponseProvider.future);
+  return response['curricularUnits'] as List<CurricularUnit>;
+});
+
+final averageGradeProvider = FutureProvider<double>((ref) async {
+  final response = await ref.watch(curricularUnitsResponseProvider.future);
+  return response['avgGrade'] as double;
+});
+
 class CurricularUnitsScreen extends ConsumerWidget {
   const CurricularUnitsScreen({super.key});
 
@@ -18,6 +29,7 @@ class CurricularUnitsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedChip = ref.watch(selectedChipProvider);
     final curricularUnitsAsync = ref.watch(curricularUnitsProvider);
+    final averageGradeAsync = ref.watch(averageGradeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,12 +37,14 @@ class CurricularUnitsScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(curricularUnitsProvider);
+          ref.invalidate(curricularUnitsResponseProvider);
         },
         child: ListView(
           children: [
-            const GradeAverage(
-              grade: 16.22,
+            averageGradeAsync.when(
+              data: (grade) => GradeAverage(grade: grade),
+              loading: () => const GradeAverage(loading: true),
+              error: (_, __) => const GradeAverage(error: true),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -102,23 +116,23 @@ class CurricularUnitsScreen extends ConsumerWidget {
                 List<CurricularUnit> filteredUnits = [];
                 if (selectedChip == -1) {
                   if (curricularUnits.isNotEmpty) {
-                    final academicYear = curricularUnits.first.academicYear;
+                    final academicYear = "2024-25";
                     filteredUnits = curricularUnits.where(
-                            (unit) => unit.academicYear == academicYear
-                                      && unit.semester == 2 //todo: actually use a good check
+                            (unit) => unit.grades.last.academicYear == academicYear
+                                      && unit.semester == 2 // TODO: actually use a good check
                     ).toList();
                   }
                 } else if (selectedChip == 0) {
                   filteredUnits = curricularUnits;
                 } else {
                   filteredUnits = curricularUnits.where(
-                          (unit) => unit.studyYear == selectedChip
+                          (unit) => unit.year == selectedChip
                   ).toList();
                 }
 
                 Map<int, List<CurricularUnit>> unitsByYear = {};
                 for (var unit in filteredUnits) {
-                  unitsByYear.putIfAbsent(unit.studyYear, () => []).add(unit);
+                  unitsByYear.putIfAbsent(unit.year, () => []).add(unit);
                 }
 
                 return Padding(
@@ -152,13 +166,24 @@ class CurricularUnitsScreen extends ConsumerWidget {
                   ),
                 );
               },
-              loading: () => Center(
-                  child: CircularProgressIndicator()
+              loading: () => Column(
+                children: [
+                  SizedBox(height: 60),
+                  CircularProgressIndicator()
+                ],
               ),
-              error: (e, stackTrace) =>
-                  Center(
-                      child: Text('Failed to load curricular units')
+              error: (error, stackTrace) => Column(
+                children: [
+                  SizedBox(height: 60),
+                  ErrorMessage(
+                    error: error.toString(),
+                    stackTrace: stackTrace,
+                    callback: () async {
+                      ref.invalidate(curricularUnitsResponseProvider);
+                    }
                   ),
+                ],
+              ),
             )
           ],
         ),
@@ -168,11 +193,15 @@ class CurricularUnitsScreen extends ConsumerWidget {
 }
 
 class GradeAverage extends StatelessWidget {
-  final double grade;
+  final double? grade;
+  final bool loading;
+  final bool error;
 
   const GradeAverage({
     super.key,
-    required this.grade
+    this.grade,
+    this.loading = false,
+    this.error = false,
   });
 
   @override
@@ -182,14 +211,31 @@ class GradeAverage extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
-            Text(
-              '$grade',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 40,
-                fontWeight: FontWeight.bold
+            if(loading && !error)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: CircularProgressIndicator(),
+              )
+            else if (error) ...[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  'Não foi possível obter a média',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                )
+              )
+            ]
+            else
+              Text(
+                '$grade',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold
+                ),
               ),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -261,49 +307,52 @@ class CurricularUnitCard extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.school,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  SizedBox(width: 6),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              '$semesterº Semestre',
-                              style: TextStyle(
-                                fontSize: 10,
-                              ),
-                            ),
-                            Dot(size: 16),
-                            Text(
-                              '$ects ECTS',
-                              style: TextStyle(
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: grade != null ? 0 : 3),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.school,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                '$semesterº Semestre',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                              Dot(size: 16),
+                              Text(
+                                '$ects ECTS',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (grade != null) ...[

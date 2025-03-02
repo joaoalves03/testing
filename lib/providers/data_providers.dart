@@ -67,8 +67,8 @@ final curricularUnitProvider =
   return dataService.getCurricularUnit(curricularUnitId);
 });
 
-final curricularUnitsProvider =
-    FutureProvider<List<CurricularUnit>>((ref) async {
+final curricularUnitsResponseProvider =
+    FutureProvider<Map<String, dynamic>>((ref) async {
   final dataService = ref.read(dataServiceProvider);
   return dataService.getCurricularUnits();
 });
