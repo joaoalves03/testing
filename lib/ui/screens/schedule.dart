@@ -7,6 +7,7 @@ import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/models/task.dart';
 import 'package:goipvc/models/holiday.dart';
 import 'package:goipvc/ui/widgets/lesson_sheet.dart';
+import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:goipvc/providers/data_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,8 +21,8 @@ class ScheduleScreen extends ConsumerStatefulWidget {
 class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   final CalendarController _calendarController = CalendarController();
   CalendarView _currentView = CalendarView.week;
-  String _headerText = "Month Year";
   final ValueNotifier<bool> _showWeekends = ValueNotifier<bool>(true);
+  late String _headerText;
 
   static const String calendarViewKey = 'calendar_view';
 
@@ -51,6 +52,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   @override
   void initState() {
     super.initState();
+    _headerText = DateFormat('MMMM yyyy').format(DateTime.now());
     _loadPreferences();
   }
 
@@ -101,7 +103,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
 
   Future<void> _savePreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(calendarViewKey, _getStringFromCalendarView(_currentView));
+    await prefs.setString(
+        calendarViewKey, _getStringFromCalendarView(_currentView));
   }
 
   MeetingDataSource _getDataSource(List<Lesson> lessons) {
@@ -192,45 +195,45 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     final lessonsAsync = ref.watch(lessonsProvider);
 
     return Scaffold(
-      body: lessonsAsync.when(
-        data: (lessons) {
-          return Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: SizedBox(
-                  height: 40,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Text(
-                              toBeginningOfSentenceCase(_headerText),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ],
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: SizedBox(
+              height: 40,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Text(
+                          toBeginningOfSentenceCase(_headerText),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18),
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.today),
-                        onPressed: () {
-                          _calendarController.displayDate = DateTime.now();
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.settings),
-                        onPressed: () {
-                          _showSettingsSheet(context);
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  IconButton(
+                    icon: Icon(Icons.today),
+                    onPressed: () {
+                      _calendarController.displayDate = DateTime.now();
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      _showSettingsSheet(context);
+                    },
+                  ),
+                ],
               ),
-              Expanded(
-                child: SfCalendar(
+            ),
+          ),
+          Expanded(
+            child: lessonsAsync.when(
+              data: (lessons) {
+                return SfCalendar(
                   headerHeight: 0,
                   firstDayOfWeek: 1,
                   cellEndPadding: 0,
@@ -291,18 +294,23 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                       }
                     });
                   },
-                ),
-              ),
-            ],
-          );
-        },
-        loading: () => Center(
-            child: SizedBox(
-          width: 50,
-          height: 50,
-          child: CircularProgressIndicator(),
-        )),
-        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+                );
+              },
+              loading: () => Center(
+                  child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(),
+              )),
+              error: (error, stackTrace) => ErrorMessage(
+                  error: error.toString(),
+                  stackTrace: stackTrace.toString(),
+                  callback: () {
+                    ref.invalidate(lessonsProvider);
+                  }),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -528,19 +536,18 @@ class Settings extends StatelessWidget {
     required Widget tailing,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Row(
-        children: [
-          Text(label),
-          Spacer(),
-          tailing,
-        ],
-      )
-    );
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Row(
+          children: [
+            Text(label),
+            Spacer(),
+            tailing,
+          ],
+        ));
   }
 }
