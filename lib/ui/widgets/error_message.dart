@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goipvc/ui/widgets/card.dart';
 
 class ErrorMessage extends StatelessWidget {
+  final String? message;
   final String? error;
   final String? stackTrace;
   final VoidCallback? callback;
@@ -10,6 +11,7 @@ class ErrorMessage extends StatelessWidget {
 
   const ErrorMessage({
     super.key,
+    this.message,
     this.error,
     this.stackTrace,
     this.callback,
@@ -91,7 +93,10 @@ class ErrorMessage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Icon(icon, size: 48),
-          Text("Ocorreu um erro", style: const TextStyle(fontSize: 24)),
+          Text(
+              message ?? "Ocorreu um erro",
+              style: const TextStyle(fontSize: 24)
+          ),
           if (callback != null)
             Padding(
               padding: const EdgeInsets.only(top: 8),

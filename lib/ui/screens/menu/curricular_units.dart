@@ -12,16 +12,6 @@ import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
 
 final selectedChipProvider = StateProvider.autoDispose<int>((ref) => -1);
 
-final curricularUnitsProvider = FutureProvider<List<CurricularUnit>>((ref) async {
-  final response = await ref.watch(curricularUnitsResponseProvider.future);
-  return response['curricularUnits'] as List<CurricularUnit>;
-});
-
-final averageGradeProvider = FutureProvider<double>((ref) async {
-  final response = await ref.watch(curricularUnitsResponseProvider.future);
-  return response['avgGrade'] as double;
-});
-
 class CurricularUnitsScreen extends ConsumerWidget {
   const CurricularUnitsScreen({super.key});
 
@@ -128,6 +118,12 @@ class CurricularUnitsScreen extends ConsumerWidget {
                   filteredUnits = curricularUnits.where(
                           (unit) => unit.year == selectedChip
                   ).toList();
+                }
+
+                if (selectedChip == -1 && filteredUnits.isEmpty) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ref.read(selectedChipProvider.notifier).state = 0;
+                  });
                 }
 
                 Map<int, List<CurricularUnit>> unitsByYear = {};
