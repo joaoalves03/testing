@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:goipvc/models/notification.dart';
+import 'package:goipvc/models/app_notification.dart';
 import 'package:goipvc/ui/widgets/error_message.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -12,12 +12,12 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   // TODO: Replace with actual notifications eventually
   final List<dynamic> _notifications = [
-    NotificationModel(
+    AppNotification(
       type: 'update',
       title: '0.25.5',
       timestamp: DateTime.now().subtract(Duration(hours: 1)),
     ),
-    NotificationModel(
+    AppNotification(
       type: 'normal',
       icon: Icons.watch_later,
       topText: 'Aula alterada',
@@ -25,7 +25,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       subtitle: 'Aula de 5/3/2024 - S 2.4 para A 2.1',
       timestamp: DateTime(2024, 3, 5, 9, 10),
     ),
-    NotificationModel(
+    AppNotification(
       type: 'normal',
       icon: Icons.school_rounded,
       topText: 'Moodle',
@@ -33,7 +33,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       subtitle: 'Nova tarefa',
       timestamp: DateTime(2024, 3, 5, 9, 10),
     ),
-    NotificationModel(
+    AppNotification(
       type: 'normal',
       icon: Icons.message_rounded,
       topText: 'Moodle',
@@ -87,7 +87,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 }
 
 class NotificationContainer extends StatelessWidget {
-  final NotificationModel notification;
+  final AppNotification notification;
   final VoidCallback onDismissed;
 
   const NotificationContainer({
@@ -165,7 +165,7 @@ class NotificationContainer extends StatelessWidget {
 }
 
 class UpdateNotificationContainer extends StatelessWidget {
-  final NotificationModel notification;
+  final AppNotification notification;
   final VoidCallback onUpdate;
   final VoidCallback onChangelog;
 
