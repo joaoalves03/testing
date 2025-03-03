@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,8 +8,9 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:goipvc/generated/l10n.dart';
-import 'package:goipvc/ui/widgets/containers.dart';
 import 'package:goipvc/ui/first_time.dart';
+import 'package:goipvc/ui/screens/terms.dart';
+import 'package:goipvc/ui/widgets/containers.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -255,83 +257,128 @@ class LoginState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              _showQuickSettings(context);
-            },
-            icon: const Icon(Icons.settings),
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SvgPicture.asset(
-              'assets/logo.svg',
-              height: 64,
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            AutofillGroup(
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: S.of(context).username,
-                      errorText: _usernameError,
-                      errorStyle: const TextStyle(color: Colors.red),
-                    ),
-                    autofillHints: const [AutofillHints.username],
-                    autocorrect: false,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: S.of(context).password,
-                      errorText: _passwordError,
-                      errorStyle: const TextStyle(color: Colors.red),
-                    ),
-                    obscureText: true,
-                    autofillHints: const [AutofillHints.password],
-                    autocorrect: false,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            FilledButton.icon(
-              onPressed: _isLoggingIn ? null : _login,
-              label: Text("Login"),
-              icon: _isLoggingIn
-                  ? Container(
-                      width: 24,
-                      height: 24,
-                      padding: const EdgeInsets.all(2.0),
-                      child: CircularProgressIndicator(),
-                    )
-                  : const Icon(Icons.login),
-            ),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () {
+                _showQuickSettings(context);
+              },
+              icon: const Icon(Icons.settings),
+            )
           ],
         ),
-      )
-    );
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/logo.svg',
+                height: 64,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onSurface,
+                  BlendMode.srcIn,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              AutofillGroup(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: S.of(context).username,
+                        errorText: _usernameError,
+                        errorStyle: const TextStyle(color: Colors.red),
+                      ),
+                      autofillHints: const [AutofillHints.username],
+                      autocorrect: false,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: S.of(context).password,
+                        errorText: _passwordError,
+                        errorStyle: const TextStyle(color: Colors.red),
+                      ),
+                      obscureText: true,
+                      autofillHints: const [AutofillHints.password],
+                      autocorrect: false,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              FilledButton.icon(
+                onPressed: _isLoggingIn ? null : _login,
+                label: Text("Login"),
+                icon: _isLoggingIn
+                    ? Container(
+                        width: 24,
+                        height: 24,
+                        padding: const EdgeInsets.all(2.0),
+                        child: CircularProgressIndicator(),
+                      )
+                    : const Icon(Icons.login),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+
+              // Terms message
+              Text.rich(
+                TextSpan(
+                  text: "Ao fazer login, está de acordo com os ",
+                  children: [
+                    TextSpan(
+                      text: "termos e condições",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TermsScreen(),
+                            ),
+                          );
+                        },
+                    ),
+                    TextSpan(text: " do goipvc, que pode ler "),
+                    TextSpan(
+                      text: "aqui",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TermsScreen(),
+                            ),
+                          );
+                        },
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ));
   }
 }

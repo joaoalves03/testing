@@ -13,16 +13,10 @@ class FirstTimeScreen extends StatefulWidget {
 class FirstTimeScreenState extends State<FirstTimeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  bool _acceptedTerms = false;
-
-  void _handleConsentChange(bool? value) async {
-    setState(() {
-      _acceptedTerms = value ?? false;
-    });
-  }
+  final List<Widget> pages = [ThemePage(), NotificationsPage()];
 
   void _nextPage(BuildContext context) async {
-    if (_currentPage < 2) {
+    if (_currentPage < pages.length - 1) {
       await _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -56,14 +50,7 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: [
-          ConsentPage(
-            accepted: _acceptedTerms,
-            onChanged: _handleConsentChange,
-          ),
-          ThemePage(),
-          NotificationsPage()
-        ],
+        children: pages,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
@@ -80,99 +67,15 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
             FloatingActionButton(
               heroTag: "nextButton",
               elevation: 0,
-              foregroundColor: (!_acceptedTerms)
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.onPrimary,
-              backgroundColor: (!_acceptedTerms)
-                  ? Theme.of(context).colorScheme.surfaceContainerHighest
-                  : Theme.of(context).colorScheme.primary,
-              onPressed: (!_acceptedTerms) ? null : () => _nextPage(context),
-              child: _currentPage == 2
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () => _nextPage(context),
+              child: _currentPage == pages.length - 1
                   ? const Icon(Icons.done)
                   : const Icon(Icons.navigate_next),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ConsentPage extends StatelessWidget {
-  final bool accepted;
-  final ValueChanged<bool?> onChanged;
-
-  const ConsentPage({
-    super.key,
-    required this.accepted,
-    required this.onChanged,
-  });
-
-  String generateLoremIpsum({int paragraphs = 1}) {
-    const loremIpsumText =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
-    return List.filled(paragraphs, loremIpsumText).join('\n\n');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Terms of Service & Privacy Policy",
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: MediaQuery.of(context).size.height * 0.5,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Text(
-                      "Terms of Service",
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  Text(
-                    generateLoremIpsum(paragraphs: 3),
-                  ),
-                  SizedBox(height: 35),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      "Privacy Policy",
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  Text(
-                    generateLoremIpsum(paragraphs: 3),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          CheckboxListTile(
-            title: Text(
-                "I have read and agree to the Terms of Service and Privacy Policy"),
-            value: accepted,
-            onChanged: onChanged,
-          ),
-        ],
       ),
     );
   }
