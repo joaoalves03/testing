@@ -199,6 +199,49 @@ class GradeAverage extends StatelessWidget {
     this.error = false,
   });
 
+  void showInformationBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return SafeArea(
+            child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.outline,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Como é calculada a média global?",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(height: 10),
+              Text(
+                  "A média é calculada tendo em consideração a nota da Unidade Curricular e os seus respetivos ECTS."),
+              SizedBox(height: 10),
+              Text(
+                  "Primeiro obtém-se o somatório das notas das UCs multiplicadas pelos seus ECTS. De seguida, divide-se esse valor pelo somatório dos ECTS das UCs."),
+            ],
+          ),
+        ));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -228,19 +271,24 @@ class GradeAverage extends StatelessWidget {
                   fontSize: 40,
                   fontWeight: FontWeight.bold),
             ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Média Global",
-                  style: TextStyle(
-                    fontSize: 14,
-                  )),
-              SizedBox(width: 6),
-              Icon(
-                Icons.info,
-                size: 14,
-              )
-            ],
+          GestureDetector(
+            onTap: () {
+              showInformationBottomSheet(context);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Média Global",
+                    style: TextStyle(
+                      fontSize: 14,
+                    )),
+                SizedBox(width: 6),
+                Icon(
+                  Icons.info,
+                  size: 14,
+                )
+              ],
+            ),
           )
         ],
       ),
