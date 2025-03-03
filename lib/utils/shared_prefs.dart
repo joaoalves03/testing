@@ -7,10 +7,6 @@ class SharedPrefsUtil {
   static Future<void> initializeDefaults() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (!prefs.containsKey('tos_accepted')) {
-      await prefs.setBool('tos_accepted', false);
-    }
-
     if (!prefs.containsKey('theme')) {
       await prefs.setString('theme', 'light');
     }
@@ -25,7 +21,6 @@ class SharedPrefsUtil {
 
     SharedPrefsUtil.printPrefs();
   }
-
 
   static Future<void> printPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

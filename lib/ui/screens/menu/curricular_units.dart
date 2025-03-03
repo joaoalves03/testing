@@ -9,7 +9,6 @@ import 'package:goipvc/ui/widgets/card.dart';
 import 'package:goipvc/ui/widgets/dot.dart';
 import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
 
-
 final selectedChipProvider = StateProvider.autoDispose<int>((ref) => -1);
 
 class CurricularUnitsScreen extends ConsumerWidget {
@@ -22,169 +21,169 @@ class CurricularUnitsScreen extends ConsumerWidget {
     final averageGradeAsync = ref.watch(averageGradeProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Cadeiras"),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(curricularUnitsResponseProvider);
-        },
-        child: ListView(
-          children: [
-            averageGradeAsync.when(
-              data: (grade) => GradeAverage(grade: grade),
-              loading: () => const GradeAverage(loading: true),
-              error: (_, __) => const GradeAverage(error: true),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
-                  children: [
-                    OptionChip(
-                      label: "Este Semestre",
-                      selected: selectedChip == -1,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          ref.read(selectedChipProvider.notifier).state = -1;
-                        }
-                      },
-                    ),
-                    Container(
-                      width: 2,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outline,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    OptionChip(
-                      label: "Tudo",
-                      selected: selectedChip == 0,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          ref.read(selectedChipProvider.notifier).state = 0;
-                        }
-                      },
-                    ),
-                    OptionChip(
-                      label: "1º ano",
-                      selected: selectedChip == 1,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          ref.read(selectedChipProvider.notifier).state = 1;
-                        }
-                      },
-                    ),
-                    OptionChip(
-                      label: "2º ano",
-                      selected: selectedChip == 2,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          ref.read(selectedChipProvider.notifier).state = 2;
-                        }
-                      },
-                    ),
-                    OptionChip(
-                      label: "3º ano",
-                      selected: selectedChip == 3,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          ref.read(selectedChipProvider.notifier).state = 3;
-                        }
-                      },
-                    ),
-                  ],
-                ),
+        appBar: AppBar(
+          title: Text("Cadeiras"),
+        ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(curricularUnitsResponseProvider);
+          },
+          child: ListView(
+            children: [
+              averageGradeAsync.when(
+                data: (grade) => GradeAverage(grade: grade),
+                loading: () => const GradeAverage(loading: true),
+                error: (_, __) => const GradeAverage(error: true),
               ),
-            ),
-            curricularUnitsAsync.when(
-              data: (curricularUnits) {
-                List<CurricularUnit> filteredUnits = [];
-                if (selectedChip == -1) {
-                  if (curricularUnits.isNotEmpty) {
-                    final academicYear = "2024-25";
-                    filteredUnits = curricularUnits.where(
-                            (unit) => unit.grades.last.academicYear == academicYear
-                                      && unit.semester == 2 // TODO: actually use a good check
-                    ).toList();
-                  }
-                } else if (selectedChip == 0) {
-                  filteredUnits = curricularUnits;
-                } else {
-                  filteredUnits = curricularUnits.where(
-                          (unit) => unit.year == selectedChip
-                  ).toList();
-                }
-
-                if (selectedChip == -1 && filteredUnits.isEmpty) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ref.read(selectedChipProvider.notifier).state = 0;
-                  });
-                }
-
-                Map<int, List<CurricularUnit>> unitsByYear = {};
-                for (var unit in filteredUnits) {
-                  unitsByYear.putIfAbsent(unit.year, () => []).add(unit);
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
                     children: [
-                      for (var year in unitsByYear.keys)
-                        ListSection(
-                          title: "$yearº ano",
-                          children: [
-                            for (var curricularUnit in unitsByYear[year]!)
-                              CurricularUnitCard(
-                                name: curricularUnit.name,
-                                semester: curricularUnit.semester,
-                                ects: curricularUnit.ects,
-                                grade: curricularUnit.finalGrade,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CurricularUnitScreen(
-                                        curricularUnitId: curricularUnit.id,
-                                      )
-                                    )
-                                  );
-                                },
-                              ),
-                          ],
+                      OptionChip(
+                        label: "Este Semestre",
+                        selected: selectedChip == -1,
+                        onSelected: (isSelected) {
+                          if (isSelected) {
+                            ref.read(selectedChipProvider.notifier).state = -1;
+                          }
+                        },
+                      ),
+                      Container(
+                        width: 2,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.outline,
+                          borderRadius: BorderRadius.circular(2),
                         ),
+                      ),
+                      OptionChip(
+                        label: "Tudo",
+                        selected: selectedChip == 0,
+                        onSelected: (isSelected) {
+                          if (isSelected) {
+                            ref.read(selectedChipProvider.notifier).state = 0;
+                          }
+                        },
+                      ),
+                      OptionChip(
+                        label: "1º ano",
+                        selected: selectedChip == 1,
+                        onSelected: (isSelected) {
+                          if (isSelected) {
+                            ref.read(selectedChipProvider.notifier).state = 1;
+                          }
+                        },
+                      ),
+                      OptionChip(
+                        label: "2º ano",
+                        selected: selectedChip == 2,
+                        onSelected: (isSelected) {
+                          if (isSelected) {
+                            ref.read(selectedChipProvider.notifier).state = 2;
+                          }
+                        },
+                      ),
+                      OptionChip(
+                        label: "3º ano",
+                        selected: selectedChip == 3,
+                        onSelected: (isSelected) {
+                          if (isSelected) {
+                            ref.read(selectedChipProvider.notifier).state = 3;
+                          }
+                        },
+                      ),
                     ],
                   ),
-                );
-              },
-              loading: () => Column(
-                children: [
-                  SizedBox(height: 60),
-                  CircularProgressIndicator()
-                ],
+                ),
               ),
-              error: (error, stackTrace) => Column(
-                children: [
-                  SizedBox(height: 60),
-                  ErrorMessage(
-                    error: error.toString(),
-                    stackTrace: stackTrace.toString(),
-                    callback: () async {
-                      ref.invalidate(curricularUnitsResponseProvider);
+              curricularUnitsAsync.when(
+                data: (curricularUnits) {
+                  List<CurricularUnit> filteredUnits = [];
+                  if (selectedChip == -1) {
+                    if (curricularUnits.isNotEmpty) {
+                      final academicYear = "2024-25";
+                      filteredUnits = curricularUnits
+                          .where((unit) =>
+                                  unit.grades.last.academicYear ==
+                                      academicYear &&
+                                  unit.semester ==
+                                      2 // TODO: actually use a good check
+                              )
+                          .toList();
                     }
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      )
-    );
+                  } else if (selectedChip == 0) {
+                    filteredUnits = curricularUnits;
+                  } else {
+                    filteredUnits = curricularUnits
+                        .where((unit) => unit.year == selectedChip)
+                        .toList();
+                  }
+
+                  if (selectedChip == -1 && filteredUnits.isEmpty) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      ref.read(selectedChipProvider.notifier).state = 0;
+                    });
+                  }
+
+                  Map<int, List<CurricularUnit>> unitsByYear = {};
+                  for (var unit in filteredUnits) {
+                    unitsByYear.putIfAbsent(unit.year, () => []).add(unit);
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      children: [
+                        for (var year in unitsByYear.keys)
+                          ListSection(
+                            title: "$yearº ano",
+                            children: [
+                              for (var curricularUnit in unitsByYear[year]!)
+                                CurricularUnitCard(
+                                  name: curricularUnit.name,
+                                  semester: curricularUnit.semester,
+                                  ects: curricularUnit.ects,
+                                  grade: curricularUnit.finalGrade,
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                CurricularUnitScreen(
+                                                  curricularUnitId:
+                                                      curricularUnit.id,
+                                                )));
+                                  },
+                                ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  );
+                },
+                loading: () => Column(
+                  children: [SizedBox(height: 60), CircularProgressIndicator()],
+                ),
+                error: (error, stackTrace) => Column(
+                  children: [
+                    SizedBox(height: 60),
+                    ErrorMessage(
+                        error: error.toString(),
+                        stackTrace: stackTrace.toString(),
+                        callback: () async {
+                          ref.invalidate(curricularUnitsResponseProvider);
+                        }),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }
 
@@ -203,55 +202,49 @@ class GradeAverage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          children: [
-            if(loading && !error)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: CircularProgressIndicator(),
-              )
-            else if (error) ...[
-              Padding(
+        child: Padding(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        children: [
+          if (loading && !error)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: CircularProgressIndicator(),
+            )
+          else if (error) ...[
+            Padding(
                 padding: EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   'Não foi possível obter a média',
                   style: TextStyle(
                     fontSize: 20,
                   ),
-                )
-              )
-            ]
-            else
-              Text(
-                '$grade',
-                style: TextStyle(
+                ))
+          ] else
+            Text(
+              '$grade',
+              style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontSize: 40,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Média Global",
+                  fontWeight: FontWeight.bold),
+            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Média Global",
                   style: TextStyle(
                     fontSize: 14,
-                  )
-                ),
-                SizedBox(width: 6),
-                Icon(
-                  Icons.info,
-                  size: 14,
-                )
-              ],
-            )
-          ],
-        ),
-      )
-    );
+                  )),
+              SizedBox(width: 6),
+              Icon(
+                Icons.info,
+                size: 14,
+              )
+            ],
+          )
+        ],
+      ),
+    ));
   }
 }
 
@@ -351,10 +344,7 @@ class CurricularUnitCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (grade != null) ...[
-              SizedBox(width: 10),
-              Grade(grade: grade!)
-            ]
+            if (grade != null) ...[SizedBox(width: 10), Grade(grade: grade!)]
           ],
         ),
       ],

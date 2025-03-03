@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/ui/screens/login.dart';
 import 'package:goipvc/ui/widgets/dropdown.dart';
 import 'init_view.dart';
@@ -20,12 +19,6 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
     setState(() {
       _acceptedTerms = value ?? false;
     });
-
-  }
-
-  void changeConsentPrefs(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('tos_accepted', _acceptedTerms);
   }
 
   void _nextPage(BuildContext context) async {
@@ -36,7 +29,6 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
       );
       setState(() => _currentPage++);
     } else {
-      changeConsentPrefs(true);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const InitView()),
       );
@@ -44,15 +36,13 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
   }
 
   void _previousPage() async {
-    if(_currentPage > 0){
+    if (_currentPage > 0) {
       await _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
       setState(() => _currentPage--);
-    }else{
-      changeConsentPrefs(false);
-
+    } else {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
@@ -77,7 +67,7 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -108,7 +98,6 @@ class FirstTimeScreenState extends State<FirstTimeScreen> {
   }
 }
 
-
 class ConsentPage extends StatelessWidget {
   final bool accepted;
   final ValueChanged<bool?> onChanged;
@@ -120,7 +109,8 @@ class ConsentPage extends StatelessWidget {
   });
 
   String generateLoremIpsum({int paragraphs = 1}) {
-    const loremIpsumText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    const loremIpsumText =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
     return List.filled(paragraphs, loremIpsumText).join('\n\n');
   }
@@ -177,7 +167,8 @@ class ConsentPage extends StatelessWidget {
           ),
           SizedBox(height: 16.0),
           CheckboxListTile(
-            title: Text("I have read and agree to the Terms of Service and Privacy Policy"),
+            title: Text(
+                "I have read and agree to the Terms of Service and Privacy Policy"),
             value: accepted,
             onChanged: onChanged,
           ),
@@ -186,7 +177,6 @@ class ConsentPage extends StatelessWidget {
     );
   }
 }
-
 
 class ThemePage extends StatelessWidget {
   const ThemePage({super.key});
@@ -203,8 +193,7 @@ class ThemePage extends StatelessWidget {
               child: Text(
                 "Aparência",
                 style: Theme.of(context).textTheme.headlineSmall,
-              )
-          ),
+              )),
           ListTile(
             leading: Icon(Icons.brightness_medium),
             title: Text("Tema"),
@@ -224,7 +213,7 @@ class ThemePage extends StatelessWidget {
                   child: Text("Claro"),
                 ),
               ],
-              onChanged: (String? value) {  },
+              onChanged: (String? value) {},
             ),
           ),
         ],
@@ -248,8 +237,7 @@ class NotificationsPage extends StatelessWidget {
               child: Text(
                 "Notificações",
                 style: Theme.of(context).textTheme.headlineSmall,
-              )
-          ),
+              )),
           SwitchListTile(
             secondary: const Icon(Icons.notifications_on),
             title: Text("Notificações"),

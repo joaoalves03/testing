@@ -46,8 +46,7 @@ class TeachersScreenState extends State<TeachersScreen> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredTeachers = teachers
-          .where((teacher) =>
-          teacher.name.toLowerCase().contains(query))
+          .where((teacher) => teacher.name.toLowerCase().contains(query))
           .toList();
     });
   }

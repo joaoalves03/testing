@@ -9,7 +9,6 @@ import 'package:logger/logger.dart';
 
 import 'utils/shared_prefs.dart';
 
-import 'ui/first_time.dart';
 import 'ui/init_view.dart';
 import 'ui/screens/login.dart';
 
@@ -34,14 +33,12 @@ class MyApp extends StatelessWidget {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-    final bool tosAccepted = prefs.getBool('tos_accepted') ?? false;
     final String theme = prefs.getString('theme') ?? 'light';
     final String colorScheme = prefs.getString('color_scheme') ?? 'school';
     final String schoolTheme = prefs.getString('school_theme') ?? 'IPVC';
 
     return {
       'isLoggedIn': isLoggedIn,
-      'tosAccepted': tosAccepted,
       'theme': theme,
       'colorScheme': colorScheme,
       'schoolTheme': schoolTheme,
@@ -62,7 +59,6 @@ class MyApp extends StatelessWidget {
             }
 
             final bool isLoggedIn = snapshot.data?['isLoggedIn'];
-            final bool tosAccepted = snapshot.data?['tosAccepted'];
             final String theme = snapshot.data?['theme'];
             final String colorScheme = snapshot.data?['colorScheme'];
             final String schoolTheme = snapshot.data?['schoolTheme'];
@@ -97,9 +93,7 @@ class MyApp extends StatelessWidget {
               ),
               themeMode: themeMode,
               debugShowCheckedModeBanner: false,
-              home: isLoggedIn
-                  ? (tosAccepted ? const InitView() : const FirstTimeScreen())
-                  : const LoginScreen(),
+              home: isLoggedIn ? const InitView() : const LoginScreen(),
               routes: getRoutes(),
             );
           },
