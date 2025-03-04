@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/ui/screens/login.dart';
 import 'package:goipvc/ui/widgets/dropdown.dart';
-import 'init_view.dart';
+import '../init_view.dart';
 
 class FirstTimeScreen extends StatefulWidget {
   const FirstTimeScreen({super.key});

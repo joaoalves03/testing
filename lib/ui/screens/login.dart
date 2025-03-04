@@ -8,8 +8,9 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:goipvc/generated/l10n.dart';
-import 'package:goipvc/ui/first_time.dart';
+import 'package:goipvc/ui/screens/first_time.dart';
 import 'package:goipvc/ui/screens/terms.dart';
+import 'package:goipvc/ui/screens/privacy.dart';
 import 'package:goipvc/ui/widgets/containers.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -338,14 +339,14 @@ class LoginState extends State<LoginScreen> {
               // Terms message
               Text.rich(
                 TextSpan(
-                  text: "Ao fazer login, está de acordo com os ",
+                  text: "Ao fazer login, estás de acordo com os ",
                   children: [
                     TextSpan(
-                      text: "termos e condições",
+                      text: "termos de serviço",
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        decoration: TextDecoration.underline,
-                      ),
+                          color: Theme.of(context).colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.bold),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           Navigator.push(
@@ -356,19 +357,19 @@ class LoginState extends State<LoginScreen> {
                           );
                         },
                     ),
-                    TextSpan(text: " do goipvc, que pode ler "),
+                    TextSpan(text: " e "),
                     TextSpan(
-                      text: "aqui",
+                      text: "política de privacidade",
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        decoration: TextDecoration.underline,
-                      ),
+                          color: Theme.of(context).colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.bold),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TermsScreen(),
+                              builder: (context) => PrivacyScreen(),
                             ),
                           );
                         },

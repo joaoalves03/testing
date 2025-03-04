@@ -13,6 +13,8 @@ import 'menu/curricular_units.dart';
 import 'menu/calendar.dart';
 import 'menu/teachers.dart';
 import 'menu/tuition_fees.dart';
+import 'package:goipvc/ui/screens/privacy.dart';
+import 'package:goipvc/ui/screens/terms.dart';
 import 'menu/settings.dart';
 
 class MenuScreen extends ConsumerWidget {
@@ -164,6 +166,22 @@ class MenuScreen extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.info),
               title: Text("Sobre"),
+            ),
+            ListTile(
+              leading: Icon(Icons.gavel),
+              title: Text("Termos de serviço"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TermsScreen()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.shield),
+              title: Text("Política de privacidade"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PrivacyScreen()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.settings),
