@@ -118,10 +118,13 @@ class MenuScreen extends ConsumerWidget {
                 }
               },
             ),
-            ListTile(
-              leading: Icon(Icons.credit_card),
-              title: Text("Conta"),
-            )
+            // -------------------
+            // Expected for later - SHOULD BE USED OR REMOVED
+            // -------------------
+            // ListTile(
+            //   leading: Icon(Icons.credit_card),
+            //   title: Text("Conta"),
+            // )
           ]),
           ListSection(title: "ON", children: [
             ListTile(
