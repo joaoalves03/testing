@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/ui/widgets/error_message.dart';
 import 'package:intl/intl.dart';
 import 'package:goipvc/providers/data_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,65 +25,80 @@ class TuitionFeesScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Propinas"),
-        ),
-        body: tuitionFeesAsync.when(
-          data: (tuitionFees) {
-            final paidTuitions = _sortTuitionFeesByDate(tuitionFees
-                .where((tuitionFee) =>
-                    tuitionFee.amountPaid > 0 && tuitionFee.fine == 0)
-                .toList());
-
-            final debtTuitions = _sortTuitionFeesByDate(tuitionFees
-                .where(
-                    (tuitionFee) => tuitionFee.debt > 0 || tuitionFee.fine > 0)
-                .toList());
-
-            return Column(
-              children: [
-                TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.payments), text: 'Dívidas'),
-                    Tab(icon: Icon(Icons.paid), text: 'Pago'),
-                  ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        child: ListView(
-                          children: <Widget>[
-                            for (var debtTuition in debtTuitions)
-                              TuitionFeeCard(tuitionFee: debtTuition)
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        child: ListView(
-                          children: <Widget>[
-                            for (var paidTuition in paidTuitions)
-                              TuitionFeeCard(tuitionFee: paidTuition)
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-          loading: () => Center(
-              child: CircularProgressIndicator()
+          appBar: AppBar(
+            title: Text("Propinas"),
           ),
-          error: (e, stackTrace) =>
-              Center(child: Text('Failed to load tuition fees')),
-        ),
-      ),
+          body: Column(
+            children: [
+              TabBar(
+                tabs: [
+                  Tab(icon: Icon(Icons.payments), text: 'Dívidas'),
+                  Tab(icon: Icon(Icons.paid), text: 'Pago'),
+                ],
+              ),
+              tuitionFeesAsync.when(
+                  data: (tuitionFees) {
+                    final paidTuitions = _sortTuitionFeesByDate(tuitionFees
+                        .where((tuitionFee) =>
+                            tuitionFee.amountPaid > 0 && tuitionFee.fine == 0)
+                        .toList());
+
+                    final debtTuitions = _sortTuitionFeesByDate(tuitionFees
+                        .where((tuitionFee) =>
+                            tuitionFee.debt > 0 || tuitionFee.fine > 0)
+                        .toList());
+
+                    return Expanded(
+                      child: TabBarView(
+                        children: [
+                          RefreshIndicator(
+                            onRefresh: () async {
+                              ref.invalidate(tuitionsProvider);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              child: ListView(
+                                children: <Widget>[
+                                  for (var debtTuition in debtTuitions)
+                                    TuitionFeeCard(tuitionFee: debtTuition)
+                                ],
+                              ),
+                            ),
+                          ),
+                          RefreshIndicator(
+                            onRefresh: () async {
+                              ref.invalidate(tuitionsProvider);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              child: ListView(
+                                children: <Widget>[
+                                  for (var paidTuition in paidTuitions)
+                                    TuitionFeeCard(tuitionFee: paidTuition)
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  loading: () => Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                  error: (error, stackTrace) => Expanded(
+                        child: ErrorMessage(
+                          error: error.toString(),
+                          stackTrace: stackTrace.toString(),
+                          callback: () async {
+                            ref.invalidate(tuitionsProvider);
+                          },
+                        ),
+                      ))
+            ],
+          )),
     );
   }
 }
@@ -90,10 +106,7 @@ class TuitionFeesScreen extends ConsumerWidget {
 class TuitionFeeCard extends StatelessWidget {
   final TuitionFee tuitionFee;
 
-  const TuitionFeeCard({
-    super.key,
-    required this.tuitionFee
-  });
+  const TuitionFeeCard({super.key, required this.tuitionFee});
 
   @override
   Widget build(BuildContext context) {
