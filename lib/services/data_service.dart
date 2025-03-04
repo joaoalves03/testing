@@ -17,7 +17,7 @@ class DataService {
   final Ref ref;
   DataService(this.ref);
 
-  Future<void> _refreshToken(String url) async {
+  Future<Map<String, String>> _refreshToken(String url) async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = Uri.parse(url).origin;
 
@@ -25,13 +25,13 @@ class DataService {
     final username = prefs['username'] ?? '';
     final password = prefs['password'] ?? '';
 
-    if (url.contains("on")) {
+    if (url.contains('on')) {
       tokenType = 'on';
-    } else if (url.contains("academicos")) {
+    } else if (url.contains('academicos')) {
       tokenType = 'academicos';
-    } else if (url.contains("moodle")) {
+    } else if (url.contains('moodle')) {
       tokenType = 'moodle';
-    } else if (url.contains("sas")) {
+    } else if (url.contains('sas')) {
       tokenType = 'sas';
     }
 
@@ -58,13 +58,20 @@ class DataService {
             'sas_refresh_token', data['refreshToken']);
         prefs['sas_token'] = data['token'];
         prefs['sas_refresh_token'] = data['refreshToken'];
+
+        return {
+          'authorization': data['token'],
+          'cookie': data['refreshToken'],
+          'type': tokenType
+        };
       } else {
         final token = responseBody[tokenType];
 
         await sharedPreferences.setString('${tokenType}_token', token);
         prefs['${tokenType}_token'] = token;
+
+        return {'cookie': token, 'type': tokenType};
       }
-      await SharedPrefsUtil.printPrefs();
     } else {
       throw Exception('Failed to refresh $tokenType token');
     }
@@ -78,7 +85,15 @@ class DataService {
         : http.post(Uri.parse(url), headers: headers, body: body));
 
     if ((response.statusCode == 401) && retry) {
-      await _refreshToken(url);
+      final newToken = await _refreshToken(url);
+
+      if (newToken['type'] == 'sas') {
+        headers['Authorization'] = newToken['authorization']!;
+        headers['Cookie'] = newToken['cookie']!;
+      } else {
+        headers['Cookie'] = newToken['cookie']!;
+      }
+
       return await request(method, url, headers, body: body, retry: false);
     }
 
@@ -96,7 +111,7 @@ class DataService {
         await SharedPreferences.getInstance();
     var firstName = sharedPreferences.getString('first_name');
 
-    if (firstName != null && firstName != "Unauthorized") {
+    if (firstName != null && firstName != 'Unauthorized') {
       return firstName;
     }
 
@@ -206,10 +221,10 @@ class DataService {
     );
 
     var student = Student.fromJson(jsonDecode(response.body));
-    student.email = "$username@ipvc.pt";
+    student.email = '$username@ipvc.pt';
 
     final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
     if (!sharedPreferences.containsKey('course_id')) {
       await sharedPreferences.setInt('course_id', student.courseId);
     }
@@ -222,7 +237,7 @@ class DataService {
     final academicosToken = prefs['academicos_token'] ?? 'JSESSIONID=...';
 
     final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
     var courseId = sharedPreferences.getInt('course_id');
 
     final url =
@@ -242,24 +257,24 @@ class DataService {
     final onToken = prefs['on_token'] ?? '';
 
     final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
     var courseId = sharedPreferences.getInt('course_id');
 
     final curricularUnits = await ref.read(curricularUnitsProvider.future);
     final curricularUnit = curricularUnits.firstWhere(
-          (unit) => unit.id == curricularUnitId,
-      orElse: () => throw Exception('Curricular unit $curricularUnitId not found'),
+      (unit) => unit.id == curricularUnitId,
+      orElse: () =>
+          throw Exception('Curricular unit $curricularUnitId not found'),
     );
 
     final response = await request(
-      'POST',
-      '$serverUrl/on/curricular-unit',
-      {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': onToken
-      },
-      body: 'courseId=$courseId&classId=$curricularUnitId'
-    );
+        'POST',
+        '$serverUrl/on/curricular-unit',
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Cookie': onToken
+        },
+        body: 'courseId=$courseId&classId=$curricularUnitId');
 
     final data = jsonDecode(response.body);
 
@@ -285,10 +300,7 @@ class DataService {
     final cuList = data['curricularUnits'] as List;
     units.addAll(cuList.map((e) => CurricularUnit.fromJson(e)).toList());
 
-    return {
-      "avgGrade": data['avgGrade'],
-      "curricularUnits": units
-    };
+    return {'avgGrade': data['avgGrade'], 'curricularUnits': units};
   }
 
   Future<List<TuitionFee>> getTuitionFees() async {

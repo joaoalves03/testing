@@ -17,7 +17,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // ref.read(studentImageProvider);
+    ref.read(studentInfoProvider);
   }
 
   @override
