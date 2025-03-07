@@ -55,12 +55,13 @@ final studentInfoProvider = FutureProvider<Student>((ref) async {
 
 final studentImageProvider = FutureProvider<Uint8List>((ref) async {
   final dataService = ref.read(dataServiceProvider);
-  final studentId = await dataService.getStudentId();
+  final studentInfo = await ref.watch(studentInfoProvider.future);
+  final studentId = studentInfo.studentId;
   return dataService.getStudentImage(studentId);
 });
 
-final curricularUnitProvider =
-    FutureProvider.family<Map<String, dynamic>, int>((ref, curricularUnitId) async {
+final curricularUnitProvider = FutureProvider.family<Map<String, dynamic>, int>(
+    (ref, curricularUnitId) async {
   final dataService = ref.read(dataServiceProvider);
   return dataService.getCurricularUnit(curricularUnitId);
 });
@@ -71,7 +72,8 @@ final curricularUnitsResponseProvider =
   return dataService.getCurricularUnits();
 });
 
-final curricularUnitsProvider = FutureProvider<List<CurricularUnit>>((ref) async {
+final curricularUnitsProvider =
+    FutureProvider<List<CurricularUnit>>((ref) async {
   final response = await ref.watch(curricularUnitsResponseProvider.future);
   return response['curricularUnits'] as List<CurricularUnit>;
 });
