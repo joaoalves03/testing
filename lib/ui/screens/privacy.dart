@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_markdown/flutter_markdown.dart';
 
-class PrivacyScreen extends StatelessWidget {
-  const PrivacyScreen({
-    super.key,
-  });
+class PrivacyScreen extends StatefulWidget {
+  const PrivacyScreen({super.key});
 
-  // TODO: Replace with actual privacy policy
-  String generateLoremIpsum({int paragraphs = 1}) {
-    const loremIpsumText =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+  @override
+  PrivacyScreenState createState() => PrivacyScreenState();
+}
 
-    return List.filled(paragraphs, loremIpsumText).join('\n\n');
+class PrivacyScreenState extends State<PrivacyScreen> {
+  String _privacyPolicy = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrivacyPolicy();
+  }
+
+  Future<void> _loadPrivacyPolicy() async {
+    final String privacyPolicy = await rootBundle.loadString('assets/pp.md');
+    setState(() {
+      _privacyPolicy = privacyPolicy;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Política de privacidade"),
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: ListView(
-            children: [
-              Text(
-                generateLoremIpsum(paragraphs: 3),
-              ),
-            ],
-          ),
-        ));
+      appBar: AppBar(
+        title: Text("Política de privacidade"),
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: _privacyPolicy.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : Markdown(data: _privacyPolicy),
+      ),
+    );
   }
 }

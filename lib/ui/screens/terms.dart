@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_markdown/flutter_markdown.dart';
 
-class TermsScreen extends StatelessWidget {
-  const TermsScreen({
-    super.key,
-  });
+class TermsScreen extends StatefulWidget {
+  const TermsScreen({super.key});
 
-  // TODO: Replace with actual terms of service
-  String generateLoremIpsum({int paragraphs = 1}) {
-    const loremIpsumText =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+  @override
+  TermsScreenState createState() => TermsScreenState();
+}
 
-    return List.filled(paragraphs, loremIpsumText).join('\n\n');
+class TermsScreenState extends State<TermsScreen> {
+  String _termsOfService = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTermsOfService();
+  }
+
+  Future<void> _loadTermsOfService() async {
+    final String termsOfService = await rootBundle.loadString('assets/tos.md');
+    setState(() {
+      _termsOfService = termsOfService;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Termos de serviço"),
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: ListView(
-            children: [
-              Text(
-                generateLoremIpsum(paragraphs: 3),
-              ),
-            ],
-          ),
-        ));
+      appBar: AppBar(
+        title: Text("Termos de serviço"),
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: _termsOfService.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : Markdown(data: _termsOfService),
+      ),
+    );
   }
 }
