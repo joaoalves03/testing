@@ -110,11 +110,18 @@ class MenuScreen extends ConsumerWidget {
               title: Text("SASocial"),
               trailing: Icon(Icons.launch),
               onTap: () async {
-                final url = Uri.parse('https://sasocial.sas.ipvc.pt/dashboard');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  throw 'Could not launch $url';
+                final appUrl = Uri.parse('sasocial://job-fair');
+                final webUrl =
+                    Uri.parse('https://sasocial.sas.ipvc.pt/dashboard');
+
+                try {
+                  await launchUrl(appUrl);
+                } catch (e) {
+                  try {
+                    await launchUrl(webUrl);
+                  } catch (e) {
+                    throw 'Could not launch $webUrl';
+                  }
                 }
               },
             ),
@@ -155,11 +162,18 @@ class MenuScreen extends ConsumerWidget {
               title: Text("Moodle"),
               trailing: Icon(Icons.launch),
               onTap: () async {
-                final url = Uri.parse('https://elearning.ipvc.pt/ipvc2024/my/');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  throw 'Could not launch $url';
+                final appUrl = Uri.parse('moodlemobile://.MainActivity');
+                final webUrl =
+                    Uri.parse('https://elearning.ipvc.pt/ipvc2024/my/');
+
+                try {
+                  await launchUrl(appUrl);
+                } catch (e) {
+                  try {
+                    await launchUrl(webUrl);
+                  } catch (e) {
+                    throw 'Could not launch $webUrl';
+                  }
                 }
               },
             )
