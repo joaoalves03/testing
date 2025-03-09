@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "974585428824",
+    "project_id": "goipvc-47944",
+    "storage_bucket": "goipvc-47944.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974585428824:android:68e6e0c99633545651c32d",
+        "android_client_info": {
+          "package_name": "app.goipvc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHCSM6RexwW7BwfqaXP83k9TH66iXQT2U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
