@@ -21,13 +21,109 @@ void main() async {
   await SharedPrefsUtil.initializeDefaults();
   runApp(
     ProviderScope(
-      child: MyApp(),
+      child: App(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatefulWidget {
+  const App({super.key});
+
+  static AppState of(BuildContext context) =>
+      context.findAncestorStateOfType<AppState>()!;
+
+  @override
+  AppState createState() => AppState();
+}
+
+class AppState extends State<App> {
+  ThemeMode _themeMode = ThemeMode.system;
+  String _colorScheme = 'school';
+  String _schoolTheme = 'IPVC';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _themeMode = (prefs.getString('theme') ?? 'system') == 'system'
+          ? ThemeMode.system
+          : (prefs.getString('theme') ?? 'system') == 'dark'
+              ? ThemeMode.dark
+              : ThemeMode.light;
+      _colorScheme = prefs.getString('color_scheme') ?? 'school';
+      _schoolTheme = prefs.getString('school_theme') ?? 'IPVC';
+    });
+  }
+
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
+
+  void changeColorScheme(String colorScheme) {
+    setState(() {
+      _colorScheme = colorScheme;
+    });
+  }
+
+  void changeSchoolTheme(String schoolTheme) {
+    setState(() {
+      _schoolTheme = schoolTheme;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp(
+          title: 'goIPVC',
+          localizationsDelegates: const [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            SfGlobalLocalizations.delegate
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          theme: _buildTheme(
+            lightDynamic,
+            Brightness.light,
+            _colorScheme,
+            _schoolTheme,
+          ),
+          darkTheme: _buildTheme(
+            darkDynamic,
+            Brightness.dark,
+            _colorScheme,
+            _schoolTheme,
+          ),
+          themeMode: _themeMode,
+          debugShowCheckedModeBanner: false,
+          home: FutureBuilder<Map<String, dynamic>>(
+            future: _getAppData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
+              }
+
+              final bool isLoggedIn = snapshot.data?['isLoggedIn'] ?? false;
+
+              return isLoggedIn ? const InitView() : const LoginScreen();
+            },
+          ),
+          routes: getRoutes(),
+        );
+      },
+    );
+  }
 
   Future<Map<String, dynamic>> _getAppData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -43,63 +139,6 @@ class MyApp extends StatelessWidget {
       'colorScheme': colorScheme,
       'schoolTheme': schoolTheme,
     };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return FutureBuilder<Map<String, dynamic>>(
-          future: _getAppData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const MaterialApp(
-                  home: Scaffold(
-                      body: Center(child: CircularProgressIndicator())));
-            }
-
-            final bool isLoggedIn = snapshot.data?['isLoggedIn'];
-            final String theme = snapshot.data?['theme'];
-            final String colorScheme = snapshot.data?['colorScheme'];
-            final String schoolTheme = snapshot.data?['schoolTheme'];
-
-            final ThemeMode themeMode = theme == 'system'
-                ? ThemeMode.system
-                : theme == 'dark'
-                    ? ThemeMode.dark
-                    : ThemeMode.light;
-
-            return MaterialApp(
-              title: 'goIPVC',
-              localizationsDelegates: const [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                SfGlobalLocalizations.delegate
-              ],
-              supportedLocales: S.delegate.supportedLocales,
-              theme: _buildTheme(
-                lightDynamic,
-                Brightness.light,
-                colorScheme,
-                schoolTheme,
-              ),
-              darkTheme: _buildTheme(
-                darkDynamic,
-                Brightness.dark,
-                colorScheme,
-                schoolTheme,
-              ),
-              themeMode: themeMode,
-              debugShowCheckedModeBanner: false,
-              home: isLoggedIn ? const InitView() : const LoginScreen(),
-              routes: getRoutes(),
-            );
-          },
-        );
-      },
-    );
   }
 
   ThemeData _buildTheme(

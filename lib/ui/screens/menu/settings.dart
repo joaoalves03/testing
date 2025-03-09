@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:goipvc/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:goipvc/ui/widgets/dropdown.dart';
 import 'package:goipvc/ui/widgets/list_section.dart';
 import 'package:goipvc/ui/widgets/containers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -28,8 +30,49 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-class ThemeSettings extends StatelessWidget {
+class ThemeSettings extends StatefulWidget {
   const ThemeSettings({super.key});
+
+  @override
+  ThemeSettingsState createState() => ThemeSettingsState();
+}
+
+class ThemeSettingsState extends State<ThemeSettings> {
+  String _themeValue = "system";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _themeValue = prefs.getString('theme') ?? 'system';
+    });
+  }
+
+  Future<void> _saveTheme(String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('theme', value);
+  }
+
+  void _changeTheme(String? value) {
+    if (value != null) {
+      setState(() {
+        _themeValue = value;
+      });
+      _saveTheme(value);
+      if (value == 'dark') {
+        App.of(context).changeTheme(ThemeMode.dark);
+      } else if (value == 'light') {
+        App.of(context).changeTheme(ThemeMode.light);
+      } else {
+        App.of(context).changeTheme(ThemeMode.system);
+      }
+    }
+  }
 
   void showSchoolBottomSheet(BuildContext context) {
     List<Map<String, String>> schools = [
@@ -45,96 +88,93 @@ class ThemeSettings extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return SafeArea(
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              String? selectedSchool = "IPVC";
+        return SafeArea(child: StatefulBuilder(
+          builder: (context, setState) {
+            String? selectedSchool = "IPVC";
 
-              Widget buildSchoolButton(Map<String, String> school) {
-                final name = school.keys.first;
-                final color = Color(int.parse(school.values.first));
-                final isSelected = selectedSchool == name;
+            Widget buildSchoolButton(Map<String, String> school) {
+              final name = school.keys.first;
+              final color = Color(int.parse(school.values.first));
+              final isSelected = selectedSchool == name;
 
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: isSelected
-                            ? Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 4
-                        )
-                            : null,
-                      ),
-                      clipBehavior: Clip.hardEdge,
-                      child: InkWell(
-                        onTap: () => setState(() => selectedSchool = name),
-                        child: Center(
-                          child: Text(
-                            name,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: isSelected
+                          ? Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 4)
+                          : null,
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      onTap: () => setState(() => selectedSchool = name),
+                      child: Center(
+                        child: Text(
+                          name,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
                       ),
                     ),
                   ),
-                );
-              }
-
-              return Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.outline,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      "Escolher Escola",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 24),
-                    Column(
-                      children: [
-                        Row(
-                          children: schools
-                              .sublist(0, 4)
-                              .map((school) => buildSchoolButton(school))
-                              .toList(),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          children: schools
-                              .sublist(4)
-                              .map((school) => buildSchoolButton(school))
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                  ],
                 ),
               );
-            },
-          )
-        );
+            }
+
+            return Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.outline,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "Escolher Escola",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 24),
+                  Column(
+                    children: [
+                      Row(
+                        children: schools
+                            .sublist(0, 4)
+                            .map((school) => buildSchoolButton(school))
+                            .toList(),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        children: schools
+                            .sublist(4)
+                            .map((school) => buildSchoolButton(school))
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        ));
       },
     );
   }
@@ -146,7 +186,7 @@ class ThemeSettings extends StatelessWidget {
         leading: Icon(Icons.brightness_medium),
         title: Text("Tema"),
         trailing: Dropdown<String>(
-          value: "system",
+          value: _themeValue,
           items: [
             DropdownMenuItem<String>(
               value: "system",
@@ -161,7 +201,7 @@ class ThemeSettings extends StatelessWidget {
               child: Text("Claro"),
             ),
           ],
-          onChanged: (String? value) {  },
+          onChanged: _changeTheme,
         ),
       ),
       ListTile(
@@ -179,7 +219,7 @@ class ThemeSettings extends StatelessWidget {
               child: Text("Escola"),
             ),
           ],
-          onChanged: (String? value) {  },
+          onChanged: (String? value) {},
         ),
       ),
       ListTile(
@@ -200,13 +240,9 @@ class NotificationSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListSection(title: "Notificações", children: [
       ListTile(
-        leading: Icon(Icons.notifications_on),
-        title: Text("Notificações"),
-        trailing: Switch(
-            value: true,
-            onChanged: null
-        )
-      ),
+          leading: Icon(Icons.notifications_on),
+          title: Text("Notificações"),
+          trailing: Switch(value: true, onChanged: null)),
       ListTile(
         leading: Icon(Icons.notification_important),
         title: Text("Aulas"),
@@ -226,7 +262,7 @@ class NotificationSettings extends StatelessWidget {
               child: Text("30 minutos"),
             ),
           ],
-          onChanged: (String? value) {  },
+          onChanged: (String? value) {},
         ),
       ),
       ListTile(
@@ -248,7 +284,7 @@ class NotificationSettings extends StatelessWidget {
               child: Text("30 minutos"),
             ),
           ],
-          onChanged: (String? value) {  },
+          onChanged: (String? value) {},
         ),
       ),
     ]);
@@ -276,7 +312,7 @@ class PreferenceSettings extends StatelessWidget {
               child: Text("English"),
             ),
           ],
-          onChanged: (String? value) {  },
+          onChanged: (String? value) {},
         ),
       ),
     ]);
@@ -290,9 +326,9 @@ class ExtraSettings extends StatefulWidget {
   State<StatefulWidget> createState() => ExtraSettingsState();
 }
 
-class ExtraSettingsState extends State<ExtraSettings>{
+class ExtraSettingsState extends State<ExtraSettings> {
   final TextEditingController _serverController =
-    TextEditingController(text: 'https://api.goipvc.xyz');
+      TextEditingController(text: 'https://api.goipvc.xyz');
   final FocusNode _serverFocusNode = FocusNode();
   Color _serverBorderColor = Colors.grey;
 
@@ -300,9 +336,8 @@ class ExtraSettingsState extends State<ExtraSettings>{
     final String serverUrl = _serverController.text;
 
     try {
-      final response = await http
-          .get(Uri.parse(serverUrl))
-          .timeout(Duration(seconds: 5));
+      final response =
+          await http.get(Uri.parse(serverUrl)).timeout(Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -352,8 +387,7 @@ class ExtraSettingsState extends State<ExtraSettings>{
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text("Save")
-                ),
+                    child: Text("Save")),
               ],
             )
           ],
@@ -387,7 +421,7 @@ class ExtraSettingsState extends State<ExtraSettings>{
           "Eliminar Dados",
           style: TextStyle(color: Colors.red),
         ),
-        onTap: () { },
+        onTap: () {},
       ),
     ]);
   }
