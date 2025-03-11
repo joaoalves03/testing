@@ -10,14 +10,11 @@ class Dot extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        '•',
-        style: TextStyle(
-          fontSize: size ?? 22,
-          color: textColor ?? Theme.of(context).colorScheme.onSurface,
-          height: 0,
-        ),
-      ),
+      child: Icon(
+        Icons.fiber_manual_record,
+        size: size ?? 8,
+        color: textColor ?? Theme.of(context).colorScheme.onSurface,
+      )
     );
   }
 }

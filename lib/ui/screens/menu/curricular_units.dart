@@ -376,7 +376,7 @@ class CurricularUnitCard extends StatelessWidget {
                                   fontSize: 10,
                                 ),
                               ),
-                              Dot(size: 16),
+                              Dot(),
                               Text(
                                 '$ects ECTS',
                                 style: TextStyle(
