@@ -23,14 +23,22 @@ class ClassesTab extends ConsumerWidget {
   }
 
   List<Widget> _buildNextClassesChildren(List<Lesson> lessonsForDate) {
-    return lessonsForDate.asMap().entries.map((entry) {
-      final lessonIndex = entry.key;
-      final lesson = entry.value;
-      return UpcomingClass(
-        lesson: lesson,
-        extend: lessonIndex == 0,
+    List<Widget> children = [];
+
+    lessonsForDate.asMap().forEach((lessonIndex, lesson) {
+      children.add(
+        UpcomingClass(
+          lesson: lesson,
+          extend: lessonIndex == 0,
+        ),
       );
-    }).toList();
+
+      if (lessonIndex == 0 && lessonsForDate.length > 1) {
+        children.add(SizedBox(height: 16));
+      }
+    });
+
+    return children;
   }
 
   Widget _buildNextOrUpcomingClasses(
@@ -50,7 +58,7 @@ class ClassesTab extends ConsumerWidget {
     } else {
       return Column(
         children: lessonsForDate.map((lesson) {
-          return UpcomingClass(lesson: lesson, extend: false);
+          return UpcomingClass(lesson: lesson);
         }).toList(),
       );
     }
@@ -302,7 +310,7 @@ class UpcomingClass extends StatelessWidget {
           ),
           if (extend)
             Padding(
-              padding: EdgeInsets.only(left: 26, bottom: 16),
+              padding: EdgeInsets.only(left: 26),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
