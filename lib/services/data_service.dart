@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -194,18 +195,42 @@ class DataService {
     final serverUrl = prefs['server_url'] ?? '';
     final onToken = prefs['on_token'] ?? '';
 
-    final response = await request(
-      'POST',
-      '$serverUrl/on/schedule',
-      {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': onToken,
-      },
-      body: 'studentId=$studentId',
-    );
+    try {
+      final response = await request(
+        'POST',
+        '$serverUrl/on/schedule',
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Cookie': onToken,
+        },
+        body: 'studentId=$studentId',
+      ).timeout(Duration(seconds: 5));
 
-    final data = jsonDecode(response.body) as List;
-    return data.map((e) => Lesson.fromJson(e)).toList();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List;
+        final lessons = data.map((e) => Lesson.fromJson(e)).toList();
+
+        final SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        await sharedPreferences.setString('lessons', jsonEncode(data));
+
+        return lessons;
+      } else {
+        throw Exception('Failed to load lessons');
+      }
+    } on TimeoutException catch (_) {
+      // if server is down, load cached data
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      final lessonsString = sharedPreferences.getString('lessons');
+
+      if (lessonsString != null) {
+        final data = jsonDecode(lessonsString) as List;
+        return data.map((e) => Lesson.fromJson(e)).toList();
+      } else {
+        throw Exception('Failed to load lessons and no cached data available');
+      }
+    }
   }
 
   Future<Student> getStudentInfo() async {
