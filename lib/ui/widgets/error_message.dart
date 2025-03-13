@@ -8,6 +8,8 @@ class ErrorMessage extends StatelessWidget {
   final VoidCallback? callback;
   final bool shouldBeLogged;
   final IconData icon;
+  final bool showIcon;
+  final double size;
 
   const ErrorMessage({
     super.key,
@@ -17,6 +19,8 @@ class ErrorMessage extends StatelessWidget {
     this.callback,
     this.shouldBeLogged = false,
     this.icon = Icons.error,
+    this.showIcon = true,
+    this.size = 24
   });
 
   void showErrorDetails(BuildContext context) {
@@ -92,10 +96,10 @@ class ErrorMessage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(icon, size: 48),
+          Icon(icon, size: size * 2),
           Text(
               message ?? "Ocorreu um erro",
-              style: const TextStyle(fontSize: 24)
+              style: TextStyle(fontSize: size)
           ),
           if (callback != null)
             Padding(
