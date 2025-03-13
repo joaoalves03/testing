@@ -5,6 +5,7 @@ import 'package:goipvc/models/curricular_unit.dart';
 import 'package:goipvc/models/lesson.dart';
 import 'package:goipvc/models/student.dart';
 import 'package:goipvc/models/tuition_fee.dart';
+import 'package:goipvc/models/task.dart';
 import 'package:goipvc/services/data_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,6 +49,17 @@ final lessonsProvider = FutureProvider<List<Lesson>>((ref) async {
   final studentId = await dataService.getStudentId();
   final lessons = await dataService.getLessons(studentId);
   return lessons;
+});
+
+final tasksProvider = FutureProvider<List<Task>>((ref) async {
+  final dataService = ref.read(dataServiceProvider);
+  return dataService.getTasks();
+});
+
+final combinedProvider = FutureProvider.autoDispose<(List<Lesson>, List<Task>)>((ref) async {
+  final lessons = await ref.watch(lessonsProvider.future);
+  final tasks = await ref.watch(tasksProvider.future);
+  return (lessons, tasks);
 });
 
 final studentInfoProvider = FutureProvider<Student>((ref) async {

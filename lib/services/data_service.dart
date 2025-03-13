@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/utils/shared_prefs.dart';
 
 import '../main.dart';
+import '../models/task.dart';
 import '../providers/data_providers.dart';
 import '../models/lesson.dart';
 import '../models/student.dart';
@@ -223,6 +224,25 @@ class DataService {
 
     final data = jsonDecode(response.body) as List;
     return data.map((e) => Lesson.fromJson(e)).toList();
+  }
+
+  Future<List<Task>> getTasks() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final moodleCookie = prefs['moodle_cookie'] ?? '';
+    final moodleSesskey = prefs['moodle_sesskey'] ?? '';
+
+    final response = await request(
+      'GET',
+      '$serverUrl/moodle/assignments',
+      {
+        'Authorization': moodleSesskey,
+        'Cookie': moodleCookie,
+      },
+    );
+
+    final data = jsonDecode(response.body) as List;
+    return data.map((e) => Task.fromJson(e)).toList();
   }
 
   Future<Student> getStudentInfo() async {

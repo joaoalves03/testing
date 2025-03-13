@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:goipvc/ui/widgets/task_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -37,15 +38,6 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       title: "Christmas",
       start: "2024-12-23",
       end: "2025-01-04",
-    ),
-  ];
-  final List<Task> _tasks = [
-    Task(
-      id: 1,
-      title: "Complete Project",
-      due: "2025-02-03T00:00:00",
-      className: "SO",
-      type: "Project",
     ),
   ];
 
@@ -107,8 +99,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         calendarViewKey, _getStringFromCalendarView(_currentView));
   }
 
-  MeetingDataSource _getDataSource(List<Lesson> lessons) {
-    return MeetingDataSource(lessons, _tasks, _holidays);
+  MeetingDataSource _getDataSource(List<Lesson> lessons, List<Task> tasks) {
+    return MeetingDataSource(context, lessons, tasks, _holidays);
   }
 
   List<TimeRegion> _getTimeRegions() {
@@ -192,7 +184,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lessonsAsync = ref.watch(lessonsProvider);
+    final combinedAsync = ref.watch(combinedProvider);
 
     return Scaffold(
       body: Column(
@@ -231,8 +223,11 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
             ),
           ),
           Expanded(
-            child: lessonsAsync.when(
-              data: (lessons) {
+            child: combinedAsync.when(
+              data: (data) {
+                final lessons = data.$1;
+                final tasks = data.$2;
+
                 return SfCalendar(
                   headerHeight: 0,
                   firstDayOfWeek: 1,
@@ -256,11 +251,16 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                       : null,
                   controller: _calendarController,
                   specialRegions: _getTimeRegions(),
-                  dataSource: _getDataSource(lessons),
+                  dataSource: _getDataSource(lessons, tasks),
                   onTap: (CalendarTapDetails tap) {
                     if (tap.targetElement == CalendarElement.appointment &&
                         tap.appointments![0] is Lesson) {
                       showLessonBottomSheet(context, tap.appointments![0]);
+                    }
+
+                    if (tap.targetElement == CalendarElement.appointment &&
+                        tap.appointments![0] is Task) {
+                      showTaskBottomSheet(context, tap.appointments![0] as Task);
                     }
                   },
                   onViewChanged: (ViewChangedDetails viewChangedDetails) {
@@ -317,18 +317,14 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
 }
 
 class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(
+  final BuildContext context;
+
+  MeetingDataSource(this.context,
       List<Lesson> lessons, List<Task> tasks, List<Holiday> holidays) {
     appointments = [];
     appointments!.addAll(lessons);
 
-    appointments!.addAll(tasks.map((task) => Appointment(
-          startTime: DateTime.parse(task.due),
-          endTime: DateTime.parse(task.due).add(Duration(hours: 1)),
-          subject: task.title,
-          color: Colors.blue,
-          isAllDay: true,
-        )));
+    appointments!.addAll(tasks);
 
     appointments!.addAll(holidays.map((holiday) => Appointment(
           startTime: DateTime.parse(holiday.start),
@@ -343,6 +339,8 @@ class MeetingDataSource extends CalendarDataSource {
   DateTime getStartTime(int index) {
     if (appointments![index] is Lesson) {
       return DateTime.parse((appointments![index] as Lesson).start);
+    } else if (appointments![index] is Task){
+      return DateTime.parse((appointments![index] as Task).due);
     }
     return DateTime.now();
   }
@@ -351,6 +349,9 @@ class MeetingDataSource extends CalendarDataSource {
   DateTime getEndTime(int index) {
     if (appointments![index] is Lesson) {
       return DateTime.parse((appointments![index] as Lesson).end);
+      } else if (appointments![index] is Task){
+      return DateTime.parse((appointments![index] as Task).due)
+          .add(Duration(hours: 1));
     }
     return DateTime.now();
   }
@@ -360,6 +361,8 @@ class MeetingDataSource extends CalendarDataSource {
     if (appointments![index] is Lesson) {
       Lesson lesson = (appointments![index] as Lesson);
       return "${lesson.shortName}\n${lesson.room}";
+    } else if (appointments![index] is Task){
+      return (appointments![index] as Task).title;
     }
     return "";
   }
@@ -371,8 +374,20 @@ class MeetingDataSource extends CalendarDataSource {
               (appointments![index] as Lesson).statusColor.substring(1),
               radix: 16) +
           0xFF000000);
+    } else if (appointments![index] is Task){
+      return Theme.of(context).colorScheme.primaryContainer;
     }
     return Colors.grey;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    if (appointments![index] is Lesson) {
+      return false;
+    } else if (appointments![index] is Task){
+      return true;
+    }
+    return false;
   }
 }
 

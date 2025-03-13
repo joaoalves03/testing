@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goipvc/providers/data_providers.dart';
 import 'package:goipvc/models/curricular_unit.dart';
-import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
-import 'package:goipvc/ui/widgets/curricular_unit/grades_tab.dart';
-import 'package:goipvc/ui/widgets/error_message.dart';
 
+import 'package:goipvc/ui/widgets/dot.dart';
+import 'package:goipvc/ui/widgets/error_message.dart';
+import 'package:goipvc/ui/widgets/curricular_unit/grade.dart';
+
+import 'package:goipvc/ui/widgets/curricular_unit/general_tab.dart';
+import 'package:goipvc/ui/widgets/curricular_unit/attendance_tab.dart';
 import 'package:goipvc/ui/widgets/curricular_unit/program_tab.dart';
+import 'package:goipvc/ui/widgets/curricular_unit/grades_tab.dart';
 
 class CurricularUnitScreen extends ConsumerWidget {
   final int curricularUnitId;
@@ -23,18 +27,13 @@ class CurricularUnitScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text("Cadeira")),
       body: curricularUnitAsync.when(
-
-        data: (curricularUnitData) {
-          final CurricularUnit curricularUnit = curricularUnitData['unit'];
-          final puc = curricularUnitData['puc'];
-
+        data: (CurricularUnit curricularUnit) {
           return DefaultTabController(
             length: 4,
             child: Column(
               children: [
                 UnitHeader(
                   curricularUnit: curricularUnit,
-                  puc: puc,
                 ),
                 const TabBar(
                     tabs: [
@@ -47,33 +46,10 @@ class CurricularUnitScreen extends ConsumerWidget {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      RefreshIndicator(
-                          onRefresh: () async {
-                            ref.invalidate(curricularUnitProvider);
-                          },
-                          child: Container()
-                      ),
-
-                      RefreshIndicator(
-                          onRefresh: () async {
-                            ref.invalidate(curricularUnitProvider);
-                          },
-                          child: Container()
-                      ),
-
-                      RefreshIndicator(
-                        onRefresh: () async {
-                          ref.invalidate(curricularUnitProvider);
-                        },
-                        child: ProgramTab(puc: puc)
-                      ),
-
-                      RefreshIndicator(
-                          onRefresh: () async {
-                            ref.invalidate(curricularUnitProvider);
-                          },
-                          child: GradesTab(grades: curricularUnit.grades)
-                      ),
+                      GeneralTab(curricularUnit: curricularUnit),
+                      AttendanceTab(curricularUnit: curricularUnit),
+                      ProgramTab(puc: curricularUnit.puc!),
+                      GradesTab(grades: curricularUnit.grades)
                     ],
                   ),
                 ),
@@ -96,12 +72,10 @@ class CurricularUnitScreen extends ConsumerWidget {
 
 class UnitHeader extends StatelessWidget {
   final CurricularUnit curricularUnit;
-  final Map<String, dynamic> puc;
 
   const UnitHeader({
     super.key,
     required this.curricularUnit,
-    required this.puc
   });
 
   @override
@@ -125,6 +99,23 @@ class UnitHeader extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                Row(
+                  children: [
+                    Text(
+                        "${curricularUnit.id}"
+                    ),
+                    Dot(),
+                    Text(
+                        "${curricularUnit.semester}º semestre"
+                    ),
+                    Dot(),
+                    Text(
+                        "${curricularUnit.ects} ects"
+                    ),
+                  ],
+                ),
+
+                // TODO: Add to api the various hours curricular unit can have
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Wrap(
@@ -132,13 +123,13 @@ class UnitHeader extends StatelessWidget {
                     children: [
                       Chip(
                         label: Text(
-                          "PL: ${puc['pl_horas']?.toString() ?? '--'} horas",
+                          "PL: ${'--'} horas",
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 2),
                       ),
                       Chip(
                         label: Text(
-                          "TP: ${puc['tp_horas']?.toString() ?? '--'} horas",
+                          "TP: ${'--'} horas",
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 2),
                       ),
