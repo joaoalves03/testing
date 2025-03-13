@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goipvc/ui/screens/login.dart';
 import 'package:goipvc/ui/widgets/dropdown.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../init_view.dart';
 
 class FirstTimeScreen extends StatefulWidget {
@@ -135,65 +133,6 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class NotificationsPageState extends State<NotificationsPage> {
-  bool _notificationsEnabled = false;
-  bool _isRequestingPermission = false;
-  int _deniedCount = 0;
-
-  Future<void> _requestNotificationPermission() async {
-    if (_isRequestingPermission) return;
-    setState(() => _isRequestingPermission = true);
-
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    void showPermissionDialog() {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Permissão para Notificações"),
-          content: const Text(
-              "A aplicação não conseguiu pedir permissões automaticamente. Para ativar as notificações, é preciso permitir nas configurações do Android."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: const Text("Abrir Configurações"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancelar"),
-            ),
-          ],
-        ),
-      );
-    }
-
-    setState(() {
-      _isRequestingPermission = false;
-      switch (settings.authorizationStatus) {
-        case AuthorizationStatus.authorized:
-        case AuthorizationStatus.provisional:
-          _notificationsEnabled = true;
-          break;
-        case AuthorizationStatus.denied:
-          _notificationsEnabled = false;
-          _deniedCount++;
-          if (_deniedCount > 2) {
-            showPermissionDialog();
-          }
-          break;
-        case AuthorizationStatus.notDetermined:
-          break;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -211,17 +150,8 @@ class NotificationsPageState extends State<NotificationsPage> {
           SwitchListTile(
             secondary: const Icon(Icons.notifications_on),
             title: const Text("Notificações"),
-            value: _notificationsEnabled,
-            onChanged: _isRequestingPermission
-                ? null
-                : (value) async {
-                    if (value) {
-                      await _requestNotificationPermission();
-                    } else {
-                      await FirebaseMessaging.instance.deleteToken();
-                      setState(() => _notificationsEnabled = false);
-                    }
-                  },
+            value: false,
+            onChanged: (bool value) {},
           ),
         ],
       ),
