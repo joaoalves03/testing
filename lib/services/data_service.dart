@@ -64,7 +64,21 @@ class DataService {
           'cookie': data['refreshToken'],
           'type': tokenType
         };
-      } else {
+      } if (tokenType == 'moodle') {
+        final data = responseBody[tokenType];
+
+        await sharedPreferences.setString('moodle_cookie', data['cookie']);
+        await sharedPreferences.setString(
+            'moodle_sesskey', data['sesskey']);
+        prefs['moodle_cookie'] = data['cookie'];
+        prefs['moodle_sesskey'] = data['sesskey'];
+
+        return {
+          'cookie': data['cookie'],
+          'sesskey': data['sesskey'],
+          'type': tokenType
+        };
+      }else {
         final token = responseBody[tokenType];
 
         await sharedPreferences.setString('${tokenType}_token', token);
@@ -89,6 +103,9 @@ class DataService {
 
       if (newToken['type'] == 'sas') {
         headers['Authorization'] = newToken['authorization']!;
+        headers['Cookie'] = newToken['cookie']!;
+      } if (newToken['type'] == 'moodle') {
+        headers['Authorization'] = newToken['sesskey']!;
         headers['Cookie'] = newToken['cookie']!;
       } else {
         headers['Cookie'] = newToken['cookie']!;

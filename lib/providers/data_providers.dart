@@ -23,6 +23,8 @@ final prefsProvider = FutureProvider<Map<String, String?>>((ref) async {
     'sas_token': prefs.getString('sas_token'),
     'sas_refresh_token': prefs.getString('sas_refresh_token'),
     'academicos_token': prefs.getString('academicos_token'),
+    'moodle_cookie': prefs.getString('moodle_cookie'),
+    'moodle_sesskey': prefs.getString('moodle_sesskey'),
   };
 });
 

@@ -85,6 +85,7 @@ class LoginState extends State<LoginScreen> {
               'password': password,
               'on': 'true',
               'sas': 'true',
+              'moodle': 'true',
             }),
           )
           .timeout(const Duration(seconds: 15));
@@ -101,6 +102,8 @@ class LoginState extends State<LoginScreen> {
         await prefs.setString('sas_token', responseBody['sas']['token']);
         await prefs.setString(
             'sas_refresh_token', responseBody['sas']['refreshToken']);
+        await prefs.setString('moodle_cookie', responseBody['moodle']['cookie']);
+        await prefs.setString('moodle_sesskey', responseBody['moodle']['sesskey']);
 
         if (mounted) {
           Navigator.pushReplacement(
