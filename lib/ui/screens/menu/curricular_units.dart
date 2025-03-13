@@ -345,7 +345,7 @@ class CurricularUnitCard extends StatelessWidget {
           children: [
             Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: grade != null ? 0 : 3),
+                padding: EdgeInsets.symmetric(vertical: grade != null ? 0 : 5),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

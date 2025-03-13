@@ -251,7 +251,7 @@ class DataService {
     return response.bodyBytes;
   }
 
-  Future<Map<String, dynamic>> getCurricularUnit(int curricularUnitId) async {
+  Future<CurricularUnit> getCurricularUnit(int curricularUnitId) async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
     final onToken = prefs['on_token'] ?? '';
@@ -276,12 +276,10 @@ class DataService {
         },
         body: 'courseId=$courseId&classId=$curricularUnitId');
 
-    final data = jsonDecode(response.body);
+    final puc = PUC.fromJson(jsonDecode(response.body));
+    curricularUnit.puc = puc;
 
-    return {
-      'unit': curricularUnit,
-      'puc': data,
-    };
+    return curricularUnit;
   }
 
   Future<Map<String, dynamic>> getCurricularUnits() async {

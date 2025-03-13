@@ -5,6 +5,7 @@ class CurricularUnit {
   int semester;
   int ects;
   List<UnitGrade> grades;
+  PUC? puc;
   int? finalGrade;
 
   CurricularUnit({
@@ -14,6 +15,7 @@ class CurricularUnit {
     required this.semester,
     required this.ects,
     required this.grades,
+    this.puc,
     this.finalGrade,
   });
 
@@ -55,6 +57,38 @@ class UnitGrade {
       status: json[2],
       date: json[3],
       academicYear: json[4],
+    );
+  }
+}
+
+class PUC {
+  final String summary;
+  final String objectives;
+  final String courseContent;
+  final String methodologies;
+  final String evaluation;
+  final String bibliography;
+  final String bibliographyExtra;
+
+  PUC({
+    required this.summary,
+    required this.objectives,
+    required this.courseContent,
+    required this.methodologies,
+    required this.evaluation,
+    required this.bibliography,
+    required this.bibliographyExtra,
+  });
+
+  factory PUC.fromJson(Map<String, dynamic> json) {
+    return PUC(
+      summary: json['summary'],
+      objectives: json['objectives'],
+      courseContent: json['courseContent'],
+      methodologies: json['methodologies'],
+      evaluation: json['evaluation'],
+      bibliography: json['bibliography'],
+      bibliographyExtra: json['bibliographyExtra'],
     );
   }
 }
