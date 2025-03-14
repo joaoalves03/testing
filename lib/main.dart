@@ -1,36 +1,33 @@
+import 'dart:async';
+
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:goipvc/firebase_options.dart';
-import 'package:goipvc/themes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:syncfusion_localizations/syncfusion_localizations.dart';
-import 'generated/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:goipvc/services/notifications.dart';
 import 'package:logger/logger.dart';
 
-import 'utils/shared_prefs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_localizations/syncfusion_localizations.dart';
+import 'firebase_options.dart';
+import 'themes.dart';
 
+import 'generated/l10n.dart';
 import 'ui/init_view.dart';
 import 'ui/screens/login.dart';
-
-import 'package:dynamic_color/dynamic_color.dart';
+import 'utils/shared_prefs.dart';
 
 final Logger logger = Logger();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await SharedPrefsUtil.initializeDefaults();
-  runApp(
-    ProviderScope(
-      child: App(),
-    ),
-  );
+
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -38,6 +35,9 @@ Future<void> main() async {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+
+  await Notifications.init();
+  runApp(ProviderScope(child: App()));
 }
 
 class App extends StatefulWidget {
