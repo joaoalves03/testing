@@ -13,6 +13,8 @@ import 'package:goipvc/ui/screens/terms.dart';
 import 'package:goipvc/ui/screens/privacy.dart';
 import 'package:goipvc/ui/widgets/containers.dart';
 
+import '../widgets/logo.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -102,8 +104,10 @@ class LoginState extends State<LoginScreen> {
         await prefs.setString('sas_token', responseBody['sas']['token']);
         await prefs.setString(
             'sas_refresh_token', responseBody['sas']['refreshToken']);
-        await prefs.setString('moodle_cookie', responseBody['moodle']['cookie']);
-        await prefs.setString('moodle_sesskey', responseBody['moodle']['sesskey']);
+        await prefs.setString(
+            'moodle_cookie', responseBody['moodle']['cookie']);
+        await prefs.setString(
+            'moodle_sesskey', responseBody['moodle']['sesskey']);
 
         if (mounted) {
           Navigator.pushReplacement(
@@ -277,14 +281,7 @@ class LoginState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SvgPicture.asset(
-                'assets/logo.svg',
-                height: 64,
-                colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.onSurface,
-                  BlendMode.srcIn,
-                ),
-              ),
+              Logo(),
               const SizedBox(
                 height: 20,
               ),

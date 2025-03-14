@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goipvc/firebase_options.dart';
 import 'package:goipvc/themes.dart';
+import 'package:goipvc/ui/widgets/logo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
@@ -125,7 +126,10 @@ class AppState extends State<App> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()));
+                    body: Center(
+                        child: Column(
+                  children: [Logo(), CircularProgressIndicator()],
+                )));
               }
 
               final bool isLoggedIn = snapshot.data?['isLoggedIn'] ?? false;
