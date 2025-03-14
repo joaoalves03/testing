@@ -125,7 +125,10 @@ class AppState extends State<App> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()));
+                    body: Center(
+                        child: Column(
+                  children: [Logo(), CircularProgressIndicator()],
+                )));
               }
 
               final bool isLoggedIn = snapshot.data?['isLoggedIn'] ?? false;

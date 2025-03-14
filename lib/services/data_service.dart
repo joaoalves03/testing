@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:goipvc/utils/shared_prefs.dart';
 
 import '../main.dart';
+import '../models/task.dart';
 import '../providers/data_providers.dart';
 import '../models/lesson.dart';
 import '../models/student.dart';
@@ -65,7 +66,21 @@ class DataService {
           'cookie': data['refreshToken'],
           'type': tokenType
         };
-      } else {
+      } if (tokenType == 'moodle') {
+        final data = responseBody[tokenType];
+
+        await sharedPreferences.setString('moodle_cookie', data['cookie']);
+        await sharedPreferences.setString(
+            'moodle_sesskey', data['sesskey']);
+        prefs['moodle_cookie'] = data['cookie'];
+        prefs['moodle_sesskey'] = data['sesskey'];
+
+        return {
+          'cookie': data['cookie'],
+          'sesskey': data['sesskey'],
+          'type': tokenType
+        };
+      }else {
         final token = responseBody[tokenType];
 
         await sharedPreferences.setString('${tokenType}_token', token);
@@ -90,6 +105,9 @@ class DataService {
 
       if (newToken['type'] == 'sas') {
         headers['Authorization'] = newToken['authorization']!;
+        headers['Cookie'] = newToken['cookie']!;
+      } if (newToken['type'] == 'moodle') {
+        headers['Authorization'] = newToken['sesskey']!;
         headers['Cookie'] = newToken['cookie']!;
       } else {
         headers['Cookie'] = newToken['cookie']!;
@@ -233,6 +251,25 @@ class DataService {
     }
   }
 
+  Future<List<Task>> getTasks() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final serverUrl = prefs['server_url'] ?? '';
+    final moodleCookie = prefs['moodle_cookie'] ?? '';
+    final moodleSesskey = prefs['moodle_sesskey'] ?? '';
+
+    final response = await request(
+      'GET',
+      '$serverUrl/moodle/assignments',
+      {
+        'Authorization': moodleSesskey,
+        'Cookie': moodleCookie,
+      },
+    );
+
+    final data = jsonDecode(response.body) as List;
+    return data.map((e) => Task.fromJson(e)).toList();
+  }
+
   Future<Student> getStudentInfo() async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
@@ -276,7 +313,7 @@ class DataService {
     return response.bodyBytes;
   }
 
-  Future<Map<String, dynamic>> getCurricularUnit(int curricularUnitId) async {
+  Future<CurricularUnit> getCurricularUnit(int curricularUnitId) async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
     final onToken = prefs['on_token'] ?? '';
@@ -301,12 +338,10 @@ class DataService {
         },
         body: 'courseId=$courseId&classId=$curricularUnitId');
 
-    final data = jsonDecode(response.body);
+    final puc = PUC.fromJson(jsonDecode(response.body));
+    curricularUnit.puc = puc;
 
-    return {
-      'unit': curricularUnit,
-      'puc': data,
-    };
+    return curricularUnit;
   }
 
   Future<Map<String, dynamic>> getCurricularUnits() async {

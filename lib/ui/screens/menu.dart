@@ -13,8 +13,9 @@ import 'menu/curricular_units.dart';
 import 'menu/calendar.dart';
 import 'menu/teachers.dart';
 import 'menu/tuition_fees.dart';
-import 'package:goipvc/ui/screens/privacy.dart';
-import 'package:goipvc/ui/screens/terms.dart';
+import 'menu/about.dart';
+import './privacy.dart';
+import './terms.dart';
 import 'menu/settings.dart';
 
 class MenuScreen extends ConsumerWidget {
@@ -183,6 +184,10 @@ class MenuScreen extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.info),
               title: Text("Sobre"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AboutScreen()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.gavel),
