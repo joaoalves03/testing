@@ -9,6 +9,8 @@ import 'package:goipvc/models/task.dart';
 import 'package:goipvc/services/data_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final providerContainer = ProviderContainer();
+
 final dataServiceProvider = Provider<DataService>((ref) {
   return DataService(ref);
 });
