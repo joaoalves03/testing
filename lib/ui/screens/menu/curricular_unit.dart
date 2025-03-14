@@ -25,7 +25,7 @@ class CurricularUnitScreen extends ConsumerWidget {
     final curricularUnitAsync = ref.watch(curricularUnitProvider(curricularUnitId));
 
     return Scaffold(
-      appBar: AppBar(title: Text("Cadeira")),
+      appBar: AppBar(title: Text("Unidade Curricular")),
       body: curricularUnitAsync.when(
         data: (CurricularUnit curricularUnit) {
           return DefaultTabController(

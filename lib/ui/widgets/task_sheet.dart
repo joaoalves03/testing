@@ -86,7 +86,7 @@ void showTaskBottomSheet(BuildContext context, Task task) {
             ListTile(
               leading: Icon(Icons.book),
               title: Text(
-                "Ver cadeira",
+                "Ver Unidade Curricular",
                 style:
                     TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),

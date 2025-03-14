@@ -22,7 +22,7 @@ class CurricularUnitsScreen extends ConsumerWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Cadeiras"),
+          title: Text("Unidades Curriculares"),
         ),
         body: RefreshIndicator(
           onRefresh: () async {

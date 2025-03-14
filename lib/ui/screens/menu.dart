@@ -38,7 +38,7 @@ class MenuScreen extends ConsumerWidget {
           ListSection(title: "Geral", children: [
             ListTile(
               leading: Icon(Icons.school),
-              title: Text("Cadeiras"),
+              title: Text("Unidades Curriculares"),
               onTap: () {
                 Navigator.push(
                     context,

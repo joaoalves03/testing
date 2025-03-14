@@ -13,10 +13,6 @@ class ProgramTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (puc == null) {
-      return const Center(child: Text('No program information available'));
-    }
-
     final List<Widget> cards = [];
 
     void card(String title, String? content) {
@@ -44,7 +40,7 @@ class ProgramTab extends ConsumerWidget {
         child: cards.isEmpty
             ? ErrorMessage(
             icon: Icons.sentiment_dissatisfied,
-            message: "Sem programa da cadeira"
+            message: "Sem programa da Unidade Curricular"
         )
             : ListView(
             padding: const EdgeInsets.all(12),
