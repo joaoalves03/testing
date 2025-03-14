@@ -10,16 +10,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:goipvc/services/notifications.dart';
 import 'package:logger/logger.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'firebase_options.dart';
 import 'themes.dart';
 
 import 'generated/l10n.dart';
+import 'utils/shared_prefs.dart';
 import 'ui/init_view.dart';
 import 'ui/screens/login.dart';
-import 'utils/shared_prefs.dart';
+import 'ui/widgets/logo.dart';
 
 final Logger logger = Logger();
 
