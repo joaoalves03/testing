@@ -26,11 +26,11 @@ class ProgramTab extends ConsumerWidget {
 
     card('Resumo', puc.summary);
     card('Objetivos da aprendizagem', puc.objectives);
-    card('Conteúdos programáticos', puc.courseContent);
-    card('Metodologias de ensino', puc.methodologies);
+    card('Conteúdos programáticos', puc.programContent);
+    card('Metodologias de ensino', puc.teachMethods);
     card('Avaliação', puc.evaluation);
-    card('Bibliografia principal', puc.bibliography);
-    card('Bibliografia complementar', puc.bibliographyExtra);
+    card('Bibliografia principal', puc.mainBiblio);
+    card('Bibliografia complementar', puc.compBiblio);
 
 
     return RefreshIndicator(

@@ -1,6 +1,6 @@
 class Teacher {
-  final String name;
-  final String email;
+  final String? name;
+  final String? email;
 
   Teacher({
     required this.name,
@@ -8,6 +8,7 @@ class Teacher {
   });
 
   factory Teacher.fromJson(Map<String, dynamic> json) {
+    print(json);
     return Teacher(
       name: json['name'],
       email: json['email'],

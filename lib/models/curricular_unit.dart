@@ -1,3 +1,5 @@
+import 'package:goipvc/models/teacher.dart';
+
 class CurricularUnit {
   int id;
   String name;
@@ -64,31 +66,51 @@ class UnitGrade {
 class PUC {
   final String summary;
   final String objectives;
-  final String courseContent;
-  final String methodologies;
+  final String programContent;
+  final String teachMethods;
   final String evaluation;
-  final String bibliography;
-  final String bibliographyExtra;
+  final String mainBiblio;
+  final String compBiblio;
+  final List<dynamic> classType;
+  final List<Teacher?> responsible;
+  final List<Teacher?> otherTeachers;
 
   PUC({
     required this.summary,
     required this.objectives,
-    required this.courseContent,
-    required this.methodologies,
+    required this.programContent,
+    required this.teachMethods,
     required this.evaluation,
-    required this.bibliography,
-    required this.bibliographyExtra,
+    required this.mainBiblio,
+    required this.compBiblio,
+    required this.classType,
+    required this.responsible,
+    required this.otherTeachers,
   });
 
   factory PUC.fromJson(Map<String, dynamic> json) {
+    print(json['responsible']);
+    print(json['responsible'] != null);
+    print(json['responsible'] == null);
     return PUC(
       summary: json['summary'],
       objectives: json['objectives'],
-      courseContent: json['courseContent'],
-      methodologies: json['methodologies'],
+      programContent: json['programContent'],
+      teachMethods: json['teachMethods'],
       evaluation: json['evaluation'],
-      bibliography: json['bibliography'],
-      bibliographyExtra: json['bibliographyExtra'],
+      mainBiblio: json['mainBiblio'],
+      compBiblio: json['compBiblio'],
+      classType: json['classType'],
+      responsible: json['responsible'] != null
+          ? (json['responsible'] as List<dynamic>)
+          .map((t) => Teacher.fromJson(t))
+          .toList()
+          : [],
+      otherTeachers: json['otherTeachers'] != null
+          ? (json['otherTeachers'] as List<dynamic>)
+          .map((t) => Teacher.fromJson(t))
+          .toList()
+          : [],
     );
   }
 }

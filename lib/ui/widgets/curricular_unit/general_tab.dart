@@ -24,18 +24,22 @@ class GeneralTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(curricularUnitProvider);
-          ref.invalidate(tasksProvider);
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(12),
-          children: [
-            ScheduleWidget(curricularUnit: curricularUnit),
-            TeachersWidget(curricularUnit: curricularUnit),
-            TasksWidget(curricularUnit: curricularUnit)
-          ],
-        )
+      onRefresh: () async {
+        ref.invalidate(curricularUnitProvider);
+        ref.invalidate(tasksProvider);
+      },
+      child: ListView(
+        padding: EdgeInsets.all(10),
+        children: [
+          Column(
+            children: [
+              ScheduleWidget(curricularUnit: curricularUnit),
+              TeachersWidget(curricularUnit: curricularUnit),
+              TasksWidget(curricularUnit: curricularUnit),
+            ],
+          ),
+        ]
+      ),
     );
   }
 }
@@ -196,7 +200,7 @@ class DayCircle extends StatelessWidget {
   }
 }
 
-class TeachersWidget extends ConsumerWidget {
+class TeachersWidget extends ConsumerStatefulWidget {
   final CurricularUnit curricularUnit;
 
   const TeachersWidget({
@@ -205,18 +209,95 @@ class TeachersWidget extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TeachersWidget> createState() => _TeachersWidgetState();
+}
+
+class _TeachersWidgetState extends ConsumerState<TeachersWidget> {
+  bool _showAllTeachers = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final otherTeachers = widget.curricularUnit.puc?.otherTeachers ?? [];
+    final totalOtherTeachers = otherTeachers.length;
+    final visibleOtherTeachers = _showAllTeachers ? otherTeachers : otherTeachers.take(2).toList();
+    final remainingTeachersCount = totalOtherTeachers - visibleOtherTeachers.length;
+
     return FilledCard(
       icon: Icons.design_services,
-      title: "Responsáveis",
+      title: "Docentes",
       children: [
-        ListTile(
-          visualDensity: VisualDensity.compact,
-          title: Text("John Doe"),
-          subtitle: Text("john@estg.ipvc.pt"),
-          trailing: Icon(Icons.arrow_forward),
-          onTap: () {},
-        )
+        ...?widget.curricularUnit.puc?.responsible.map((teacher) {
+          return ListTile(
+            visualDensity: VisualDensity.compact,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Responsável',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  teacher?.name ?? 'Desconhecido',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+            subtitle: Text(teacher?.email ?? 'Sem Email'),
+            trailing: const Icon(Icons.arrow_forward),
+            onTap: () {},
+          );
+        }),
+
+        ...visibleOtherTeachers.map((teacher) {
+          return ListTile(
+            visualDensity: VisualDensity.compact,
+            title: Text(
+              teacher?.name ?? 'Desconhecido',
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(teacher?.email ?? 'Sem email'),
+            trailing: const Icon(Icons.arrow_forward),
+            onTap: () {},
+          );
+        }),
+
+        if (remainingTeachersCount > 0 && !_showAllTeachers)
+          Center(
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  _showAllTeachers = true;
+                });
+              },
+              child: Text(
+                'Ver +$remainingTeachersCount docentes',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+
+        if (_showAllTeachers)
+          Center(
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  _showAllTeachers = false;
+                });
+              },
+              child: Text(
+                'Mostrar menos',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+
       ],
     );
   }

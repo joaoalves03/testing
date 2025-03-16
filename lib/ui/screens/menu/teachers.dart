@@ -46,7 +46,7 @@ class TeachersScreenState extends State<TeachersScreen> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredTeachers = teachers
-          .where((teacher) => teacher.name.toLowerCase().contains(query))
+          .where((teacher) => teacher.name!.toLowerCase().contains(query))
           .toList();
     });
   }
@@ -80,8 +80,8 @@ class TeachersScreenState extends State<TeachersScreen> {
               itemBuilder: (context, index) {
                 final teacher = _filteredTeachers[index];
                 return ListTile(
-                  title: Text(teacher.name),
-                  subtitle: Text(teacher.email),
+                  title: Text(teacher.email ?? "Desconhecido"),
+                  subtitle: Text(teacher.email ?? "Sem email"),
                   leading: Icon(Icons.person),
                   onTap: () {
                     // TODO: Missing Navigation
