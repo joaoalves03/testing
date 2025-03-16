@@ -145,20 +145,7 @@ class CurricularUnitsScreen extends ConsumerWidget {
                             children: [
                               for (var curricularUnit in unitsByYear[year]!)
                                 CurricularUnitCard(
-                                  name: curricularUnit.name,
-                                  semester: curricularUnit.semester,
-                                  ects: curricularUnit.ects,
-                                  grade: curricularUnit.finalGrade,
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                CurricularUnitScreen(
-                                                  curricularUnitId:
-                                                      curricularUnit.id,
-                                                )));
-                                  },
+                                  curricularUnit: curricularUnit,
                                 ),
                             ],
                           ),
@@ -321,31 +308,35 @@ class OptionChip extends StatelessWidget {
 }
 
 class CurricularUnitCard extends StatelessWidget {
-  final String name;
-  final int semester;
-  final int ects;
-  final int? grade;
-  final void Function()? onTap;
+  final CurricularUnit curricularUnit;
 
   const CurricularUnitCard({
     super.key,
-    required this.name,
-    required this.semester,
-    required this.ects,
-    this.grade,
-    this.onTap,
+    required this.curricularUnit,
   });
 
   @override
   Widget build(BuildContext context) {
     return FilledCard(
-      onTap: onTap,
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    CurricularUnitScreen(
+                      curricularUnitId: curricularUnit.id,
+                    )
+            )
+        );
+      },
       children: [
         Row(
           children: [
             Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: grade != null ? 0 : 5),
+                padding: EdgeInsets.symmetric(
+                    vertical: curricularUnit.finalGrade != null ? 0 : 5
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -359,7 +350,7 @@ class CurricularUnitCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            name,
+                            curricularUnit.name,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
@@ -371,14 +362,14 @@ class CurricularUnitCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '$semesterº Semestre',
+                                '${curricularUnit.semester}º Semestre',
                                 style: TextStyle(
                                   fontSize: 10,
                                 ),
                               ),
                               Dot(),
                               Text(
-                                '$ects ECTS',
+                                '${curricularUnit.ects} ECTS',
                                 style: TextStyle(
                                   fontSize: 10,
                                 ),
@@ -392,7 +383,9 @@ class CurricularUnitCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (grade != null) ...[SizedBox(width: 10), Grade(grade: grade!)]
+            if (curricularUnit.finalGrade != null) ...[
+              SizedBox(width: 10), Grade(grade: curricularUnit.finalGrade!)
+            ]
           ],
         ),
       ],

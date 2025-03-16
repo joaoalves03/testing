@@ -10,6 +10,7 @@ class FilledCard extends StatelessWidget {
   final double? marginHorizontal;
   final List<Widget> children;
   final Function()? onTap;
+  final Function()? onLongPress;
 
   const FilledCard({
     super.key,
@@ -22,6 +23,7 @@ class FilledCard extends StatelessWidget {
     this.marginVertical,
     this.marginHorizontal,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -33,6 +35,7 @@ class FilledCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: paddingVertical ?? 10, horizontal: paddingHorizontal ?? 10),
           child: Wrap(
