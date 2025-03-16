@@ -224,25 +224,27 @@ class _BlueprintScreenState extends ConsumerState<BlueprintScreen> {
                                     ),
                                 ],
                               ),
-                              Container(
-                                height: 20,
-                                alignment: Alignment.center,
-                                child: Container(
-                                  width: 32,
-                                  height: 2,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceDim,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                ),
-                              ),
-                              FloorSelector(
-                                active: false,
-                                child: Icon(Icons.swap_horiz),
-                                onTap: () => setState(() => _currentIndex = 0),
-                              )
+
+                              // TODO: Add API endpoint to switch school blueprints
+                              // Container(
+                              //   height: 20,
+                              //   alignment: Alignment.center,
+                              //   child: Container(
+                              //     width: 32,
+                              //     height: 2,
+                              //     decoration: BoxDecoration(
+                              //       color: Theme.of(context)
+                              //           .colorScheme
+                              //           .surfaceDim,
+                              //       borderRadius: BorderRadius.circular(2),
+                              //     ),
+                              //   ),
+                              // ),
+                              // FloorSelector(
+                              //   active: false,
+                              //   child: Icon(Icons.swap_horiz),
+                              //   onTap: () => setState(() => _currentIndex = 0),
+                              // )
                             ],
                           ),
                         ),
