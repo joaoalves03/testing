@@ -63,9 +63,9 @@ class TasksTab extends ConsumerWidget {
                             children: tasksForDate.map((task) {
                                 return UpcomingTask(task: task);
                             }).toList()
-                          )
+                          ),
                         ],
-                        SizedBox(height: 15)
+                        SizedBox(height: 40)
                       ],
                     ),
                   );

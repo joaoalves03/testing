@@ -119,7 +119,7 @@ class ClassesTab extends ConsumerWidget {
                         _buildNextOrUpcomingClasses(
                             currentDate, lessonsForDate),
                       ],
-                      SizedBox(height: 15)
+                      SizedBox(height: currentDate == now ? 0 : 40)
                     ],
                   ),
                 );
@@ -161,6 +161,7 @@ class RightNowCard extends StatelessWidget {
       children: [
         _buildTitleRow(context),
         _buildInfoRow(),
+        SizedBox(height: 10),
         _buildProgressRow(),
       ],
     );
