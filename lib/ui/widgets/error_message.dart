@@ -54,7 +54,7 @@ class ErrorMessage extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
-                Text(error ?? "Nenhum detalhe adicional disponível."),
+                SelectableText(error ?? "Nenhum detalhe adicional disponível."),
                 if (stackTrace != null) ...[
                   SizedBox(height: 16),
                   ExpandableCard(
