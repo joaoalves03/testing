@@ -128,8 +128,16 @@ class AppState extends State<App> {
                 return const Scaffold(
                     body: Center(
                         child: Column(
-                  children: [Logo(), CircularProgressIndicator()],
-                )));
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Logo(),
+                            SizedBox(height: 10),
+                            CircularProgressIndicator()
+                          ],
+                        )
+                    )
+                );
               }
 
               final bool isLoggedIn = snapshot.data?['isLoggedIn'] ?? false;

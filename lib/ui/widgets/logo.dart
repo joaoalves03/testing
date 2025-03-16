@@ -5,7 +5,7 @@ class Logo extends StatelessWidget {
   final double size;
   final String? text;
 
-  const Logo({super.key, this.size = 64, this.text});
+  const Logo({super.key, this.size = 52, this.text});
 
   @override
   Widget build(BuildContext context) {
