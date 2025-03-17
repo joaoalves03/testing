@@ -26,7 +26,10 @@ final Logger logger = Logger();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (!kIsWeb) {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  }
   await SharedPrefsUtil.initializeDefaults();
 
   FlutterError.onError = (errorDetails) {
@@ -128,16 +131,14 @@ class AppState extends State<App> {
                 return const Scaffold(
                     body: Center(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Logo(),
-                            SizedBox(height: 10),
-                            CircularProgressIndicator()
-                          ],
-                        )
-                    )
-                );
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Logo(),
+                    SizedBox(height: 10),
+                    CircularProgressIndicator()
+                  ],
+                )));
               }
 
               final bool isLoggedIn = snapshot.data?['isLoggedIn'] ?? false;

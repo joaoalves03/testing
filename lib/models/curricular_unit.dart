@@ -89,9 +89,6 @@ class PUC {
   });
 
   factory PUC.fromJson(Map<String, dynamic> json) {
-    print(json['responsible']);
-    print(json['responsible'] != null);
-    print(json['responsible'] == null);
     return PUC(
       summary: json['summary'],
       objectives: json['objectives'],
@@ -103,13 +100,13 @@ class PUC {
       classType: json['classType'],
       responsible: json['responsible'] != null
           ? (json['responsible'] as List<dynamic>)
-          .map((t) => Teacher.fromJson(t))
-          .toList()
+              .map((t) => Teacher.fromJson(t))
+              .toList()
           : [],
       otherTeachers: json['otherTeachers'] != null
           ? (json['otherTeachers'] as List<dynamic>)
-          .map((t) => Teacher.fromJson(t))
-          .toList()
+              .map((t) => Teacher.fromJson(t))
+              .toList()
           : [],
     );
   }

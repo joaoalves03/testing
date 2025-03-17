@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -103,11 +102,10 @@ class LoginState extends State<LoginScreen> {
         await prefs.setString('on_token', responseBody['on']);
         await prefs.setString('sas_token', responseBody['sas']['token']);
         await prefs.setString(
-            'sas_refresh_token', responseBody['sas']['refreshToken']);
-        await prefs.setString(
-            'moodle_cookie', responseBody['moodle']['cookie']);
+            'sas_authorization', responseBody['sas']['authorization']);
         await prefs.setString(
             'moodle_sesskey', responseBody['moodle']['sesskey']);
+        await prefs.setString('moodle_token', responseBody['moodle']['token']);
 
         if (mounted) {
           Navigator.pushReplacement(

@@ -23,11 +23,11 @@ final prefsProvider = FutureProvider<Map<String, String?>>((ref) async {
     'username': prefs.getString('username'),
     'password': prefs.getString('password'),
     'on_token': prefs.getString('on_token'),
+    'sas_authorization': prefs.getString('sas_authorization'),
     'sas_token': prefs.getString('sas_token'),
-    'sas_refresh_token': prefs.getString('sas_refresh_token'),
     'academicos_token': prefs.getString('academicos_token'),
-    'moodle_cookie': prefs.getString('moodle_cookie'),
     'moodle_sesskey': prefs.getString('moodle_sesskey'),
+    'moodle_token': prefs.getString('moodle_token'),
   };
 });
 
@@ -58,7 +58,8 @@ final tasksProvider = FutureProvider<List<Task>>((ref) async {
   return dataService.getTasks();
 });
 
-final combinedProvider = FutureProvider.autoDispose<(List<Lesson>, List<Task>)>((ref) async {
+final combinedProvider =
+    FutureProvider.autoDispose<(List<Lesson>, List<Task>)>((ref) async {
   final lessons = await ref.watch(lessonsProvider.future);
   final tasks = await ref.watch(tasksProvider.future);
   return (lessons, tasks);
@@ -76,8 +77,8 @@ final studentImageProvider = FutureProvider<Uint8List>((ref) async {
   return dataService.getStudentImage(studentId);
 });
 
-final curricularUnitProvider = FutureProvider.family<CurricularUnit, int>(
-    (ref, curricularUnitId) async {
+final curricularUnitProvider =
+    FutureProvider.family<CurricularUnit, int>((ref, curricularUnitId) async {
   final dataService = ref.read(dataServiceProvider);
   return dataService.getCurricularUnit(curricularUnitId);
 });

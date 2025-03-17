@@ -6,9 +6,6 @@ import 'package:goipvc/models/curricular_unit.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:goipvc/utils/shared_prefs.dart';
-
-import '../main.dart';
 import '../models/task.dart';
 import '../providers/data_providers.dart';
 import '../models/lesson.dart';
@@ -51,42 +48,42 @@ class DataService {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
 
-      await SharedPrefsUtil.printPrefs();
+      // await SharedPrefsUtil.printPrefs();
       if (tokenType == 'sas') {
         final data = responseBody[tokenType];
 
-        await sharedPreferences.setString('sas_token', data['token']);
         await sharedPreferences.setString(
-            'sas_refresh_token', data['refreshToken']);
+            'sas_authorization', data['authorization']);
+        await sharedPreferences.setString('sas_token', data['token']);
+        prefs['sas_authorization'] = data['authorization'];
         prefs['sas_token'] = data['token'];
-        prefs['sas_refresh_token'] = data['refreshToken'];
 
         return {
-          'authorization': data['token'],
-          'cookie': data['refreshToken'],
+          'authorization': data['authorization'],
+          'token': data['token'],
           'type': tokenType
         };
-      } if (tokenType == 'moodle') {
+      }
+      if (tokenType == 'moodle') {
         final data = responseBody[tokenType];
 
-        await sharedPreferences.setString('moodle_cookie', data['cookie']);
-        await sharedPreferences.setString(
-            'moodle_sesskey', data['sesskey']);
-        prefs['moodle_cookie'] = data['cookie'];
+        await sharedPreferences.setString('moodle_sesskey', data['sesskey']);
+        await sharedPreferences.setString('moodle_token', data['token']);
         prefs['moodle_sesskey'] = data['sesskey'];
+        prefs['moodle_token'] = data['token'];
 
         return {
-          'cookie': data['cookie'],
           'sesskey': data['sesskey'],
+          'token': data['token'],
           'type': tokenType
         };
-      }else {
+      } else {
         final token = responseBody[tokenType];
 
         await sharedPreferences.setString('${tokenType}_token', token);
         prefs['${tokenType}_token'] = token;
 
-        return {'cookie': token, 'type': tokenType};
+        return {'token': token, 'type': tokenType};
       }
     } else {
       throw Exception('Failed to refresh $tokenType token');
@@ -105,20 +102,22 @@ class DataService {
 
       if (newToken['type'] == 'sas') {
         headers['Authorization'] = newToken['authorization']!;
-        headers['Cookie'] = newToken['cookie']!;
-      } if (newToken['type'] == 'moodle') {
-        headers['Authorization'] = newToken['sesskey']!;
-        headers['Cookie'] = newToken['cookie']!;
+        headers['x-auth-sas'] = newToken['x-auth-sas']!;
+      }
+      if (newToken['type'] == 'moodle') {
+        body = 'sesskey=${newToken['sesskey']}';
+        headers['x-auth-moodle'] = newToken['x-auth-moodle']!;
       } else {
-        headers['Cookie'] = newToken['cookie']!;
+        headers['x-auth-${newToken['type']}'] =
+            newToken['x-auth-${newToken['type']}']!;
       }
 
       return await request(method, url, headers, body: body, retry: false);
     }
 
     if (response.statusCode != 200 && response.statusCode != 401) {
-      logger.d('$method $url');
-      logger.d(response.body);
+      // logger.d('$method $url');
+      // logger.d(response.body);
       throw Exception('Failed to load data');
     }
 
@@ -141,7 +140,7 @@ class DataService {
     final response = await request(
       'GET',
       '$serverUrl/on/first-name',
-      {'Cookie': onToken},
+      {'x-auth-on': onToken},
     );
 
     firstName = response.body;
@@ -161,15 +160,15 @@ class DataService {
 
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
+    final sasAuthorization = prefs['sas_authorization'] ?? '';
     final sasToken = prefs['sas_token'] ?? '';
-    final sasRefreshToken = prefs['sas_refresh_token'] ?? '';
 
     final response = await request(
       'GET',
       '$serverUrl/sas/balance',
       {
-        'Authorization': sasToken,
-        'Cookie': sasRefreshToken,
+        'Authorization': sasAuthorization,
+        'x-auth-sas': sasToken,
       },
     );
 
@@ -190,15 +189,15 @@ class DataService {
 
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
+    final sasAuthorization = prefs['sas_authorization'] ?? '';
     final sasToken = prefs['sas_token'] ?? '';
-    final sasRefreshToken = prefs['sas_refresh_token'] ?? '';
 
     final response = await request(
       'GET',
       '$serverUrl/sas/student-id',
       {
-        'Authorization': sasToken,
-        'Cookie': sasRefreshToken,
+        'Authorization': sasAuthorization,
+        'x-auth-sas': sasToken,
       },
     );
 
@@ -219,7 +218,7 @@ class DataService {
         '$serverUrl/on/schedule',
         {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Cookie': onToken,
+          'x-auth-on': onToken,
         },
         body: 'studentId=$studentId',
       ).timeout(Duration(seconds: 5));
@@ -254,16 +253,17 @@ class DataService {
   Future<List<Task>> getTasks() async {
     final prefs = await ref.read(prefsProvider.future);
     final serverUrl = prefs['server_url'] ?? '';
-    final moodleCookie = prefs['moodle_cookie'] ?? '';
+    final moodleToken = prefs['moodle_token'] ?? '';
     final moodleSesskey = prefs['moodle_sesskey'] ?? '';
 
     final response = await request(
-      'GET',
+      'POST',
       '$serverUrl/moodle/assignments',
       {
-        'Authorization': moodleSesskey,
-        'Cookie': moodleCookie,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-auth-moodle': moodleToken,
       },
+      body: 'sesskey=$moodleSesskey',
     );
 
     final data = jsonDecode(response.body) as List;
@@ -279,7 +279,7 @@ class DataService {
     final response = await request(
       'GET',
       '$serverUrl/academicos/student-info',
-      {'Cookie': academicosToken},
+      {'x-auth-academicos': academicosToken},
     );
 
     var student = Student.fromJson(jsonDecode(response.body));
@@ -302,12 +302,13 @@ class DataService {
         await SharedPreferences.getInstance();
     var courseId = sharedPreferences.getInt('course_id');
 
+    // @Matt: this won't work for now since we're not passing a cookie, needs a backend fix.
     final url =
         'https://academicos.ipvc.pt/netpa/PhotoLoader?codAluno=$studentId&codCurso=$courseId';
     final response = await request(
       'GET',
-      url,
-      {'Cookie': academicosToken},
+      "example.com", //url,
+      {'x-auth-academicos': academicosToken},
     );
 
     return response.bodyBytes;
@@ -334,7 +335,7 @@ class DataService {
         '$serverUrl/on/curricular-unit',
         {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Cookie': onToken
+          'x-auth-on': onToken
         },
         body: 'courseId=$courseId&classId=$curricularUnitId');
 
@@ -350,9 +351,9 @@ class DataService {
     final academicosToken = prefs['academicos_token'] ?? '';
 
     final response = await request(
-      'POST',
+      'GET',
       '$serverUrl/academicos/curricular-units',
-      {'Cookie': academicosToken},
+      {'x-auth-academicos': academicosToken},
     );
 
     final data = jsonDecode(response.body);
@@ -371,7 +372,7 @@ class DataService {
     final response = await request(
       'GET',
       '$serverUrl/academicos/tuitions',
-      {'Cookie': academicosToken},
+      {'x-auth-academicos': academicosToken},
     );
 
     final data = jsonDecode(response.body) as List;

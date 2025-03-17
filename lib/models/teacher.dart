@@ -8,7 +8,6 @@ class Teacher {
   });
 
   factory Teacher.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Teacher(
       name: json['name'],
       email: json['email'],
