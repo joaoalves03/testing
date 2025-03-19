@@ -40,4 +40,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: ${{ format(steps.sign_app.outputs.signedReleaseFile) }}
-          prerelease: 
+          tag: v${{ github.head_ref }}
+          prerelease: true
