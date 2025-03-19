@@ -36,10 +36,9 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Push to Releases
-        uses: ncipollo/release-action@v1
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          artifacts: ${{ format(steps.sign_app.outputs.signedReleaseFile) }}
-          prerelease: true
-          tag: v${{ env.SHORT_SHA }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Releases
+          path: |
+            steps.sign_app.outputs.signedReleaseFile
